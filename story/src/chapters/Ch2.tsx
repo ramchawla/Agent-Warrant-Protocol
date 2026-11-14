@@ -1,7 +1,7 @@
 // Chapter 2: Touch ID signs the termsHash. Then the real values flow: terms → canonical → SHA-256 → challenge → signature.
 import { useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { BadgeCheck, Fingerprint, RotateCcw } from "lucide-react";
+import { BadgeCheck, Check, Fingerprint, RotateCcw } from "lucide-react";
 import type { ChapterModule, ChapterProps } from "../ChapterShell";
 import * as api from "../api";
 import { HashFlow } from "../components/HashFlow";
@@ -68,7 +68,7 @@ function Artifact({ complete, Narrative }: ChapterProps) {
         {phase === "error" ? (
           <PrimaryButton icon={RotateCcw} tone="amber" onClick={sign}>Try Touch ID again</PrimaryButton>
         ) : (
-          <PrimaryButton icon={Fingerprint} tone="amber" busy={phase === "touch"} disabled={phase === "flow" || phase === "done"} onClick={sign}>
+          <PrimaryButton icon={phase === "flow" || phase === "done" ? Check : Fingerprint} tone="amber" busy={phase === "touch"} disabled={phase === "flow" || phase === "done"} onClick={sign}>
             {phase === "flow" || phase === "done" ? "Signed" : actionLabel}
           </PrimaryButton>
         )}

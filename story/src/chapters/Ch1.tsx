@@ -1,7 +1,7 @@
 // Chapter 1: the user types what the agent may do; the gate compiles it to exact terms and a worst case.
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { CornerDownLeft, FileSignature } from "lucide-react";
+import { Check, CornerDownLeft, FileSignature } from "lucide-react";
 import type { ChapterModule, ChapterProps } from "../ChapterShell";
 import * as api from "../api";
 import { PrimaryButton } from "../components/PrimaryButton";
@@ -136,7 +136,7 @@ function Artifact({ complete, Narrative }: ChapterProps) {
             ))}
           </div>
           <div className="mt-7 flex flex-wrap items-center gap-4">
-            <PrimaryButton icon={FileSignature} busy={creating} disabled={!compiled || red || busy || !!created} onClick={create}>
+            <PrimaryButton icon={created ? Check : FileSignature} busy={creating} disabled={!compiled || red || busy || !!created} onClick={create}>
               {created ? "Warrant created" : actionLabel}
             </PrimaryButton>
             {compiled && red && !busy && <span className="text-[13px] text-faint">Too much to hand over. Narrow it down first.</span>}
@@ -181,7 +181,7 @@ function Artifact({ complete, Narrative }: ChapterProps) {
               </p>
             </motion.div>
 
-            <div className="mt-4 grid grid-cols-[minmax(0,5fr)_minmax(0,6fr)] gap-4">
+            <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
               <section className="rounded-2xl border border-line bg-raised p-5">
                 <h3 className="text-[13px] text-muted">In plain English</h3>
                 <ul className="mt-3 space-y-3">

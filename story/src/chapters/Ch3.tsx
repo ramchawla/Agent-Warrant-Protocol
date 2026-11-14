@@ -1,7 +1,7 @@
 // Chapter 3: the stored warrants document in Atlas, then the first ledger events chained prevHash → hash.
 import { useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { Database, Leaf } from "lucide-react";
+import { Check, Database, Leaf } from "lucide-react";
 import type { ChapterModule, ChapterProps } from "../ChapterShell";
 import * as api from "../api";
 import { PrimaryButton } from "../components/PrimaryButton";
@@ -88,7 +88,7 @@ function Artifact({ complete, Narrative }: ChapterProps) {
   return (
     <>
       <Narrative>
-        <PrimaryButton icon={Database} busy={busy} disabled={!!data} onClick={show}>
+        <PrimaryButton icon={data ? Check : Database} busy={busy} disabled={!!data} onClick={show}>
           {data ? "Record shown" : actionLabel}
         </PrimaryButton>
         {error && <p role="alert" className="w-full text-[13px] text-red">{error}</p>}

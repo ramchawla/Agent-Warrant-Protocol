@@ -30,7 +30,7 @@ function Artifact({ complete, next, Narrative }: ChapterProps) {
       </Narrative>
 
       <div className="mx-auto flex max-w-[620px] flex-col">
-        <div className="flex items-center justify-between gap-6">
+        <div className="flex flex-wrap items-center justify-between gap-6">
           {/* the sign-in card being handed over */}
           <motion.div
             animate={reduce ? {} : { x: handed ? 96 : 0, rotate: handed ? 2.5 : 0, scale: handed ? 0.95 : 1 }}
