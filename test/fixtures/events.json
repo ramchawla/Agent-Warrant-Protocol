@@ -1,0 +1,830 @@
+[
+  {
+    "_id": 1,
+    "seq": 1,
+    "ts": "2026-11-14T19:02:13.437Z",
+    "warrantId": "wrt_8c4e2a6f0b1d3957e9a7c5f3",
+    "termsHash": "b4E4G5WIGJhzuKoaT6lV_JweLqlTFJOvToKP-JpTEUc",
+    "agentId": "agt_5d1f0c9a7b3e4f6a8c2d1e0b",
+    "type": "WARRANT_CREATED",
+    "runId": null,
+    "summary": "Warrant wrt_8c4e2a6f0b1d3957e9a7c5f3 created for agent agt_5d1f0c9a7b3e4f6a8c2d1e0b by user usr_3a9f1c5e7b2d4f6a8c0e1b3d: up to $50.00 per action and $120.00 in total.",
+    "policyVersion": "awp-policy-1",
+    "prevHash": "upMf0kLVD1gca1grgCjclOX4BGMIzpvFgqaiIcxTu6M",
+    "hash": "UxDTJ9dydi_Sa_pxVn10NhG0v7ePk5GrkQewqBg3gik",
+    "gateSig": "31D8GfULRQG79ymInwtYUJLKe-pCgB-Z1j0UDpekw07gTnheaaTP8QbwZGo5UybxBmxX5GTWsADBQDY7eMMaAA"
+  },
+  {
+    "_id": 2,
+    "seq": 2,
+    "ts": "2026-11-14T19:02:16.811Z",
+    "warrantId": "wrt_8c4e2a6f0b1d3957e9a7c5f3",
+    "termsHash": "b4E4G5WIGJhzuKoaT6lV_JweLqlTFJOvToKP-JpTEUc",
+    "agentId": "agt_5d1f0c9a7b3e4f6a8c2d1e0b",
+    "type": "WARRANT_APPROVED",
+    "runId": null,
+    "summary": "Warrant wrt_8c4e2a6f0b1d3957e9a7c5f3 approved by user usr_3a9f1c5e7b2d4f6a8c0e1b3d with a passkey.",
+    "policyVersion": "awp-policy-1",
+    "prevHash": "UxDTJ9dydi_Sa_pxVn10NhG0v7ePk5GrkQewqBg3gik",
+    "hash": "hE9QsCPIbaj12E9_zz6LQ-22gQ17ud1cw6CKc1vGq-s",
+    "gateSig": "3rT5gMuNB_RHv7z3Jwiv5JZkfCV4D3yXwI298FbO38k4olmJEbW9MBUhga84ugO8KwGI-em5vTqTIygliMiDCQ"
+  },
+  {
+    "_id": 3,
+    "seq": 3,
+    "ts": "2026-11-14T19:02:21.122Z",
+    "warrantId": "wrt_8c4e2a6f0b1d3957e9a7c5f3",
+    "termsHash": "b4E4G5WIGJhzuKoaT6lV_JweLqlTFJOvToKP-JpTEUc",
+    "agentId": "agt_5d1f0c9a7b3e4f6a8c2d1e0b",
+    "type": "DECISION",
+    "runId": "run_kyc_refresh_01",
+    "decisionId": "dec_7af91afe0a32e08ad2a65bb0",
+    "idempotencyKey": "run_kyc_refresh_01-step-3",
+    "decision": "allow",
+    "action": {
+      "type": "kyc.refresh",
+      "destination": "bank",
+      "account": "A1",
+      "fieldNames": [
+        "account",
+        "fields"
+      ],
+      "fieldSizes": {
+        "account": 4,
+        "fields": 24
+      }
+    },
+    "actionHash": "P-tsWjsEjImmv4GK5dp52ZHOIqxlpGFcRGMZUCLSZ5k",
+    "summary": "Allowed kyc.refresh on account A1 at bank.",
+    "policyVersion": "awp-policy-1",
+    "prevHash": "hE9QsCPIbaj12E9_zz6LQ-22gQ17ud1cw6CKc1vGq-s",
+    "hash": "g3EAJsAJ69v-NZqX3tlav-HTpi_IH51YPdVmSP6uG00",
+    "gateSig": "T8MSmSrwDk9ZSNr-0-7PUyqP-p1CxTeZ5lbaidxYaX13eaeiQ-hX1dzDPdnFo0UAesk7r0Vh8WN70uERTMKADg"
+  },
+  {
+    "_id": 4,
+    "seq": 4,
+    "ts": "2026-11-14T19:02:26.370Z",
+    "warrantId": "wrt_8c4e2a6f0b1d3957e9a7c5f3",
+    "termsHash": "b4E4G5WIGJhzuKoaT6lV_JweLqlTFJOvToKP-JpTEUc",
+    "agentId": "agt_5d1f0c9a7b3e4f6a8c2d1e0b",
+    "type": "EXECUTION",
+    "runId": "run_kyc_refresh_01",
+    "decisionId": "dec_7af91afe0a32e08ad2a65bb0",
+    "outcome": "executed",
+    "institutionRef": "bank_kyc_000101",
+    "summary": "Executed kyc.refresh for decision dec_7af91afe0a32e08ad2a65bb0 at bank (bank_kyc_000101).",
+    "policyVersion": "awp-policy-1",
+    "prevHash": "g3EAJsAJ69v-NZqX3tlav-HTpi_IH51YPdVmSP6uG00",
+    "hash": "gSqU7bRdM_gnQNeguNmDWiL6kB0kbbiZue7f6v0eB4w",
+    "gateSig": "3pG35x3vZc-vH1k193XSW6m6tTWU0vqcTSvrQf8DVMpJKqD5GTG1JBUN5uoMkO6SzwnCYgKpuMKC0Od4F4POAg"
+  },
+  {
+    "_id": 5,
+    "seq": 5,
+    "ts": "2026-11-14T19:02:28.555Z",
+    "warrantId": "wrt_8c4e2a6f0b1d3957e9a7c5f3",
+    "termsHash": "b4E4G5WIGJhzuKoaT6lV_JweLqlTFJOvToKP-JpTEUc",
+    "agentId": "agt_5d1f0c9a7b3e4f6a8c2d1e0b",
+    "type": "DECISION",
+    "runId": "run_kyc_refresh_01",
+    "decisionId": "dec_56da3271aa1f6cfa75bbac95",
+    "idempotencyKey": "run_kyc_refresh_01-step-5",
+    "decision": "allow",
+    "action": {
+      "type": "kyc.refresh",
+      "destination": "bank",
+      "account": "A2",
+      "fieldNames": [
+        "account",
+        "fields"
+      ],
+      "fieldSizes": {
+        "account": 4,
+        "fields": 24
+      }
+    },
+    "actionHash": "55zJAqEL8YkW-OBz03XVm05vs2lFLmrRycDvOdJdFrg",
+    "summary": "Allowed kyc.refresh on account A2 at bank.",
+    "policyVersion": "awp-policy-1",
+    "prevHash": "gSqU7bRdM_gnQNeguNmDWiL6kB0kbbiZue7f6v0eB4w",
+    "hash": "7tMRQ_mFq-2L0yJ7J0O4oEvNbB6IbRZXhXkt6D131o8",
+    "gateSig": "wBS2I7OaW-OrXuQ2H_UVxAXIRhiAVb94f5c66QDmulpSDrzyWB4EPraPXUZWdezBSj-ptpLlWZGyICwOqWgdBw"
+  },
+  {
+    "_id": 6,
+    "seq": 6,
+    "ts": "2026-11-14T19:02:31.677Z",
+    "warrantId": "wrt_8c4e2a6f0b1d3957e9a7c5f3",
+    "termsHash": "b4E4G5WIGJhzuKoaT6lV_JweLqlTFJOvToKP-JpTEUc",
+    "agentId": "agt_5d1f0c9a7b3e4f6a8c2d1e0b",
+    "type": "EXECUTION",
+    "runId": "run_kyc_refresh_01",
+    "decisionId": "dec_56da3271aa1f6cfa75bbac95",
+    "outcome": "executed",
+    "institutionRef": "bank_kyc_000102",
+    "summary": "Executed kyc.refresh for decision dec_56da3271aa1f6cfa75bbac95 at bank (bank_kyc_000102).",
+    "policyVersion": "awp-policy-1",
+    "prevHash": "7tMRQ_mFq-2L0yJ7J0O4oEvNbB6IbRZXhXkt6D131o8",
+    "hash": "sV_5hUoZ1qMIz3csyq-DCp30ezD4U0Mny37yCBYKVhc",
+    "gateSig": "fjED_qP3QlTa4PZUWVwSiRUnHOedjGp6jkGtU8I0bnuaqRsxetjU-ntluYvElJUZi1zE01qITn9kMsOFO_BQDg"
+  },
+  {
+    "_id": 7,
+    "seq": 7,
+    "ts": "2026-11-14T19:02:35.736Z",
+    "warrantId": "wrt_8c4e2a6f0b1d3957e9a7c5f3",
+    "termsHash": "b4E4G5WIGJhzuKoaT6lV_JweLqlTFJOvToKP-JpTEUc",
+    "agentId": "agt_5d1f0c9a7b3e4f6a8c2d1e0b",
+    "type": "DECISION",
+    "runId": "run_kyc_refresh_01",
+    "decisionId": "dec_466eee2f55fa7749d467f8f6",
+    "idempotencyKey": "run_kyc_refresh_01-step-7",
+    "decision": "allow",
+    "action": {
+      "type": "payment.create",
+      "destination": "fintech",
+      "account": "A1",
+      "merchant": "M1",
+      "amountCents": 3000,
+      "fieldNames": [
+        "fromAccount",
+        "merchant",
+        "amountCents",
+        "currency",
+        "memo"
+      ],
+      "fieldSizes": {
+        "fromAccount": 4,
+        "merchant": 4,
+        "amountCents": 4,
+        "currency": 5,
+        "memo": 15
+      }
+    },
+    "actionHash": "zTNZq0U2LiEu07EKI8Wgr_ISYktcf0TPHuweiu20wVw",
+    "summary": "Allowed payment.create of $30.00 CAD from A1 to M1 at fintech.",
+    "policyVersion": "awp-policy-1",
+    "prevHash": "sV_5hUoZ1qMIz3csyq-DCp30ezD4U0Mny37yCBYKVhc",
+    "hash": "4Y0VIVHwCrH5iEo4e0UkF_c3nuseJ0_B8XtxXlQZdY0",
+    "gateSig": "jM6fYO1YJwLcT-6Z4BMuCpDxByELNKQ3y6Gwnr0gmAthRVHeqgULm6r_Onp1vK76YxjsW347n-dC3TyequRDAg"
+  },
+  {
+    "_id": 8,
+    "seq": 8,
+    "ts": "2026-11-14T19:02:40.732Z",
+    "warrantId": "wrt_8c4e2a6f0b1d3957e9a7c5f3",
+    "termsHash": "b4E4G5WIGJhzuKoaT6lV_JweLqlTFJOvToKP-JpTEUc",
+    "agentId": "agt_5d1f0c9a7b3e4f6a8c2d1e0b",
+    "type": "EXECUTION",
+    "runId": "run_kyc_refresh_01",
+    "decisionId": "dec_466eee2f55fa7749d467f8f6",
+    "outcome": "executed",
+    "institutionRef": "fin_pay_000201",
+    "summary": "Executed payment.create for decision dec_466eee2f55fa7749d467f8f6 at fintech (fin_pay_000201).",
+    "policyVersion": "awp-policy-1",
+    "prevHash": "4Y0VIVHwCrH5iEo4e0UkF_c3nuseJ0_B8XtxXlQZdY0",
+    "hash": "FuTKsqa_EmlfP41JE-hP6xwFDjN7eTtDpTsKVtCPCmI",
+    "gateSig": "KOFDgaap6zahrAOyEVg2SF6zUsYDj5HEEGRgRVBexMvfCkJZWlYg_YYR__Mbj3gB5aQHFbRljBUUG-1d9Jd7BQ"
+  },
+  {
+    "_id": 9,
+    "seq": 9,
+    "ts": "2026-11-14T19:02:42.665Z",
+    "warrantId": "wrt_8c4e2a6f0b1d3957e9a7c5f3",
+    "termsHash": "b4E4G5WIGJhzuKoaT6lV_JweLqlTFJOvToKP-JpTEUc",
+    "agentId": "agt_5d1f0c9a7b3e4f6a8c2d1e0b",
+    "type": "DECISION",
+    "runId": "run_out_of_scope_02",
+    "decisionId": "dec_cd0fb2faf8e2d84c552388a0",
+    "idempotencyKey": "run_out_of_scope_02-step-9",
+    "decision": "deny",
+    "reasonCode": "ACCOUNT_NOT_ALLOWED",
+    "action": {
+      "type": "kyc.refresh",
+      "destination": "bank",
+      "account": "A9",
+      "fieldNames": [
+        "account",
+        "fields"
+      ],
+      "fieldSizes": {
+        "account": 4,
+        "fields": 24
+      }
+    },
+    "actionHash": "0rhePdc4Hkut-3te-Uw0JDdO8ZfgSa02EdTxg4HPC_A",
+    "summary": "Denied kyc.refresh on account A9 at bank: ACCOUNT_NOT_ALLOWED.",
+    "policyVersion": "awp-policy-1",
+    "prevHash": "FuTKsqa_EmlfP41JE-hP6xwFDjN7eTtDpTsKVtCPCmI",
+    "hash": "4JCKicoQypTDBdpZ9W-A1Nrie7iqbnng44D4YtZ5TV8",
+    "gateSig": "vHM9bN9pQhfy_r2ATOi9X-G-JNGrCbmqvQtYQ4bEHny-IrjJhpq1-FRyJpbII-vUw8ZNo26pZXdhXMrfM-djBw"
+  },
+  {
+    "_id": 10,
+    "seq": 10,
+    "ts": "2026-11-14T19:02:45.535Z",
+    "warrantId": "wrt_8c4e2a6f0b1d3957e9a7c5f3",
+    "termsHash": "b4E4G5WIGJhzuKoaT6lV_JweLqlTFJOvToKP-JpTEUc",
+    "agentId": "agt_5d1f0c9a7b3e4f6a8c2d1e0b",
+    "type": "DECISION",
+    "runId": "run_out_of_scope_02",
+    "decisionId": "dec_780fd602f505f3b6ea0d21ad",
+    "idempotencyKey": "run_out_of_scope_02-step-10",
+    "decision": "deny",
+    "reasonCode": "PER_ACTION_LIMIT",
+    "action": {
+      "type": "payment.create",
+      "destination": "fintech",
+      "account": "A1",
+      "merchant": "M1",
+      "amountCents": 8000,
+      "fieldNames": [
+        "fromAccount",
+        "merchant",
+        "amountCents",
+        "currency"
+      ],
+      "fieldSizes": {
+        "fromAccount": 4,
+        "merchant": 4,
+        "amountCents": 4,
+        "currency": 5
+      }
+    },
+    "actionHash": "zpvTfr5JM3bq493ni-WGsX-sIyBhKJ1Qq6y5iHt-g_g",
+    "summary": "Denied payment.create of $80.00 CAD from A1 to M1 at fintech: PER_ACTION_LIMIT.",
+    "policyVersion": "awp-policy-1",
+    "prevHash": "4JCKicoQypTDBdpZ9W-A1Nrie7iqbnng44D4YtZ5TV8",
+    "hash": "ghJTjjBYu1r-nDIyE1eRYEfvrigccvnJcUOd5NCzWts",
+    "gateSig": "ziIea_-Rozd4NpXGB91BeaxQOsvLHrzUv4idAHEYFT-C_9Ze3PfzEcbPkFiftLqyWCrqb-ZcWysJ16qgveV0Cg"
+  },
+  {
+    "_id": 11,
+    "seq": 11,
+    "ts": "2026-11-14T19:02:49.342Z",
+    "warrantId": "wrt_8c4e2a6f0b1d3957e9a7c5f3",
+    "termsHash": "b4E4G5WIGJhzuKoaT6lV_JweLqlTFJOvToKP-JpTEUc",
+    "agentId": "agt_5d1f0c9a7b3e4f6a8c2d1e0b",
+    "type": "DECISION",
+    "runId": "run_out_of_scope_02",
+    "decisionId": "dec_b0840b9ce7a1ed38cdb428e3",
+    "idempotencyKey": "run_out_of_scope_02-step-11",
+    "decision": "deny",
+    "reasonCode": "MERCHANT_NOT_ALLOWED",
+    "action": {
+      "type": "payment.create",
+      "destination": "fintech",
+      "account": "A1",
+      "merchant": "M2",
+      "amountCents": 2000,
+      "fieldNames": [
+        "fromAccount",
+        "merchant",
+        "amountCents",
+        "currency"
+      ],
+      "fieldSizes": {
+        "fromAccount": 4,
+        "merchant": 4,
+        "amountCents": 4,
+        "currency": 5
+      }
+    },
+    "actionHash": "px5QC8il5WO8bUv7zTqSbL2I_zxZmxWX-EFZ64FKya8",
+    "summary": "Denied payment.create of $20.00 CAD from A1 to M2 at fintech: MERCHANT_NOT_ALLOWED.",
+    "policyVersion": "awp-policy-1",
+    "prevHash": "ghJTjjBYu1r-nDIyE1eRYEfvrigccvnJcUOd5NCzWts",
+    "hash": "fyXcG0G_C4TI4sE2V3f-smMv8yDgfVw4hW__Zri6emQ",
+    "gateSig": "m-LvN4KpwAAQHzNtdfU78TiTSQVbwa31syCbnXLe8yjmpxH4PSV7q4K7g1KDbu_J3y_G-v0KU_myZbEzGtnXDA"
+  },
+  {
+    "_id": 12,
+    "seq": 12,
+    "ts": "2026-11-14T19:02:54.086Z",
+    "warrantId": "wrt_8c4e2a6f0b1d3957e9a7c5f3",
+    "termsHash": "b4E4G5WIGJhzuKoaT6lV_JweLqlTFJOvToKP-JpTEUc",
+    "agentId": "agt_5d1f0c9a7b3e4f6a8c2d1e0b",
+    "type": "DECISION",
+    "runId": "run_out_of_scope_02",
+    "decisionId": "dec_81b281cb906f70955b416041",
+    "idempotencyKey": "run_out_of_scope_02-step-12",
+    "decision": "deny",
+    "reasonCode": "CURRENCY_MISMATCH",
+    "action": {
+      "type": "payment.create",
+      "destination": "fintech",
+      "account": "A1",
+      "merchant": "M1",
+      "amountCents": 2000,
+      "fieldNames": [
+        "fromAccount",
+        "merchant",
+        "amountCents",
+        "currency"
+      ],
+      "fieldSizes": {
+        "fromAccount": 4,
+        "merchant": 4,
+        "amountCents": 4,
+        "currency": 5
+      }
+    },
+    "actionHash": "XIuit58DfN_J9zBuejhKpE5J4z_z37Bcb1z1ToGMbVg",
+    "summary": "Denied payment.create of $20.00 USD from A1 to M1 at fintech: CURRENCY_MISMATCH.",
+    "policyVersion": "awp-policy-1",
+    "prevHash": "fyXcG0G_C4TI4sE2V3f-smMv8yDgfVw4hW__Zri6emQ",
+    "hash": "LZsp4TbTnEr8hvGWeRF5OcUd8FNzRLX4YryAlKQFf2Y",
+    "gateSig": "-GHNfm1O-bwIe0sNi7F92mg1fsXbJFkTxP6MHZjBXdetBWvljPevuk2HCmpFS44FU5zOQUsx6dYCyfhSDGMSBQ"
+  },
+  {
+    "_id": 13,
+    "seq": 13,
+    "ts": "2026-11-14T19:02:55.767Z",
+    "warrantId": "wrt_8c4e2a6f0b1d3957e9a7c5f3",
+    "termsHash": "b4E4G5WIGJhzuKoaT6lV_JweLqlTFJOvToKP-JpTEUc",
+    "agentId": "agt_5d1f0c9a7b3e4f6a8c2d1e0b",
+    "type": "DECISION",
+    "runId": "run_injection_03",
+    "decisionId": "dec_1679637c679b9034a0f1df9e",
+    "idempotencyKey": "run_injection_03-step-13",
+    "decision": "deny",
+    "reasonCode": "ACTION_NOT_ALLOWED",
+    "action": {
+      "type": "data.export",
+      "destination": "https://collector.example/c",
+      "fieldNames": [
+        "clientList"
+      ],
+      "fieldSizes": {
+        "clientList": 1842
+      }
+    },
+    "actionHash": "QOG4fe72owCL34xpHddVIS1KdGS47O3WeCoLuFt7qSc",
+    "summary": "Denied data.export to https://collector.example/c: ACTION_NOT_ALLOWED.",
+    "policyVersion": "awp-policy-1",
+    "prevHash": "LZsp4TbTnEr8hvGWeRF5OcUd8FNzRLX4YryAlKQFf2Y",
+    "hash": "IBcPLLr3VIZIx1xritkm7iAt4yzgbiPxSPG_Y1-8loc",
+    "gateSig": "s3y4J9pOxjeHouZZ9nQD1YdliT-SkYvfnKxYpx-vstYI-ZUYOzghrOZR2OFeQa-B4AA7X0K-0kiwl43XIZpeDA"
+  },
+  {
+    "_id": 14,
+    "seq": 14,
+    "ts": "2026-11-14T19:02:58.385Z",
+    "warrantId": "wrt_8c4e2a6f0b1d3957e9a7c5f3",
+    "termsHash": "b4E4G5WIGJhzuKoaT6lV_JweLqlTFJOvToKP-JpTEUc",
+    "agentId": "agt_5d1f0c9a7b3e4f6a8c2d1e0b",
+    "type": "DECISION",
+    "runId": "run_injection_03",
+    "decisionId": "dec_0b0a7273f5b57115143a1133",
+    "idempotencyKey": "run_injection_03-step-14",
+    "decision": "deny",
+    "reasonCode": "DESTINATION_NOT_ALLOWED",
+    "action": {
+      "type": "payment.create",
+      "destination": "https://collector.example/c",
+      "account": "A1",
+      "merchant": "M1",
+      "amountCents": 1000,
+      "fieldNames": [
+        "fromAccount",
+        "merchant",
+        "amountCents",
+        "currency"
+      ],
+      "fieldSizes": {
+        "fromAccount": 4,
+        "merchant": 4,
+        "amountCents": 4,
+        "currency": 5
+      }
+    },
+    "actionHash": "LaXfYYcVlbhc6ubfk6vFTl-aFPp_cQj8sF2N7d4iXhk",
+    "summary": "Denied payment.create of $10.00 CAD from A1 to M1 at https://collector.example/c: DESTINATION_NOT_ALLOWED.",
+    "policyVersion": "awp-policy-1",
+    "prevHash": "IBcPLLr3VIZIx1xritkm7iAt4yzgbiPxSPG_Y1-8loc",
+    "hash": "LwkDx2KS9usqPBg-vmaAhFYfHG5L9bCK29y79If-7XA",
+    "gateSig": "YGDDYD6lNGCxlNx7cm9h18P51V0nnUlrHsM_1C1Y7_tu7I6hghyTXjanvTEgsqxMOjl7WQg8RkD_esFpbT9oDQ"
+  },
+  {
+    "_id": 15,
+    "seq": 15,
+    "ts": "2026-11-14T19:03:01.940Z",
+    "warrantId": "wrt_8c4e2a6f0b1d3957e9a7c5f3",
+    "termsHash": "b4E4G5WIGJhzuKoaT6lV_JweLqlTFJOvToKP-JpTEUc",
+    "agentId": "agt_5d1f0c9a7b3e4f6a8c2d1e0b",
+    "type": "DECISION",
+    "runId": "run_injection_03",
+    "decisionId": "dec_32c655b6f4c4411f11215475",
+    "idempotencyKey": "run_injection_03-step-15",
+    "decision": "deny",
+    "reasonCode": "FIELD_NOT_ALLOWED",
+    "action": {
+      "type": "payment.create",
+      "destination": "fintech",
+      "account": "A1",
+      "merchant": "M1",
+      "amountCents": 1000,
+      "fieldNames": [
+        "fromAccount",
+        "merchant",
+        "amountCents",
+        "currency",
+        "clientList"
+      ],
+      "fieldSizes": {
+        "fromAccount": 4,
+        "merchant": 4,
+        "amountCents": 4,
+        "currency": 5,
+        "clientList": 1842
+      }
+    },
+    "actionHash": "rAaXrzh9foOgd3VaZdeUNeHU2woKhaYXYkHKwfLAkOg",
+    "summary": "Denied payment.create of $10.00 CAD from A1 to M1 at fintech: FIELD_NOT_ALLOWED.",
+    "policyVersion": "awp-policy-1",
+    "prevHash": "LwkDx2KS9usqPBg-vmaAhFYfHG5L9bCK29y79If-7XA",
+    "hash": "VcijrrVCiggWATOdKZhFqzF81hlzcuyNNioZ7gwl8X0",
+    "gateSig": "Vjy_BQOC0vZEOY8DC_cYqK0gCW3-C_tDWJBFL1XwbOOFQcVtAYAigFJke34g_LZXGuckV5Yvkylt83uQWi0zDQ"
+  },
+  {
+    "_id": 16,
+    "seq": 16,
+    "ts": "2026-11-14T19:03:06.432Z",
+    "warrantId": "wrt_8c4e2a6f0b1d3957e9a7c5f3",
+    "termsHash": "b4E4G5WIGJhzuKoaT6lV_JweLqlTFJOvToKP-JpTEUc",
+    "agentId": "agt_5d1f0c9a7b3e4f6a8c2d1e0b",
+    "type": "DECISION",
+    "runId": "run_injection_03",
+    "decisionId": "dec_641d950f10d7b994df3475a0",
+    "idempotencyKey": "run_injection_03-step-16",
+    "decision": "deny",
+    "reasonCode": "FIELD_CONSTRAINT",
+    "action": {
+      "type": "payment.create",
+      "destination": "fintech",
+      "account": "A1",
+      "merchant": "M1",
+      "amountCents": 1000,
+      "fieldNames": [
+        "fromAccount",
+        "merchant",
+        "amountCents",
+        "currency",
+        "memo"
+      ],
+      "fieldSizes": {
+        "fromAccount": 4,
+        "merchant": 4,
+        "amountCents": 4,
+        "currency": 5,
+        "memo": 5002
+      }
+    },
+    "actionHash": "9Kqs3nh4PlCNScibv_jdajry_wZ6saA0jfraBCqFmqs",
+    "summary": "Denied payment.create of $10.00 CAD from A1 to M1 at fintech: FIELD_CONSTRAINT.",
+    "policyVersion": "awp-policy-1",
+    "prevHash": "VcijrrVCiggWATOdKZhFqzF81hlzcuyNNioZ7gwl8X0",
+    "hash": "t0AvgbfRKLhdPzG73qzxc6F-_yEyxSeZjvIA3PfVXpw",
+    "gateSig": "ByCpTyeWmyXvglYOsKGi_yN43CRcxYdRFmmudABXYUxXk3R2hmtYHD8y8aNQAZvq9EeYpCn1E8EVmlQRw_G3Cg"
+  },
+  {
+    "_id": 17,
+    "seq": 17,
+    "ts": "2026-11-14T19:03:11.861Z",
+    "warrantId": "wrt_8c4e2a6f0b1d3957e9a7c5f3",
+    "termsHash": "b4E4G5WIGJhzuKoaT6lV_JweLqlTFJOvToKP-JpTEUc",
+    "agentId": "agt_e7a94c1b20d85f3a6b9c4d2e",
+    "type": "DECISION",
+    "runId": "run_other_agent_04",
+    "decisionId": "dec_28e44a46ca5e6936f8745b41",
+    "idempotencyKey": "run_other_agent_04-step-17",
+    "decision": "deny",
+    "reasonCode": "AGENT_MISMATCH",
+    "action": {
+      "type": "payment.create",
+      "destination": "fintech",
+      "account": "A1",
+      "merchant": "M1",
+      "amountCents": 1000,
+      "fieldNames": [
+        "fromAccount",
+        "merchant",
+        "amountCents",
+        "currency"
+      ],
+      "fieldSizes": {
+        "fromAccount": 4,
+        "merchant": 4,
+        "amountCents": 4,
+        "currency": 5
+      }
+    },
+    "actionHash": "Gs1TnkmUp-NjKTV22DpAO2YdXsasIZxFcYgXMxXl9Ac",
+    "summary": "Denied payment.create of $10.00 CAD from A1 to M1 at fintech: AGENT_MISMATCH.",
+    "policyVersion": "awp-policy-1",
+    "prevHash": "t0AvgbfRKLhdPzG73qzxc6F-_yEyxSeZjvIA3PfVXpw",
+    "hash": "9aY8TE0Z-KMY1_orgHuxiCYn8_x78gCeJ8UhjCLP_2Q",
+    "gateSig": "y8DXXUhM7qWLMTJh3rKhN9C0Rfub0ZCKRfVG-LKN8UOjbVgJGA3mFYV1oNuxJOcLNzxh3AAyfi9ojz02ZxvAAw"
+  },
+  {
+    "_id": 18,
+    "seq": 18,
+    "ts": "2026-11-14T19:03:14.227Z",
+    "warrantId": "wrt_1f7b9d3c5e0a2468b6d4f2a0",
+    "termsHash": "khf7QwNHD--czCREcmujLinH3HelfHzjPwsFpsRfzyA",
+    "agentId": "agt_5d1f0c9a7b3e4f6a8c2d1e0b",
+    "type": "CHILD_ISSUED",
+    "runId": null,
+    "summary": "Child warrant wrt_1f7b9d3c5e0a2468b6d4f2a0 issued to agent agt_0b6c8e2f4a1d3975c0e8f6a4 under wrt_8c4e2a6f0b1d3957e9a7c5f3: kyc.refresh on A4 and A5, no spending.",
+    "policyVersion": "awp-policy-1",
+    "prevHash": "9aY8TE0Z-KMY1_orgHuxiCYn8_x78gCeJ8UhjCLP_2Q",
+    "hash": "PGMys04fpKojsAPF_NR1ZHZF9Oj-rXtsvgWZnw5CJVY",
+    "gateSig": "IaCOETexn1nTvQ5-wq_SXNSPMWtrABDCkUsWT7vnkXHcpZTWotLNY-gCQwUG5HkcMn7QFl9fHWtPDINch1AxDQ"
+  },
+  {
+    "_id": 19,
+    "seq": 19,
+    "ts": "2026-11-14T19:03:17.530Z",
+    "warrantId": "wrt_8c4e2a6f0b1d3957e9a7c5f3",
+    "termsHash": "b4E4G5WIGJhzuKoaT6lV_JweLqlTFJOvToKP-JpTEUc",
+    "agentId": "agt_5d1f0c9a7b3e4f6a8c2d1e0b",
+    "type": "DECISION",
+    "runId": "run_payments_05",
+    "decisionId": "dec_c368301ef60edd8004cc2753",
+    "idempotencyKey": "run_payments_05-step-19",
+    "decision": "allow",
+    "action": {
+      "type": "payment.create",
+      "destination": "fintech",
+      "account": "A1",
+      "merchant": "M1",
+      "amountCents": 5000,
+      "fieldNames": [
+        "fromAccount",
+        "merchant",
+        "amountCents",
+        "currency"
+      ],
+      "fieldSizes": {
+        "fromAccount": 4,
+        "merchant": 4,
+        "amountCents": 4,
+        "currency": 5
+      }
+    },
+    "actionHash": "JmgUYwpooS2KVNgU_nsJfaRK1KFedkfJF6YENYEXKiI",
+    "summary": "Allowed payment.create of $50.00 CAD from A1 to M1 at fintech.",
+    "policyVersion": "awp-policy-1",
+    "prevHash": "PGMys04fpKojsAPF_NR1ZHZF9Oj-rXtsvgWZnw5CJVY",
+    "hash": "94wVik42Y1kjkSMeCMMGUDTJQXyiwuVqZ_vkNAxgrGw",
+    "gateSig": "BQNYKn1uB-x381lyvVIBX8VPdqsacPEcrV7eSaqhOCINIIDhbvxt2KW5whwATaAFzFDQfcHF2E1K2uUkrGwmBA"
+  },
+  {
+    "_id": 20,
+    "seq": 20,
+    "ts": "2026-11-14T19:03:21.770Z",
+    "warrantId": "wrt_8c4e2a6f0b1d3957e9a7c5f3",
+    "termsHash": "b4E4G5WIGJhzuKoaT6lV_JweLqlTFJOvToKP-JpTEUc",
+    "agentId": "agt_5d1f0c9a7b3e4f6a8c2d1e0b",
+    "type": "EXECUTION",
+    "runId": "run_payments_05",
+    "decisionId": "dec_c368301ef60edd8004cc2753",
+    "outcome": "rejected",
+    "summary": "Rejected payment.create for decision dec_c368301ef60edd8004cc2753 by fintech; held amount released.",
+    "policyVersion": "awp-policy-1",
+    "prevHash": "94wVik42Y1kjkSMeCMMGUDTJQXyiwuVqZ_vkNAxgrGw",
+    "hash": "fsLGbBbiSItMwwi4auQLVbo2X7-sBpFGXjveUL_T7yM",
+    "gateSig": "cK5uwdttbudXjF6mFY0YjbW1aWbfQkYi9GDrTkwTNecYUDpFwVlo9kPKeiM2-KPbzfTTRajO_IS4wdnCeQGOBw"
+  },
+  {
+    "_id": 21,
+    "seq": 21,
+    "ts": "2026-11-14T19:03:26.947Z",
+    "warrantId": "wrt_8c4e2a6f0b1d3957e9a7c5f3",
+    "termsHash": "b4E4G5WIGJhzuKoaT6lV_JweLqlTFJOvToKP-JpTEUc",
+    "agentId": "agt_5d1f0c9a7b3e4f6a8c2d1e0b",
+    "type": "DECISION",
+    "runId": "run_payments_05",
+    "decisionId": "dec_9c620f39179bed30489cf78c",
+    "idempotencyKey": "run_payments_05-step-21",
+    "decision": "allow",
+    "action": {
+      "type": "payment.create",
+      "destination": "fintech",
+      "account": "A1",
+      "merchant": "M1",
+      "amountCents": 5000,
+      "fieldNames": [
+        "fromAccount",
+        "merchant",
+        "amountCents",
+        "currency"
+      ],
+      "fieldSizes": {
+        "fromAccount": 4,
+        "merchant": 4,
+        "amountCents": 4,
+        "currency": 5
+      }
+    },
+    "actionHash": "JmgUYwpooS2KVNgU_nsJfaRK1KFedkfJF6YENYEXKiI",
+    "summary": "Allowed payment.create of $50.00 CAD from A1 to M1 at fintech.",
+    "policyVersion": "awp-policy-1",
+    "prevHash": "fsLGbBbiSItMwwi4auQLVbo2X7-sBpFGXjveUL_T7yM",
+    "hash": "FYsz1CfqERmMnzCR23hiPB_DZT32Kra_UqcTq0mMyDE",
+    "gateSig": "D2P2eJm3PNLPrf-SqpWJrJDsPQNxBinRRBaS8uW62GvJODmgDNpiilAUak9C9D0VYoqcKpQ1SrYIlKgkDSzVBQ"
+  },
+  {
+    "_id": 22,
+    "seq": 22,
+    "ts": "2026-11-14T19:03:29.061Z",
+    "warrantId": "wrt_8c4e2a6f0b1d3957e9a7c5f3",
+    "termsHash": "b4E4G5WIGJhzuKoaT6lV_JweLqlTFJOvToKP-JpTEUc",
+    "agentId": "agt_5d1f0c9a7b3e4f6a8c2d1e0b",
+    "type": "EXECUTION",
+    "runId": "run_payments_05",
+    "decisionId": "dec_9c620f39179bed30489cf78c",
+    "outcome": "executed",
+    "institutionRef": "fin_pay_000202",
+    "summary": "Executed payment.create for decision dec_9c620f39179bed30489cf78c at fintech (fin_pay_000202).",
+    "policyVersion": "awp-policy-1",
+    "prevHash": "FYsz1CfqERmMnzCR23hiPB_DZT32Kra_UqcTq0mMyDE",
+    "hash": "GUMpR0nNlkXxc_fN2Iqcjw44kUJN27sV_G_YKvt3B_0",
+    "gateSig": "u4o9yzmkzu--Sc0NluIE4HoqC7dN5lXiNLL9yvC8udqCjNiYFwbpr6m0QebpU49YcSAJpjuhlLehzZaPgbXWBA"
+  },
+  {
+    "_id": 23,
+    "seq": 23,
+    "ts": "2026-11-14T19:03:32.112Z",
+    "warrantId": "wrt_8c4e2a6f0b1d3957e9a7c5f3",
+    "termsHash": "b4E4G5WIGJhzuKoaT6lV_JweLqlTFJOvToKP-JpTEUc",
+    "agentId": "agt_5d1f0c9a7b3e4f6a8c2d1e0b",
+    "type": "DECISION",
+    "runId": "run_payments_05",
+    "decisionId": "dec_b7bacf0e31ada4f2e8e9be06",
+    "idempotencyKey": "run_payments_05-step-23",
+    "decision": "allow",
+    "action": {
+      "type": "payment.create",
+      "destination": "fintech",
+      "account": "A1",
+      "merchant": "M1",
+      "amountCents": 1000,
+      "fieldNames": [
+        "fromAccount",
+        "merchant",
+        "amountCents",
+        "currency"
+      ],
+      "fieldSizes": {
+        "fromAccount": 4,
+        "merchant": 4,
+        "amountCents": 4,
+        "currency": 5
+      }
+    },
+    "actionHash": "Gs1TnkmUp-NjKTV22DpAO2YdXsasIZxFcYgXMxXl9Ac",
+    "summary": "Allowed payment.create of $10.00 CAD from A1 to M1 at fintech.",
+    "policyVersion": "awp-policy-1",
+    "prevHash": "GUMpR0nNlkXxc_fN2Iqcjw44kUJN27sV_G_YKvt3B_0",
+    "hash": "sgSj5_lhxC7bZe0brk5bEQiuJpOzdYNGycAawEUHnzI",
+    "gateSig": "AFMdxt2XQfPrKiuZU31odv0LyGCafs3mDlMemA_x3DJGP0bfXkRyN-G3JiTwSMFhcY5CVU7y9rf-3IF-84UMBQ"
+  },
+  {
+    "_id": 24,
+    "seq": 24,
+    "ts": "2026-11-14T19:03:36.100Z",
+    "warrantId": "wrt_8c4e2a6f0b1d3957e9a7c5f3",
+    "termsHash": "b4E4G5WIGJhzuKoaT6lV_JweLqlTFJOvToKP-JpTEUc",
+    "agentId": "agt_5d1f0c9a7b3e4f6a8c2d1e0b",
+    "type": "EXECUTION",
+    "runId": "run_payments_05",
+    "decisionId": "dec_b7bacf0e31ada4f2e8e9be06",
+    "outcome": "unknown",
+    "summary": "Unknown outcome of payment.create for decision dec_b7bacf0e31ada4f2e8e9be06 at fintech: no answer within 5 seconds; amount stays held.",
+    "policyVersion": "awp-policy-1",
+    "prevHash": "sgSj5_lhxC7bZe0brk5bEQiuJpOzdYNGycAawEUHnzI",
+    "hash": "OeFudxiiB5kQEcMcfzZfMVwRZsGYSYsATINWazFgOas",
+    "gateSig": "9sic2sQV8JLqVR6-5kmfE8mxdjp-qpZ1NMOpSwjtJ1KPO6KXpl6pYFV6czCMO-skl1Vm111fiZAgWVFO6pKnBQ"
+  },
+  {
+    "_id": 25,
+    "seq": 25,
+    "ts": "2026-11-14T19:03:41.025Z",
+    "warrantId": "wrt_8c4e2a6f0b1d3957e9a7c5f3",
+    "termsHash": "b4E4G5WIGJhzuKoaT6lV_JweLqlTFJOvToKP-JpTEUc",
+    "agentId": "agt_5d1f0c9a7b3e4f6a8c2d1e0b",
+    "type": "DECISION",
+    "runId": "run_payments_05",
+    "decisionId": "dec_33c47dc44bdfdea2bc2bf6a1",
+    "idempotencyKey": "run_payments_05-step-25",
+    "decision": "deny",
+    "reasonCode": "BUDGET_EXHAUSTED",
+    "action": {
+      "type": "payment.create",
+      "destination": "fintech",
+      "account": "A1",
+      "merchant": "M1",
+      "amountCents": 5000,
+      "fieldNames": [
+        "fromAccount",
+        "merchant",
+        "amountCents",
+        "currency"
+      ],
+      "fieldSizes": {
+        "fromAccount": 4,
+        "merchant": 4,
+        "amountCents": 4,
+        "currency": 5
+      }
+    },
+    "actionHash": "JmgUYwpooS2KVNgU_nsJfaRK1KFedkfJF6YENYEXKiI",
+    "summary": "Denied payment.create of $50.00 CAD from A1 to M1 at fintech: BUDGET_EXHAUSTED.",
+    "policyVersion": "awp-policy-1",
+    "prevHash": "OeFudxiiB5kQEcMcfzZfMVwRZsGYSYsATINWazFgOas",
+    "hash": "9w9f1WRBZBLke3YS7KZbMC4pYLwbUz1CWJotcXZCcSQ",
+    "gateSig": "Eu-IgvJ55sfmZrUf_texXc_XybfR535o96tm0i8fhFb2YDQvrq7CB5v4fkkP3YjMY2BYcTcFo6bziRDCDwb1Dg"
+  },
+  {
+    "_id": 26,
+    "seq": 26,
+    "ts": "2026-11-14T19:03:42.887Z",
+    "warrantId": "wrt_8c4e2a6f0b1d3957e9a7c5f3",
+    "termsHash": "b4E4G5WIGJhzuKoaT6lV_JweLqlTFJOvToKP-JpTEUc",
+    "agentId": "agt_5d1f0c9a7b3e4f6a8c2d1e0b",
+    "type": "DECISION",
+    "runId": "run_payments_05",
+    "decisionId": "dec_fc4dde9b6209e276f87ae74a",
+    "idempotencyKey": "run_payments_05-step-26",
+    "decision": "allow",
+    "action": {
+      "type": "kyc.refresh",
+      "destination": "bank",
+      "account": "A3",
+      "fieldNames": [
+        "account",
+        "fields"
+      ],
+      "fieldSizes": {
+        "account": 4,
+        "fields": 24
+      }
+    },
+    "actionHash": "Q1ERaEqJR6n_jYoodZ55j-iXMepDRQWLxeCmHKo6woY",
+    "summary": "Allowed kyc.refresh on account A3 at bank.",
+    "policyVersion": "awp-policy-1",
+    "prevHash": "9w9f1WRBZBLke3YS7KZbMC4pYLwbUz1CWJotcXZCcSQ",
+    "hash": "12h7ovlnz2PrzviuXxRxCpxThil7ipQIzLaT0YJ5j5k",
+    "gateSig": "xlStyubJDm7cNzEwOnvPPG4AWfAy_RpVP5wq1YNaWDVE8y-xpSsQNTxcSkEpF64_LsWtJXmFu_aQUp2MP4ilCQ"
+  },
+  {
+    "_id": 27,
+    "seq": 27,
+    "ts": "2026-11-14T19:03:45.686Z",
+    "warrantId": "wrt_8c4e2a6f0b1d3957e9a7c5f3",
+    "termsHash": "b4E4G5WIGJhzuKoaT6lV_JweLqlTFJOvToKP-JpTEUc",
+    "agentId": "agt_5d1f0c9a7b3e4f6a8c2d1e0b",
+    "type": "REVOKED",
+    "runId": null,
+    "summary": "Warrant wrt_8c4e2a6f0b1d3957e9a7c5f3 revoked by user usr_3a9f1c5e7b2d4f6a8c0e1b3d; 2 warrants stopped.",
+    "policyVersion": "awp-policy-1",
+    "prevHash": "12h7ovlnz2PrzviuXxRxCpxThil7ipQIzLaT0YJ5j5k",
+    "hash": "IQNabV-zYq9wF4yjS9fpv3a8ycHjrG7WBjXr9JI9N4Y",
+    "gateSig": "MUNQiGUVd4kb6bqQj-ZH6wuAEHpLP3qdDsT2hXvvRZdkzbLFsDw-Z1zaPdzoHICZkn06US6YLkgxVuaxVVnlCg"
+  },
+  {
+    "_id": 28,
+    "seq": 28,
+    "ts": "2026-11-14T19:03:49.422Z",
+    "warrantId": "wrt_8c4e2a6f0b1d3957e9a7c5f3",
+    "termsHash": "b4E4G5WIGJhzuKoaT6lV_JweLqlTFJOvToKP-JpTEUc",
+    "agentId": "agt_5d1f0c9a7b3e4f6a8c2d1e0b",
+    "type": "DECISION",
+    "runId": "run_payments_05",
+    "decisionId": "dec_a63b9a031eae5a398dd624db",
+    "idempotencyKey": "run_payments_05-step-28",
+    "decision": "deny",
+    "reasonCode": "WARRANT_REVOKED",
+    "action": {
+      "type": "kyc.refresh",
+      "destination": "bank",
+      "account": "A4",
+      "fieldNames": [
+        "account",
+        "fields"
+      ],
+      "fieldSizes": {
+        "account": 4,
+        "fields": 24
+      }
+    },
+    "actionHash": "1ie3zE7Ct9ZfHZenx5voBviL1wV01aVGnhaBgN5zK4A",
+    "summary": "Denied kyc.refresh on account A4 at bank: WARRANT_REVOKED.",
+    "policyVersion": "awp-policy-1",
+    "prevHash": "IQNabV-zYq9wF4yjS9fpv3a8ycHjrG7WBjXr9JI9N4Y",
+    "hash": "oq5ChdqVRVJJZVLg724xrTdCu6GoYpkA-qSqRQISSPY",
+    "gateSig": "LydNOOSCIQ3wCJ8BMR5h3dN5WJSZlRGNRDsT24VUpf-vyTmJl-EHm5Bvsi1Mn0PpDmd3XnGfmsJbgItWmFGHBA"
+  }
+]
