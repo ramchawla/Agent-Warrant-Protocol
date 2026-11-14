@@ -118,13 +118,15 @@ function checkDelegation(element: Receipt["chain"][number], parent: Terms, child
     subset(c.destinations, p.destinations) && fieldsNarrower &&
     child.currency === parent.currency &&
     child.perActionMaxCents <= parent.perActionMaxCents && child.totalLimitCents <= parent.totalLimitCents &&
-    Date.parse(child.expiresAt) <= Date.parse(parent.expiresAt);
+    Date.parse(child.expiresAt) <= Date.parse(parent.expiresAt) &&
+    Date.parse(child.notBefore) >= Date.parse(parent.notBefore);   // an unparsable date compares false and fails closed
   if (!narrower) reject("CHAIN_NOT_SUBSET");
 }
 
 /** Step 6: the action sits inside the last warrant. Mirrors the scope rules of evaluate(). */
 function checkLast(terms: Terms, action: Action, actionHash: unknown, institution: string, now: number): void {
   if (!(now < Date.parse(terms.expiresAt))) reject("WARRANT_EXPIRED");   // an unparsable date fails closed
+  if (!(now >= Date.parse(terms.notBefore) - SKEW_MS)) reject("WARRANT_NOT_YET_VALID");
   const { scope } = terms;
   const { params } = action;
   if (!scope.actions.includes(action.type)) reject("ACTION_OUT_OF_SCOPE");

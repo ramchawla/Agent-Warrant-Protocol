@@ -205,6 +205,14 @@ test("warrant expired at verification time", async () => {
   assert.equal(await reasonOf(signed([approve(garbage)])), "WARRANT_EXPIRED");
 });
 
+test("warrant not yet valid at verification time", async () => {
+  // NOW is 12:00:00; the 5 s skew applies, as for receipt iat.
+  assert.equal(await reasonOf(signed([approve(makeTerms({ notBefore: "2026-01-01T13:00:00.000Z" }))])), "WARRANT_NOT_YET_VALID");
+  assert.equal(await reasonOf(signed([approve(makeTerms({ notBefore: "2026-01-01T12:00:06.000Z" }))])), "WARRANT_NOT_YET_VALID");
+  assert.equal(await reasonOf(signed([approve(makeTerms({ notBefore: "2026-01-01T12:00:04.000Z" }))])), "ok");
+  assert.equal(await reasonOf(signed([approve(makeTerms({ notBefore: "not a date" }))])), "WARRANT_NOT_YET_VALID");
+});
+
 test("delegation chain", async () => {
   const root = makeTerms();
   const narrower = (over: Partial<Terms> = {}, scope: Partial<Terms["scope"]> = {}) =>
@@ -226,6 +234,8 @@ test("delegation chain", async () => {
     ["higher per-action limit", narrower({ perActionMaxCents: 5001 })],
     ["higher total limit", narrower({ totalLimitCents: 12001 })],
     ["later expiry", narrower({ expiresAt: "2026-01-01T18:00:00.000Z" })],
+    ["earlier notBefore", narrower({ notBefore: "2025-12-31T23:00:00.000Z" })],
+    ["unparsable notBefore", narrower({ notBefore: "not a date" })],
     ["different user", narrower({ userId: newId("usr") })],
     ["different parent", narrower({ parentWarrantId: newId("wrt") })],
   ];
