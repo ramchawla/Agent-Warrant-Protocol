@@ -1,0 +1,17 @@
+{
+  "lastChecks": {
+    "institution": "fintech",
+    "gateSignature": true,
+    "customerPasskey": true,
+    "terms": true,
+    "institutionRef": "ord_7731"
+  },
+  "orders": [
+    {
+      "ref": "ord_7731",
+      "merchant": "BROKERAGE-NVDA",
+      "amountCents": 50000,
+      "status": "executed"
+    }
+  ]
+}

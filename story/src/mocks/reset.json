@@ -1,0 +1,10 @@
+{
+  "ok": true,
+  "warrantId": null,
+  "user": {
+    "userId": "usr_demo",
+    "name": "Ram",
+    "hasPasskey": true
+  },
+  "savingsCents": 8400000
+}
