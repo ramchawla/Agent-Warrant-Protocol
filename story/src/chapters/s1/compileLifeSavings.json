@@ -1,0 +1,53 @@
+{
+  "terms": {
+    "v": 1,
+    "userId": "usr_demo",
+    "agentId": "agt_demo",
+    "parentWarrantId": null,
+    "scope": {
+      "actions": [
+        "payment.create",
+        "data.export"
+      ],
+      "accounts": [
+        "SAVINGS"
+      ],
+      "merchants": [
+        "BROKERAGE-NVDA"
+      ],
+      "destinations": [
+        "fintech",
+        "llm"
+      ],
+      "fields": {
+        "payment.create": [
+          "fromAccount",
+          "merchant",
+          "amountCents",
+          "currency",
+          "memo"
+        ],
+        "data.export": [
+          "payload"
+        ]
+      }
+    },
+    "currency": "CAD",
+    "notBefore": "2026-11-14T23:20:00.000Z",
+    "expiresAt": "2026-11-15T01:00:00.000Z",
+    "perActionMaxCents": 8400000,
+    "totalLimitCents": 8400000
+  },
+  "canonical": "{\"agentId\":\"agt_demo\",\"currency\":\"CAD\",\"expiresAt\":\"2026-11-15T01:00:00.000Z\",\"notBefore\":\"2026-11-14T23:20:00.000Z\",\"parentWarrantId\":null,\"perActionMaxCents\":8400000,\"scope\":{\"accounts\":[\"SAVINGS\"],\"actions\":[\"payment.create\",\"data.export\"],\"destinations\":[\"fintech\",\"llm\"],\"fields\":{\"data.export\":[\"payload\"],\"payment.create\":[\"fromAccount\",\"merchant\",\"amountCents\",\"currency\",\"memo\"]},\"merchants\":[\"BROKERAGE-NVDA\"]},\"totalLimitCents\":8400000,\"userId\":\"usr_demo\",\"v\":1}",
+  "plain": [
+    "Buy NVIDIA stock, any amount at once",
+    "Up to $84,000 in total: all of SAVINGS",
+    "Only from your SAVINGS account",
+    "Only until 5:00 pm today"
+  ],
+  "worstCase": {
+    "cents": 8400000,
+    "sentence": "Worst case: $84,000 leaves your savings for one stock, today.",
+    "severity": "red"
+  }
+}

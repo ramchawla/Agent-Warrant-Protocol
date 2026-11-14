@@ -1,62 +1,12 @@
 {
-  "warrantId": "wrt_01JD8NVDA",
+  "warrantId": "wrt_6f1c2a9e4b7d03a58e21c4f7",
   "terms": {
     "v": 1,
+    "warrantId": "wrt_6f1c2a9e4b7d03a58e21c4f7",
     "userId": "usr_demo",
     "agentId": "agt_demo",
-    "actions": [
-      "payment.create",
-      "data.export"
-    ],
-    "accounts": [
-      "SAVINGS"
-    ],
-    "merchants": [
-      "BROKERAGE-NVDA"
-    ],
-    "destinations": [
-      "fintech",
-      "llm"
-    ],
-    "fields": {
-      "payment.create": [
-        "fromAccount",
-        "merchant",
-        "amountCents",
-        "currency",
-        "memo"
-      ],
-      "data.export": [
-        "payload"
-      ]
-    },
-    "perActionMaxCents": 50000,
-    "totalLimitCents": 100000,
-    "notBefore": "2026-11-14T15:20:00.000Z",
-    "expiresAt": "2026-11-15T01:00:00.000Z"
-  },
-  "canonical": "{\"accounts\":[\"SAVINGS\"],\"actions\":[\"payment.create\",\"data.export\"],\"agentId\":\"agt_demo\",\"destinations\":[\"fintech\",\"llm\"],\"expiresAt\":\"2026-11-15T01:00:00.000Z\",\"fields\":{\"payment.create\":[\"fromAccount\",\"merchant\",\"amountCents\",\"currency\",\"memo\"],\"data.export\":[\"payload\"]},\"merchants\":[\"BROKERAGE-NVDA\"],\"notBefore\":\"2026-11-14T15:20:00.000Z\",\"perActionMaxCents\":50000,\"totalLimitCents\":100000,\"userId\":\"usr_demo\",\"v\":1}",
-  "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
-  "challenge": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
-  "approval": {
-    "credentialId": "cR1dcR1dcR1dcR1dcR1dcR1dcR1dcR1dcR1dcR1dcR1",
-    "clientDataJSON": {
-      "type": "webauthn.get",
-      "challenge": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
-      "origin": "http://localhost:5173"
-    },
-    "authenticatorData": "aD0vaD0vaD0vaD0vaD0vaD0vaD0vaD0vaD0vaD0vaD0AQ",
-    "signature": "MEUCIQsG4nsG4nsG4nsG4nsG4nsG4nsG4nsG4nsG4nsG4nsG4rT8wrT8wrT8wrT8wrT8wrT8wrT8wrT8wrT8wrT8wrT8",
-    "userVerified": true,
-    "approvedAt": "2026-11-14T15:31:00.000Z"
-  },
-  "status": "active",
-  "document": {
-    "_id": "wrt_01JD8NVDA",
-    "terms": {
-      "v": 1,
-      "userId": "usr_demo",
-      "agentId": "agt_demo",
+    "parentWarrantId": null,
+    "scope": {
       "actions": [
         "payment.create",
         "data.export"
@@ -82,23 +32,103 @@
         "data.export": [
           "payload"
         ]
+      }
+    },
+    "currency": "CAD",
+    "perActionMaxCents": 50000,
+    "totalLimitCents": 100000,
+    "notBefore": "2026-11-14T23:20:00.000Z",
+    "expiresAt": "2026-11-15T01:00:00.000Z",
+    "nonce": "iTZQBqzrwcF1KeH_ja0aDg"
+  },
+  "canonical": "{\"agentId\":\"agt_demo\",\"currency\":\"CAD\",\"expiresAt\":\"2026-11-15T01:00:00.000Z\",\"nonce\":\"iTZQBqzrwcF1KeH_ja0aDg\",\"notBefore\":\"2026-11-14T23:20:00.000Z\",\"parentWarrantId\":null,\"perActionMaxCents\":50000,\"scope\":{\"accounts\":[\"SAVINGS\"],\"actions\":[\"payment.create\",\"data.export\"],\"destinations\":[\"fintech\",\"llm\"],\"fields\":{\"data.export\":[\"payload\"],\"payment.create\":[\"fromAccount\",\"merchant\",\"amountCents\",\"currency\",\"memo\"]},\"merchants\":[\"BROKERAGE-NVDA\"]},\"totalLimitCents\":100000,\"userId\":\"usr_demo\",\"v\":1,\"warrantId\":\"wrt_6f1c2a9e4b7d03a58e21c4f7\"}",
+  "termsHash": "MgN6kPXLWD0dKIb74eUbuUUvXKoZjQEmdKoW2g2sfK4",
+  "challenge": "MgN6kPXLWD0dKIb74eUbuUUvXKoZjQEmdKoW2g2sfK4",
+  "approval": {
+    "credentialId": "NCiDbulAwzm-UBqXz700g8QLM2M",
+    "clientDataJSON": {
+      "type": "webauthn.get",
+      "challenge": "MgN6kPXLWD0dKIb74eUbuUUvXKoZjQEmdKoW2g2sfK4",
+      "origin": "http://localhost:5173",
+      "crossOrigin": false
+    },
+    "authenticatorData": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MdAAAAAA",
+    "signature": "MEUCIEnxq-aSe4m6evrxDAJZdeenabxKT3ot4o5z1n_otJpQAiEA3BGPwtgiEUnYlMovspSUICQbqyffJofSpJBfigex53Q",
+    "userVerified": true,
+    "approvedAt": "2026-11-14T23:31:07.412Z"
+  },
+  "status": "active",
+  "document": {
+    "_id": "wrt_6f1c2a9e4b7d03a58e21c4f7",
+    "terms": {
+      "v": 1,
+      "warrantId": "wrt_6f1c2a9e4b7d03a58e21c4f7",
+      "userId": "usr_demo",
+      "agentId": "agt_demo",
+      "parentWarrantId": null,
+      "scope": {
+        "actions": [
+          "payment.create",
+          "data.export"
+        ],
+        "accounts": [
+          "SAVINGS"
+        ],
+        "merchants": [
+          "BROKERAGE-NVDA"
+        ],
+        "destinations": [
+          "fintech",
+          "llm"
+        ],
+        "fields": {
+          "payment.create": [
+            "fromAccount",
+            "merchant",
+            "amountCents",
+            "currency",
+            "memo"
+          ],
+          "data.export": [
+            "payload"
+          ]
+        }
       },
+      "currency": "CAD",
       "perActionMaxCents": 50000,
       "totalLimitCents": 100000,
-      "notBefore": "2026-11-14T15:20:00.000Z",
-      "expiresAt": "2026-11-15T01:00:00.000Z"
+      "notBefore": "2026-11-14T23:20:00.000Z",
+      "expiresAt": "2026-11-15T01:00:00.000Z",
+      "nonce": "iTZQBqzrwcF1KeH_ja0aDg"
     },
-    "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+    "termsHash": "MgN6kPXLWD0dKIb74eUbuUUvXKoZjQEmdKoW2g2sfK4",
     "approval": {
       "kind": "passkey",
-      "credentialId": "cR1dcR1dcR1dcR1dcR1dcR1dcR1dcR1dcR1dcR1dcR1",
+      "credentialId": "NCiDbulAwzm-UBqXz700g8QLM2M",
+      "response": {
+        "id": "NCiDbulAwzm-UBqXz700g8QLM2M",
+        "rawId": "NCiDbulAwzm-UBqXz700g8QLM2M",
+        "response": {
+          "authenticatorData": "SZYN5YgOjGh0NBcPZHZgW4_krrmihjLHmVzzuoMdl2MdAAAAAA",
+          "clientDataJSON": "eyJ0eXBlIjoid2ViYXV0aG4uZ2V0IiwiY2hhbGxlbmdlIjoiTWdONmtQWExXRDBkS0liNzRlVWJ1VVV2WEtvWmpRRW1kS29XMmcyc2ZLNCIsIm9yaWdpbiI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTE3MyIsImNyb3NzT3JpZ2luIjpmYWxzZX0",
+          "signature": "MEUCIEnxq-aSe4m6evrxDAJZdeenabxKT3ot4o5z1n_otJpQAiEA3BGPwtgiEUnYlMovspSUICQbqyffJofSpJBfigex53Q",
+          "userHandle": "dXNyX2RlbW8"
+        },
+        "type": "public-key",
+        "clientExtensionResults": {},
+        "authenticatorAttachment": "platform"
+      },
+      "origin": "http://localhost:5173",
       "rpId": "localhost",
-      "approvedAt": "2026-11-14T15:31:00.000Z"
+      "approvedAt": "2026-11-14T23:31:07.412Z"
     },
     "state": {
       "status": "active",
       "remainingCents": 100000,
       "actionCount": 0
-    }
+    },
+    "ancestors": [],
+    "expiresAt": "2026-11-15T01:00:00.000Z",
+    "createdAt": "2026-11-14T23:24:52.108Z"
   }
 }
