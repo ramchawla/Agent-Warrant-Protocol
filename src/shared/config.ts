@@ -42,8 +42,9 @@ export const config = {
   elevenLabsApiKey: opt("ELEVENLABS_API_KEY"),
 
   // Fixed by the PRD.
-  port: { gate: 3000, bank: 4001, fintech: 4002 },
-  institutionUrl: { bank: "http://localhost:4001", fintech: "http://localhost:4002" },
+  // Ports default to the PRD's; AWP_*_PORT lets a second, isolated stack run beside the demo one.
+  port: { gate: Number(env.AWP_GATE_PORT ?? 3000), bank: Number(env.AWP_BANK_PORT ?? 4001), fintech: Number(env.AWP_FINTECH_PORT ?? 4002) },
+  institutionUrl: { bank: `http://localhost:${env.AWP_BANK_PORT ?? 4001}`, fintech: `http://localhost:${env.AWP_FINTECH_PORT ?? 4002}` },
   policyVersion: "awp-policy-1",
   receiptTtlMs: 60_000,
   receiptSkewMs: 5_000,
