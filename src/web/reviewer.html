@@ -3,13 +3,398 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Agent Warrant Protocol</title>
+  <title>AWP Reviewer</title>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    main { max-width: 1100px; }
+    .bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+    .bar button { margin-top: 0; }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 12px; }
+    .stat { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+    .stat b { display: block; font-size: 1.5rem; line-height: 1.2; }
+    .stat span { color: var(--muted); font-size: 0.85rem; }
+    .filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+    .filters label { margin-top: 0; }
+    .run { margin-top: 18px; }
+    .run h3 { font-size: 0.95rem; margin: 0 0 6px; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+    th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { color: var(--muted); font-weight: 600; font-size: 0.8rem; }
+    td.seq { font-family: ui-monospace, Consolas, monospace; color: var(--muted); white-space: nowrap; }
+    tr.deny td { background: var(--err-bg); }
+    tr.new td { animation: flash 1.5s ease-out; }
+    @keyframes flash { from { background: var(--warn-bg); } }
+    .tag { display: inline-block; padding: 1px 7px; border-radius: 999px; font-size: 0.75rem; font-weight: 600; border: 1px solid var(--line); white-space: nowrap; }
+    .tag.allow, .tag.executed { color: var(--ok); } .tag.deny, .tag.rejected { color: var(--err); }
+    .tag.flag { color: var(--warn); border-color: var(--warn); } .tag.type { color: var(--muted); }
+    .chain-ok { color: var(--ok); font-weight: 600; } .chain-bad { color: var(--err); font-weight: 600; }
+    .live { display: inline-flex; gap: 6px; align-items: center; font-size: 0.85rem; color: var(--muted); }
+    .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); }
+    .dot.on { background: var(--ok); } .dot.off { background: var(--err); }
+    a.wid { color: var(--accent); cursor: pointer; text-decoration: underline; }
+    @media (max-width: 640px) { td.hide-sm, th.hide-sm { display: none; } }
+  </style>
 </head>
 <body>
-  <!-- Stub. Owner: Jackson. Reviewer timeline (task 10) -->
-  <h1>Agent Warrant Protocol</h1>
-  <p>Reviewer timeline (task 10). Not built yet.</p>
+  <!-- Owner: Jackson. Reviewer timeline (task 10, REQ-012, Story 5, Story 6) -->
+  <main>
+    <header>
+      <h1>Reviewer</h1>
+      <p>Who authorized what, what the agent tried, and what the gate decided.</p>
+    </header>
+
+    <section id="token-box" hidden>
+      <h2>Reviewer token</h2>
+      <label for="token">Paste REVIEWER_TOKEN from the gate's .env</label>
+      <input type="text" id="token" autocomplete="off">
+      <button id="save-token">Open the ledger</button>
+      <div id="token-msg" class="msg" hidden></div>
+    </section>
+
+    <div id="app" hidden>
+      <section>
+        <div class="bar">
+          <button id="verify">Verify chain</button>
+          <span id="chain" class="muted">Chain not checked yet.</span>
+          <span style="flex:1"></span>
+          <span class="live"><span id="dot" class="dot"></span><span id="live-text">Connecting…</span></span>
+        </div>
+        <div class="stats" id="stats"></div>
+      </section>
+
+      <section>
+        <h2>Filter</h2>
+        <div class="filters">
+          <div><label for="f-account">Account</label><input type="text" id="f-account" placeholder="A9"></div>
+          <div><label for="f-decision">Decision</label>
+            <select id="f-decision"><option value="">Any</option><option value="allow">Allowed</option><option value="deny">Blocked</option></select></div>
+          <div><label for="f-reason">Reason code</label><select id="f-reason"><option value="">Any</option></select></div>
+          <div><label for="f-run">Run</label><select id="f-run"><option value="">Any</option></select></div>
+          <div><label for="f-q">Summary contains</label><input type="text" id="f-q" placeholder="collector"></div>
+        </div>
+        <button id="clear" class="secondary">Clear filters</button>
+      </section>
+
+      <section id="warrant-box" hidden>
+        <h2>Warrant <span id="w-id" class="fingerprint"></span> <span id="w-status" class="badge"></span></h2>
+        <ol id="w-terms" class="terms"></ol>
+        <div id="w-worst" class="worst" hidden></div>
+        <p id="w-meta" class="muted"></p>
+        <button id="revoke">Revoke this warrant</button>
+        <div id="w-msg" class="msg" hidden></div>
+      </section>
+
+      <section>
+        <h2>Timeline <span id="count" class="muted"></span></h2>
+        <div id="timeline"></div>
+      </section>
+    </div>
+  </main>
+
   <script src="/vendor/index.umd.min.js"></script>
   <script src="/app.js"></script>
+  <script>
+  "use strict";
+  const { say, el } = window.AWP;
+  const $ = (id) => document.getElementById(id);
+
+  // ---- reviewer token: Authorization: Bearer for fetch, ?token= for EventSource (README contract notes)
+  let token = "";
+  try { token = localStorage.getItem("awp.reviewerToken") || ""; } catch {}
+
+  async function api(method, url, body) {
+    const res = await fetch(url, {
+      method,
+      headers: { authorization: `Bearer ${token}`, ...(body === undefined ? {} : { "content-type": "application/json" }) },
+      body: body === undefined ? undefined : JSON.stringify(body),
+    });
+    const text = await res.text();
+    let data = null;
+    try { data = text ? JSON.parse(text) : null; } catch { data = { error: text }; }
+    if (!res.ok) { const e = new Error((data && (data.message || data.error)) || `HTTP ${res.status}`); e.status = res.status; throw e; }
+    return data;
+  }
+
+  // ---- state
+  const all = new Map();            // seq -> event, everything seen (unfiltered load + live feed)
+  let shown = [];                   // events matching the current filters
+  let selectedWarrant = null;
+  const REASONS = ["MALFORMED_REQUEST", "AGENT_UNAUTHENTICATED", "AGENT_MISMATCH", "WARRANT_NOT_FOUND", "TERMS_TAMPERED",
+    "WARRANT_NOT_ACTIVE", "WARRANT_REVOKED", "WARRANT_NOT_YET_VALID", "WARRANT_EXPIRED", "ACTION_NOT_ALLOWED",
+    "DESTINATION_NOT_ALLOWED", "ACCOUNT_NOT_ALLOWED", "MERCHANT_NOT_ALLOWED", "FIELD_NOT_ALLOWED", "FIELD_CONSTRAINT",
+    "CURRENCY_MISMATCH", "AMOUNT_INVALID", "PER_ACTION_LIMIT", "BUDGET_EXHAUSTED", "LEDGER_UNAVAILABLE"];
+  for (const r of REASONS) $("f-reason").append(el("option", { value: r }, r));
+
+  function filters() {
+    return {
+      account: $("f-account").value.trim(),
+      decision: $("f-decision").value,
+      reasonCode: $("f-reason").value,
+      runId: $("f-run").value,
+      q: $("f-q").value.trim(),
+    };
+  }
+  const active = (f) => Object.values(f).some(Boolean);
+
+  // Same rules as GET /api/ledger, so live events can be placed without a round trip.
+  function matches(e, f) {
+    return (!f.runId || e.runId === f.runId) &&
+      (!f.account || (e.action && e.action.account === f.account)) &&
+      (!f.decision || e.decision === f.decision) &&
+      (!f.reasonCode || e.reasonCode === f.reasonCode) &&
+      (!f.q || e.summary.toLowerCase().includes(f.q.toLowerCase()));
+  }
+
+  // ---- derived facts
+  function executionsByDecision() {
+    const m = new Map();
+    for (const e of all.values()) if (e.type === "EXECUTION" && e.decisionId) m.set(e.decisionId, e);
+    return m;
+  }
+
+  /** Flags a reviewer must see: allowed with no execution record, unknown outcome, test authenticator. */
+  function flagsFor(e, execs) {
+    const flags = [];
+    if (e.type === "DECISION" && e.decision === "allow" && !execs.has(e.decisionId)) flags.push("no execution record");
+    if (e.type === "EXECUTION" && e.outcome === "unknown") flags.push("outcome unknown, amount held");
+    if (e.type === "WARRANT_APPROVED" && /software test authenticator/i.test(e.summary)) flags.push("test authenticator");
+    return flags;
+  }
+
+  function renderStats() {
+    const ev = [...all.values()];
+    const decisions = ev.filter((e) => e.type === "DECISION");
+    const execs = executionsByDecision();
+    const flagged = ev.filter((e) => flagsFor(e, execs).length).length;
+    const items = [
+      [decisions.filter((e) => e.decision === "allow").length, "allowed"],
+      [decisions.filter((e) => e.decision === "deny").length, "blocked"],
+      [ev.filter((e) => e.type === "EXECUTION" && e.outcome === "executed").length, "executed"],
+      [flagged, "need a look"],
+      [new Set(ev.map((e) => e.runId).filter(Boolean)).size, "runs"],
+    ];
+    $("stats").replaceChildren(...items.map(([n, label]) => el("div", { class: "stat" }, el("b", {}, String(n)), el("span", {}, label))));
+  }
+
+  function refreshRunOptions() {
+    const current = $("f-run").value;
+    const runs = [...new Set([...all.values()].map((e) => e.runId).filter(Boolean))];
+    $("f-run").replaceChildren(el("option", { value: "" }, "Any"), ...runs.map((r) => el("option", { value: r }, r)));
+    $("f-run").value = current;
+  }
+
+  const time = (iso) => new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit", second: "2-digit" });
+
+  function row(e, execs, fresh) {
+    const tags = [el("span", { class: "tag type" }, e.type.replaceAll("_", " ").toLowerCase())];
+    if (e.decision) tags.push(el("span", { class: `tag ${e.decision}` }, e.decision === "allow" ? "allowed" : "blocked"));
+    if (e.reasonCode) tags.push(el("span", { class: "tag deny" }, e.reasonCode));
+    if (e.outcome) tags.push(el("span", { class: `tag ${e.outcome}` }, e.outcome));
+    for (const f of flagsFor(e, execs)) tags.push(el("span", { class: "tag flag" }, f));
+    const tagCell = el("td", {});
+    tags.forEach((t, i) => { if (i) tagCell.append(" "); tagCell.append(t); });
+
+    const who = el("td", { class: "hide-sm" });
+    if (e.warrantId) {
+      const link = el("a", { class: "wid", title: "Show this warrant" }, e.warrantId.slice(0, 12) + "…");
+      link.addEventListener("click", () => selectWarrant(e.warrantId));
+      who.append(link);
+    }
+    const tr = el("tr", { class: `${e.decision === "deny" ? "deny" : ""} ${fresh ? "new" : ""}` },
+      el("td", { class: "seq" }, `#${e.seq}`),
+      el("td", { class: "seq hide-sm" }, time(e.ts)),
+      tagCell,
+      el("td", {}, e.summary),
+      who);
+    return tr;
+  }
+
+  function renderTimeline(freshSeqs = new Set()) {
+    const execs = executionsByDecision();
+    const groups = new Map();
+    for (const e of shown) {
+      const key = e.runId || "Warrants and approvals";
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(e);
+    }
+    const blocks = [];
+    for (const [key, events] of groups) {
+      const denied = events.filter((e) => e.decision === "deny").length;
+      const head = el("h3", {}, key);
+      if (denied) head.append(el("span", { class: "tag deny" }, `${denied} blocked`));
+      const table = el("table", {},
+        el("thead", {}, el("tr", {}, el("th", {}, "Seq"), el("th", { class: "hide-sm" }, "Time"), el("th", {}, "What"), el("th", {}, "Summary"), el("th", { class: "hide-sm" }, "Warrant"))),
+        el("tbody", {}, ...events.map((e) => row(e, execs, freshSeqs.has(e.seq)))));
+      blocks.push(el("div", { class: "run" }, head, table));
+    }
+    $("timeline").replaceChildren(...(blocks.length ? blocks : [el("p", { class: "muted" }, "No events match.")]));
+    $("count").textContent = `(${shown.length} of ${all.size} events)`;
+  }
+
+  // ---- loading
+  async function loadAll() {
+    const { events } = await api("GET", "/api/ledger");
+    for (const e of events) all.set(e.seq, e);
+    refreshRunOptions();
+    renderStats();
+  }
+
+  let filterTimer = null;
+  async function applyFilters() {
+    const f = filters();
+    if (!active(f)) {
+      shown = [...all.values()].sort((a, b) => a.seq - b.seq);
+    } else {
+      const params = new URLSearchParams(Object.entries(f).filter(([, v]) => v));
+      try {
+        shown = (await api("GET", `/api/ledger?${params}`)).events;
+      } catch {
+        shown = [...all.values()].filter((e) => matches(e, f)).sort((a, b) => a.seq - b.seq);
+      }
+    }
+    renderTimeline();
+  }
+  const onFilter = () => { clearTimeout(filterTimer); filterTimer = setTimeout(applyFilters, 200); };
+  for (const id of ["f-account", "f-q"]) $(id).addEventListener("input", onFilter);
+  for (const id of ["f-decision", "f-reason", "f-run"]) $(id).addEventListener("change", applyFilters);
+  $("clear").addEventListener("click", () => {
+    for (const id of ["f-account", "f-q", "f-decision", "f-reason", "f-run"]) $(id).value = "";
+    applyFilters();
+  });
+
+  // ---- live feed (server-sent events; "event" carries an AuditEvent, "warrant" a WarrantDoc)
+  function connect() {
+    const source = new EventSource(`/api/stream?token=${encodeURIComponent(token)}`);
+    const status = (on, text) => { $("dot").className = `dot ${on ? "on" : "off"}`; $("live-text").textContent = text; };
+    source.onopen = () => status(true, "Live");
+    source.onerror = () => status(false, "Live feed lost, retrying…");
+    source.addEventListener("event", (msg) => {
+      const e = JSON.parse(msg.data);
+      if (all.has(e.seq)) return;
+      all.set(e.seq, e);
+      if (e.runId && ![...$("f-run").options].some((o) => o.value === e.runId)) refreshRunOptions();
+      renderStats();
+      if (matches(e, filters())) {
+        shown.push(e);
+        shown.sort((a, b) => a.seq - b.seq);
+        renderTimeline(new Set([e.seq]));
+      } else {
+        $("count").textContent = `(${shown.length} of ${all.size} events)`;
+      }
+    });
+    source.addEventListener("warrant", (msg) => {
+      const w = JSON.parse(msg.data);
+      if (w._id === selectedWarrant) selectWarrant(w._id, false);
+    });
+  }
+
+  // ---- chain verification (REQ-008, REQ-012)
+  $("verify").addEventListener("click", async () => {
+    const out = $("chain");
+    out.className = "muted";
+    out.textContent = "Checking…";
+    try {
+      const r = await api("GET", "/api/ledger/verify");
+      const anchors = Object.entries(r.anchors || {})
+        .map(([name, a]) => `${name} checkpoints ${a.ok ? "agree" : "DISAGREE"} (${a.checked})`).join(", ");
+      if (r.ok) {
+        out.className = "chain-ok";
+        out.textContent = `Chain intact: ${r.checked} events verified. ${anchors}.`;
+      } else {
+        out.className = "chain-bad";
+        out.textContent = `Chain BROKEN at #${r.firstBrokenSeq} (${r.checked} checked). ${anchors}.`;
+        if (r.firstBrokenSeq !== undefined) {
+          const target = [...document.querySelectorAll("td.seq")].find((td) => td.textContent === `#${r.firstBrokenSeq}`);
+          if (target) target.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }
+    } catch (err) {
+      out.className = "chain-bad";
+      out.textContent = `Could not verify: ${err.message}`;
+    }
+  });
+
+  // ---- warrant panel and revoke (REQ-011, Story 6)
+  /** Revoke is offered for an active warrant (or one whose state we cannot read); otherwise it says why not. */
+  function setRevoke(status) {
+    const b = $("revoke");
+    b.classList.remove("busy");
+    const labels = { revoked: "Already revoked", pending: "Not approved yet", rejected: "Rejected" };
+    b.textContent = labels[status] || "Revoke this warrant";
+    b.disabled = status in labels;
+  }
+
+  async function selectWarrant(id, scroll = true) {
+    selectedWarrant = id;
+    $("warrant-box").hidden = false;
+    $("w-id").textContent = id;
+    say($("w-msg"), "info", "");
+    const related = [...all.values()].filter((e) => e.warrantId === id);
+    const approved = related.find((e) => e.type === "WARRANT_APPROVED");
+    $("w-meta").textContent = `${related.length} ledger events. ${approved ? approved.summary : "No approval recorded."}`;
+    try {
+      const w = await api("GET", `/api/warrants/${encodeURIComponent(id)}`);
+      const lines = w.plain.slice();
+      const worst = lines.pop();
+      $("w-terms").replaceChildren(...lines.map((l) => el("li", {}, l)));
+      $("w-worst").textContent = worst;
+      $("w-worst").hidden = false;
+      $("w-status").textContent = w.state.status;
+      $("w-status").className = `badge ${w.state.status}`;
+      $("w-meta").textContent += ` Remaining: $${(w.state.remainingCents / 100).toFixed(2)} after ${w.state.actionCount} actions.`;
+      setRevoke(w.state.status);
+    } catch (err) {
+      $("w-terms").replaceChildren();
+      $("w-worst").hidden = true;
+      const revoked = related.some((e) => e.type === "REVOKED");
+      $("w-status").textContent = revoked ? "revoked" : "unknown";
+      $("w-status").className = `badge ${revoked ? "revoked" : ""}`;
+      setRevoke(revoked ? "revoked" : "unknown");
+      say($("w-msg"), "info", err.status === 404 ? "This warrant's terms are not in the gate database (fixture data)." : err.message);
+    }
+    if (scroll) $("warrant-box").scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  $("revoke").addEventListener("click", async () => {
+    if (!selectedWarrant) return;
+    $("revoke").disabled = true;
+    $("revoke").classList.add("busy");
+    try {
+      const r = await api("POST", `/api/warrants/${encodeURIComponent(selectedWarrant)}/revoke`, {});
+      say($("w-msg"), "ok", `Revoked. ${r.revoked} warrant${r.revoked === 1 ? "" : "s"} stopped. The agent's next action will be blocked.`);
+      selectWarrant(selectedWarrant);
+    } catch (err) {
+      say($("w-msg"), "error", err.status === 501 ? "Revoke is not built on the gate yet (task 9)." : `Revoke failed: ${err.message}`);
+      $("revoke").disabled = false;
+      $("revoke").classList.remove("busy");
+    }
+  });
+
+  // ---- start
+  async function start() {
+    try {
+      await loadAll();
+    } catch (err) {
+      $("token-box").hidden = false;
+      $("app").hidden = true;
+      if (token) say($("token-msg"), "error", err.status === 401 ? "That token was refused." : err.message);
+      return;
+    }
+    $("token-box").hidden = true;
+    $("app").hidden = false;
+    await applyFilters();
+    connect();
+    const first = [...all.values()].find((e) => e.warrantId);
+    if (first) selectWarrant(first.warrantId, false);
+  }
+
+  $("save-token").addEventListener("click", () => {
+    token = $("token").value.trim();
+    try { localStorage.setItem("awp.reviewerToken", token); } catch {}
+    start();
+  });
+
+  start();
+  </script>
 </body>
 </html>

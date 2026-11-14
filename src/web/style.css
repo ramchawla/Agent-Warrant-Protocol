@@ -25,7 +25,8 @@ input[type=text], input[type=time], select { width: 100%; padding: 8px 10px; bor
 .checks label { display: inline-flex; gap: 6px; align-items: center; margin-right: 16px; color: var(--text); }
 button { margin-top: 16px; padding: 10px 16px; border: 0; border-radius: 6px; background: var(--accent); color: var(--accent-text); font: inherit; font-weight: 600; cursor: pointer; }
 button.secondary { background: transparent; color: var(--accent); border: 1px solid var(--line); }
-button:disabled { opacity: 0.55; cursor: progress; }
+button:disabled { opacity: 0.55; cursor: not-allowed; }
+button.busy { cursor: progress; }
 .msg { margin-top: 12px; padding: 10px 12px; border-radius: 6px; font-size: 0.95rem; }
 .msg.ok { background: var(--ok-bg); color: var(--ok); }
 .msg.error { background: var(--err-bg); color: var(--err); }
