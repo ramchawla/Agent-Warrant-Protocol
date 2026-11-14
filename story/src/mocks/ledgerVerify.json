@@ -1,14 +1,14 @@
 {
   "ok": true,
-  "checked": 3,
+  "checked": 30,
   "anchors": {
     "bank": {
       "ok": true,
-      "checked": 3
+      "checked": 4
     },
     "fintech": {
       "ok": true,
-      "checked": 3
+      "checked": 11
     }
   }
 }

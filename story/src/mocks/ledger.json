@@ -1,49 +1,1095 @@
 {
   "events": [
     {
-      "_id": 0,
-      "seq": 0,
-      "ts": "2026-11-14T15:30:00.000Z",
-      "type": "WARRANT_CREATED",
-      "warrantId": null,
-      "termsHash": null,
-      "agentId": "agt_demo",
-      "runId": null,
-      "summary": "Genesis",
-      "policyVersion": "awp-policy-1",
-      "prevHash": "0000000000000000000000000000000000000000000",
-      "hash": "Ax7Ax7Ax7Ax7Ax7Ax7Ax7Ax7Ax7Ax7Ax7Ax7Ax7Ax7A",
-      "gateSig": "gS0gS0gS0gS0gS0gS0gS0gS0gS0gS0gS0gS0gS0gS0g"
-    },
-    {
       "_id": 1,
       "seq": 1,
-      "ts": "2026-11-14T15:31:00.000Z",
+      "ts": "2026-11-14T15:30:12.000Z",
       "type": "WARRANT_CREATED",
       "warrantId": "wrt_01JD8NVDA",
       "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
-      "agentId": "agt_demo",
+      "agentId": null,
       "runId": null,
-      "summary": "Ram created warrant wrt_01JD8NVDA",
-      "policyVersion": "awp-policy-1",
-      "prevHash": "Ax7Ax7Ax7Ax7Ax7Ax7Ax7Ax7Ax7Ax7Ax7Ax7Ax7Ax7A",
-      "hash": "Bx7Bx7Bx7Bx7Bx7Bx7Bx7Bx7Bx7Bx7Bx7Bx7Bx7Bx7B",
-      "gateSig": "gS1gS1gS1gS1gS1gS1gS1gS1gS1gS1gS1gS1gS1gS1g"
+      "summary": "Warrant created: up to $1,000 of NVDA, $500 per purchase, until 5 pm",
+      "policyVersion": "pv_3",
+      "prevHash": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+      "hash": "voBMr7UHZ0b3KBdTRzo4Kq5IpaQk8zuGBcWKUaVyJnk",
+      "gateSig": "Ge1sJm4X_vWr_GcLoE7ixU72XOZ7St9m7MC2QQO3tjErL_1-8L4F31gp6yILYP2H9TYrKNHfMeXbMrdc49Btpg"
     },
     {
       "_id": 2,
       "seq": 2,
-      "ts": "2026-11-14T15:32:00.000Z",
+      "ts": "2026-11-14T15:31:00.000Z",
       "type": "WARRANT_APPROVED",
       "warrantId": "wrt_01JD8NVDA",
       "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
-      "agentId": "agt_demo",
+      "agentId": null,
       "runId": null,
-      "summary": "Ram approved warrant wrt_01JD8NVDA with Touch ID",
-      "policyVersion": "awp-policy-1",
-      "prevHash": "Bx7Bx7Bx7Bx7Bx7Bx7Bx7Bx7Bx7Bx7Bx7Bx7Bx7Bx7B",
-      "hash": "Cx7Cx7Cx7Cx7Cx7Cx7Cx7Cx7Cx7Cx7Cx7Cx7Cx7Cx7C",
-      "gateSig": "gS2gS2gS2gS2gS2gS2gS2gS2gS2gS2gS2gS2gS2gS2g"
+      "summary": "Approved with Touch ID by Ram (user verified)",
+      "policyVersion": "pv_3",
+      "prevHash": "voBMr7UHZ0b3KBdTRzo4Kq5IpaQk8zuGBcWKUaVyJnk",
+      "hash": "JoW6dsWTAQtpTibm1ebBqyvV1SM05xTY_-5-d9wCrsI",
+      "gateSig": "2R2CbGeRNGFw7ctK5UmcDFdLedLbeVaJaec74EFzPSq3EIgLIzi574TBiiRxl6Sj1XlhJ0Dx21rLokeYe6zBpA"
+    },
+    {
+      "_id": 3,
+      "seq": 3,
+      "ts": "2026-11-14T15:31:02.000Z",
+      "type": "DECISION",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": "run_01JD8R",
+      "decisionId": "dec_01JD8P0001",
+      "decision": "allow",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "account": "SAVINGS",
+        "merchant": "BROKERAGE-NVDA",
+        "amountCents": 50000,
+        "fieldNames": [
+          "fromAccount",
+          "merchant",
+          "amountCents",
+          "currency",
+          "memo"
+        ],
+        "fieldSizes": {
+          "fromAccount": 7,
+          "merchant": 14,
+          "amountCents": 5,
+          "currency": 3,
+          "memo": 4
+        }
+      },
+      "actionHash": "3QDZ8qzavG-2Znl_KcvfJKSEgL0j_r2OnvEH_MWx07M",
+      "outcome": "executed",
+      "summary": "Allowed: $500 of NVDA",
+      "policyVersion": "pv_3",
+      "prevHash": "JoW6dsWTAQtpTibm1ebBqyvV1SM05xTY_-5-d9wCrsI",
+      "hash": "0Fs8oO9SvanpkEeAPyKMMTmklU6YsOcSp99EsbAgDwk",
+      "gateSig": "8a0aS2cZhjNF7Niv7tTJEaUZ3l1xEyFgDV-dP9q47a-fWYxU4md3JNw1teZUF5a65g2ftE880wGuCOCokcliQA"
+    },
+    {
+      "_id": 4,
+      "seq": 4,
+      "ts": "2026-11-14T15:31:02.400Z",
+      "type": "EXECUTION",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": "run_01JD8R",
+      "decisionId": "dec_01JD8P0001",
+      "outcome": "executed",
+      "institutionRef": "ord_7730",
+      "summary": "Brokerage executed order ord_7730",
+      "policyVersion": "pv_3",
+      "prevHash": "0Fs8oO9SvanpkEeAPyKMMTmklU6YsOcSp99EsbAgDwk",
+      "hash": "0-3uiwwdkB26YnHEkMohKBxxBUsTAVX88TJwFC8rKqk",
+      "gateSig": "20hx29wK8Kiswkh0Ec6ktgJeiq8IgMXhkFAokdlNZgpVWV540vN1gObJg3U-o4i80WxdOFBQ3Bn045__7wAnhA"
+    },
+    {
+      "_id": 5,
+      "seq": 5,
+      "ts": "2026-11-14T15:32:10.000Z",
+      "type": "DECISION",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": "run_01JD8R",
+      "decisionId": "dec_01JD8P0004",
+      "decision": "deny",
+      "reasonCode": "PER_ACTION_LIMIT",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "account": "SAVINGS",
+        "merchant": "BROKERAGE-NVDA",
+        "amountCents": 500000,
+        "fieldNames": [
+          "fromAccount",
+          "merchant",
+          "amountCents",
+          "currency",
+          "memo"
+        ],
+        "fieldSizes": {
+          "fromAccount": 7,
+          "merchant": 14,
+          "amountCents": 6,
+          "currency": 3,
+          "memo": 4
+        }
+      },
+      "actionHash": "6NJsIJhwAq1pm080php-jD_ZwgTPR3rXzO8G4K6E9Uo",
+      "summary": "Denied: $5,000 is over the $500 per-purchase limit",
+      "policyVersion": "pv_3",
+      "prevHash": "0-3uiwwdkB26YnHEkMohKBxxBUsTAVX88TJwFC8rKqk",
+      "hash": "msOSohqhsVezTQAlb84qvMiyPJQXBCecDtQ2UfyPgcU",
+      "gateSig": "EbNhW0HEv5s8lJbWpAwQLe9QergfLd4SUCocrVr7UsvPfs-T8m8Pn5EDLeFqvdNELO5KHDPKrFS_DFdwl1ytEg"
+    },
+    {
+      "_id": 6,
+      "seq": 6,
+      "ts": "2026-11-14T15:32:11.000Z",
+      "type": "DECISION",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": "run_01JD8R",
+      "decisionId": "dec_01JD8P0005",
+      "decision": "deny",
+      "reasonCode": "MERCHANT_NOT_ALLOWED",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "account": "SAVINGS",
+        "merchant": "BROKERAGE-AAPL",
+        "amountCents": 50000,
+        "fieldNames": [
+          "fromAccount",
+          "merchant",
+          "amountCents",
+          "currency",
+          "memo"
+        ],
+        "fieldSizes": {
+          "fromAccount": 7,
+          "merchant": 14,
+          "amountCents": 5,
+          "currency": 3,
+          "memo": 4
+        }
+      },
+      "actionHash": "zEUAW9G9MH1f-Q489WiLj_aim8CtFyPj0Sj5XAehPA4",
+      "summary": "Denied: AAPL is not on the warrant",
+      "policyVersion": "pv_3",
+      "prevHash": "msOSohqhsVezTQAlb84qvMiyPJQXBCecDtQ2UfyPgcU",
+      "hash": "K-fvlmkBJMblsSVrpgXG0PfR5egvpxXP17IPRClfXFA",
+      "gateSig": "ALKorGTN9wu77aRhWH4OJabaFlCq2wEdH6eVABqc9HkZp5GLut_u19na0F8OhgmqIq7f8pER7w215srLMpknyA"
+    },
+    {
+      "_id": 7,
+      "seq": 7,
+      "ts": "2026-11-14T15:32:12.000Z",
+      "type": "DECISION",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": "run_01JD8R",
+      "decisionId": "dec_01JD8P0006",
+      "decision": "deny",
+      "reasonCode": "DESTINATION_NOT_ALLOWED",
+      "action": {
+        "type": "data.export",
+        "destination": "https://collector.example/c",
+        "fieldNames": [
+          "payload"
+        ],
+        "fieldSizes": {
+          "payload": 2048
+        }
+      },
+      "actionHash": "lo7DZxL5R6MvdYDrR-jm36voFGOJ1mP3uDnDJq7vDBQ",
+      "summary": "Denied: collector.example is not an allowed destination",
+      "policyVersion": "pv_3",
+      "prevHash": "K-fvlmkBJMblsSVrpgXG0PfR5egvpxXP17IPRClfXFA",
+      "hash": "k1KXEnTDFranIf9Bb-WI7wcrpCuu37ZjQAJzRrNGn5k",
+      "gateSig": "Usk877Hd-FXDAkgz2vj30jLUs3sp0B2Vhnwn2qNeKRtZnK0GfdhQbeo2QfsPmuuqbd3BOzn4BNc55cW4op3LhQ"
+    },
+    {
+      "_id": 8,
+      "seq": 8,
+      "ts": "2026-11-14T15:33:40.000Z",
+      "type": "DECISION",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": "run_01JD8R",
+      "decisionId": "dec_01JD8P0007",
+      "decision": "deny",
+      "reasonCode": "APPROVAL_REQUIRED",
+      "action": {
+        "type": "data.export",
+        "destination": "llm",
+        "fieldNames": [
+          "payload"
+        ],
+        "fieldSizes": {
+          "payload": 1412
+        }
+      },
+      "actionHash": "8wg49wKn4rOKfNYmIzgfr0Iac94O-JkBo7kpkD3hTrg",
+      "summary": "Held for Touch ID: portfolio summary matched an egress policy",
+      "policyVersion": "pv_3",
+      "prevHash": "k1KXEnTDFranIf9Bb-WI7wcrpCuu37ZjQAJzRrNGn5k",
+      "hash": "5Ow8gCDFy0QbwFI0IpvnGaOdeZedDSCqXsyDZ7cbIk0",
+      "gateSig": "lJ18KGRmNWkTgpbf5hPoiL3IF4IIJCkR6fxKdr-gQDn0ZSFmGzSi_zxds-EDE2Mq7pf5IjiOvDc6hEJA6m_2VA"
+    },
+    {
+      "_id": 9,
+      "seq": 9,
+      "ts": "2026-11-14T15:35:04.100Z",
+      "type": "DECISION",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": "run_01JD8R",
+      "decisionId": "dec_01JD8Q0000",
+      "decision": "allow",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "account": "SAVINGS",
+        "merchant": "BROKERAGE-NVDA",
+        "amountCents": 5000,
+        "fieldNames": [
+          "fromAccount",
+          "merchant",
+          "amountCents",
+          "currency",
+          "memo"
+        ],
+        "fieldSizes": {
+          "fromAccount": 7,
+          "merchant": 14,
+          "amountCents": 4,
+          "currency": 3,
+          "memo": 4
+        }
+      },
+      "actionHash": "W18ygo7R1NLKUbegePAvbqTAoTmRHvdmiIyuRTC8XDk",
+      "outcome": "executed",
+      "institutionRef": "ord_7740",
+      "summary": "Allowed: $50 of NVDA",
+      "policyVersion": "pv_3",
+      "prevHash": "5Ow8gCDFy0QbwFI0IpvnGaOdeZedDSCqXsyDZ7cbIk0",
+      "hash": "IgTQ7Z5nAXKA9TBqXNP4oLUFefUEEc_VDWupBlyf8Y4",
+      "gateSig": "bQAolwbpiknIfqRr7QrgF1LL2vDegprawM1UPaMBo_AdrE0PW5irW5izWZbhJHoUB4QjBw5ZYolEFGlOL1VBxg"
+    },
+    {
+      "_id": 10,
+      "seq": 10,
+      "ts": "2026-11-14T15:35:04.107Z",
+      "type": "DECISION",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": "run_01JD8R",
+      "decisionId": "dec_01JD8Q0001",
+      "decision": "allow",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "account": "SAVINGS",
+        "merchant": "BROKERAGE-NVDA",
+        "amountCents": 5000,
+        "fieldNames": [
+          "fromAccount",
+          "merchant",
+          "amountCents",
+          "currency",
+          "memo"
+        ],
+        "fieldSizes": {
+          "fromAccount": 7,
+          "merchant": 14,
+          "amountCents": 4,
+          "currency": 3,
+          "memo": 4
+        }
+      },
+      "actionHash": "W18ygo7R1NLKUbegePAvbqTAoTmRHvdmiIyuRTC8XDk",
+      "outcome": "executed",
+      "institutionRef": "ord_7741",
+      "summary": "Allowed: $50 of NVDA",
+      "policyVersion": "pv_3",
+      "prevHash": "IgTQ7Z5nAXKA9TBqXNP4oLUFefUEEc_VDWupBlyf8Y4",
+      "hash": "BiWJdBJNYb0L0vIXHdqfCbG5a6bidg4Px-vnUFfcJIY",
+      "gateSig": "0H_BrLv7OnqM3dyCX1GcrOLDMKqe9F45yeWjdbJ-Ed_eWD4L72Gpb0aWrhXJVGuEL-8L0AOKTTib9gfwyHmNJA"
+    },
+    {
+      "_id": 11,
+      "seq": 11,
+      "ts": "2026-11-14T15:35:04.114Z",
+      "type": "DECISION",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": "run_01JD8R",
+      "decisionId": "dec_01JD8Q0002",
+      "decision": "deny",
+      "reasonCode": "BUDGET_EXHAUSTED",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "account": "SAVINGS",
+        "merchant": "BROKERAGE-NVDA",
+        "amountCents": 5000,
+        "fieldNames": [
+          "fromAccount",
+          "merchant",
+          "amountCents",
+          "currency",
+          "memo"
+        ],
+        "fieldSizes": {
+          "fromAccount": 7,
+          "merchant": 14,
+          "amountCents": 4,
+          "currency": 3,
+          "memo": 4
+        }
+      },
+      "actionHash": "W18ygo7R1NLKUbegePAvbqTAoTmRHvdmiIyuRTC8XDk",
+      "summary": "Denied: warrant budget exhausted",
+      "policyVersion": "pv_3",
+      "prevHash": "BiWJdBJNYb0L0vIXHdqfCbG5a6bidg4Px-vnUFfcJIY",
+      "hash": "m8Q5SHjB4igpbXXphHblIFd8i2FB3IsWZzobfEX7xyM",
+      "gateSig": "Ep5gTn4SQOAdxHwMMxK302O1s4NgqY4OnZr-ZpqEOmMCblIuaJRL1GCoaJfJv9qdXY3o3WpzojPLiwpAQBv06w"
+    },
+    {
+      "_id": 12,
+      "seq": 12,
+      "ts": "2026-11-14T15:35:04.121Z",
+      "type": "DECISION",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": "run_01JD8R",
+      "decisionId": "dec_01JD8Q0003",
+      "decision": "allow",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "account": "SAVINGS",
+        "merchant": "BROKERAGE-NVDA",
+        "amountCents": 5000,
+        "fieldNames": [
+          "fromAccount",
+          "merchant",
+          "amountCents",
+          "currency",
+          "memo"
+        ],
+        "fieldSizes": {
+          "fromAccount": 7,
+          "merchant": 14,
+          "amountCents": 4,
+          "currency": 3,
+          "memo": 4
+        }
+      },
+      "actionHash": "W18ygo7R1NLKUbegePAvbqTAoTmRHvdmiIyuRTC8XDk",
+      "outcome": "executed",
+      "institutionRef": "ord_7743",
+      "summary": "Allowed: $50 of NVDA",
+      "policyVersion": "pv_3",
+      "prevHash": "m8Q5SHjB4igpbXXphHblIFd8i2FB3IsWZzobfEX7xyM",
+      "hash": "0oPxvt4DT-8DmoHu47yA-dfdBfWCh0fW6-sR9mFGbn4",
+      "gateSig": "bn5CqxSlWTGf0AwTfsmrYOsOCztclzfpWZSV19R43vJwcPWVLxniYbStIG5ngPmB4iO3SAXlCP-q72vXoobKGQ"
+    },
+    {
+      "_id": 13,
+      "seq": 13,
+      "ts": "2026-11-14T15:35:04.128Z",
+      "type": "DECISION",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": "run_01JD8R",
+      "decisionId": "dec_01JD8Q0004",
+      "decision": "deny",
+      "reasonCode": "BUDGET_EXHAUSTED",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "account": "SAVINGS",
+        "merchant": "BROKERAGE-NVDA",
+        "amountCents": 5000,
+        "fieldNames": [
+          "fromAccount",
+          "merchant",
+          "amountCents",
+          "currency",
+          "memo"
+        ],
+        "fieldSizes": {
+          "fromAccount": 7,
+          "merchant": 14,
+          "amountCents": 4,
+          "currency": 3,
+          "memo": 4
+        }
+      },
+      "actionHash": "W18ygo7R1NLKUbegePAvbqTAoTmRHvdmiIyuRTC8XDk",
+      "summary": "Denied: warrant budget exhausted",
+      "policyVersion": "pv_3",
+      "prevHash": "0oPxvt4DT-8DmoHu47yA-dfdBfWCh0fW6-sR9mFGbn4",
+      "hash": "r3wGB9MvpUMBi8OZGL_TU0Ukswz1FDUeOG-Z_5-vGzQ",
+      "gateSig": "WyVvSaISPpVWSjVYsTgoQ3VFQzjLRYBtF27gWi_lgiHpTS8ijZs1rdTCVV0pEvChgP-CFunc8cYoy5_ZEQ6p5A"
+    },
+    {
+      "_id": 14,
+      "seq": 14,
+      "ts": "2026-11-14T15:35:04.135Z",
+      "type": "DECISION",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": "run_01JD8R",
+      "decisionId": "dec_01JD8Q0005",
+      "decision": "allow",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "account": "SAVINGS",
+        "merchant": "BROKERAGE-NVDA",
+        "amountCents": 5000,
+        "fieldNames": [
+          "fromAccount",
+          "merchant",
+          "amountCents",
+          "currency",
+          "memo"
+        ],
+        "fieldSizes": {
+          "fromAccount": 7,
+          "merchant": 14,
+          "amountCents": 4,
+          "currency": 3,
+          "memo": 4
+        }
+      },
+      "actionHash": "W18ygo7R1NLKUbegePAvbqTAoTmRHvdmiIyuRTC8XDk",
+      "outcome": "executed",
+      "institutionRef": "ord_7745",
+      "summary": "Allowed: $50 of NVDA",
+      "policyVersion": "pv_3",
+      "prevHash": "r3wGB9MvpUMBi8OZGL_TU0Ukswz1FDUeOG-Z_5-vGzQ",
+      "hash": "3yAYuO7zZkwwdQ2zKTL3KS35v0n8vw3bouNkk_Ltfj8",
+      "gateSig": "qT37LNxL_cOvV77OEDWBDEOyQ3jiabRhGNRj1kRGjXu2fOj0Oc21BA8KNzjPDkwcxWLoGhtIEdnH9y58EAe6Qw"
+    },
+    {
+      "_id": 15,
+      "seq": 15,
+      "ts": "2026-11-14T15:35:04.142Z",
+      "type": "DECISION",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": "run_01JD8R",
+      "decisionId": "dec_01JD8Q0006",
+      "decision": "allow",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "account": "SAVINGS",
+        "merchant": "BROKERAGE-NVDA",
+        "amountCents": 5000,
+        "fieldNames": [
+          "fromAccount",
+          "merchant",
+          "amountCents",
+          "currency",
+          "memo"
+        ],
+        "fieldSizes": {
+          "fromAccount": 7,
+          "merchant": 14,
+          "amountCents": 4,
+          "currency": 3,
+          "memo": 4
+        }
+      },
+      "actionHash": "W18ygo7R1NLKUbegePAvbqTAoTmRHvdmiIyuRTC8XDk",
+      "outcome": "executed",
+      "institutionRef": "ord_7746",
+      "summary": "Allowed: $50 of NVDA",
+      "policyVersion": "pv_3",
+      "prevHash": "3yAYuO7zZkwwdQ2zKTL3KS35v0n8vw3bouNkk_Ltfj8",
+      "hash": "SZejKCDuA8WbRek46HNJISVKf8izqKGeuUSVgUKJlv0",
+      "gateSig": "m2kAsuy-cXZHys9ax80x8ux3nHO_9T3-oo7TrV25uZ2PUb_eUz-xaCdJYThJReebeGaG8Sj4Yvs3HZPiepCumg"
+    },
+    {
+      "_id": 16,
+      "seq": 16,
+      "ts": "2026-11-14T15:35:04.149Z",
+      "type": "DECISION",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": "run_01JD8R",
+      "decisionId": "dec_01JD8Q0007",
+      "decision": "deny",
+      "reasonCode": "BUDGET_EXHAUSTED",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "account": "SAVINGS",
+        "merchant": "BROKERAGE-NVDA",
+        "amountCents": 5000,
+        "fieldNames": [
+          "fromAccount",
+          "merchant",
+          "amountCents",
+          "currency",
+          "memo"
+        ],
+        "fieldSizes": {
+          "fromAccount": 7,
+          "merchant": 14,
+          "amountCents": 4,
+          "currency": 3,
+          "memo": 4
+        }
+      },
+      "actionHash": "W18ygo7R1NLKUbegePAvbqTAoTmRHvdmiIyuRTC8XDk",
+      "summary": "Denied: warrant budget exhausted",
+      "policyVersion": "pv_3",
+      "prevHash": "SZejKCDuA8WbRek46HNJISVKf8izqKGeuUSVgUKJlv0",
+      "hash": "M4wPeDDmyixNf4iiMPeS-ri15AhGAxiwV9HK2yjMKmc",
+      "gateSig": "4c1rheql6-mzQttQ9vWuQWCVJAL766V6p31JhHpeRf89nEF3fDKtGYSq6Jet814UWw1f9xRBrfXL9LNUAVLnRA"
+    },
+    {
+      "_id": 17,
+      "seq": 17,
+      "ts": "2026-11-14T15:35:04.156Z",
+      "type": "DECISION",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": "run_01JD8R",
+      "decisionId": "dec_01JD8Q0008",
+      "decision": "allow",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "account": "SAVINGS",
+        "merchant": "BROKERAGE-NVDA",
+        "amountCents": 5000,
+        "fieldNames": [
+          "fromAccount",
+          "merchant",
+          "amountCents",
+          "currency",
+          "memo"
+        ],
+        "fieldSizes": {
+          "fromAccount": 7,
+          "merchant": 14,
+          "amountCents": 4,
+          "currency": 3,
+          "memo": 4
+        }
+      },
+      "actionHash": "W18ygo7R1NLKUbegePAvbqTAoTmRHvdmiIyuRTC8XDk",
+      "outcome": "executed",
+      "institutionRef": "ord_7748",
+      "summary": "Allowed: $50 of NVDA",
+      "policyVersion": "pv_3",
+      "prevHash": "M4wPeDDmyixNf4iiMPeS-ri15AhGAxiwV9HK2yjMKmc",
+      "hash": "kEEeT688PuGaWggilv570QOR_IXuPYLaEMumvW2kCh0",
+      "gateSig": "6sX6xIPJrRiSoDujNM5QhKestLxwCRYvKfYgVWI6ba_q6cSPahwWDA5PDLxAZOmkGDMyVHGouZfmQB3JRTbd_g"
+    },
+    {
+      "_id": 18,
+      "seq": 18,
+      "ts": "2026-11-14T15:35:04.163Z",
+      "type": "DECISION",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": "run_01JD8R",
+      "decisionId": "dec_01JD8Q0009",
+      "decision": "deny",
+      "reasonCode": "BUDGET_EXHAUSTED",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "account": "SAVINGS",
+        "merchant": "BROKERAGE-NVDA",
+        "amountCents": 5000,
+        "fieldNames": [
+          "fromAccount",
+          "merchant",
+          "amountCents",
+          "currency",
+          "memo"
+        ],
+        "fieldSizes": {
+          "fromAccount": 7,
+          "merchant": 14,
+          "amountCents": 4,
+          "currency": 3,
+          "memo": 4
+        }
+      },
+      "actionHash": "W18ygo7R1NLKUbegePAvbqTAoTmRHvdmiIyuRTC8XDk",
+      "summary": "Denied: warrant budget exhausted",
+      "policyVersion": "pv_3",
+      "prevHash": "kEEeT688PuGaWggilv570QOR_IXuPYLaEMumvW2kCh0",
+      "hash": "eoCPPsPu_91WQOQ6UHqsKMrsmkk1_Fpqr6viUUXTI84",
+      "gateSig": "OBg_-oOq0zJAnz-e11_h_qc-_Wv712SY74etAysYDZnA5awU2VqvK2pjeQOvkKACUjVKj4lystjrv6CddAHYYA"
+    },
+    {
+      "_id": 19,
+      "seq": 19,
+      "ts": "2026-11-14T15:35:04.170Z",
+      "type": "DECISION",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": "run_01JD8R",
+      "decisionId": "dec_01JD8Q0010",
+      "decision": "deny",
+      "reasonCode": "BUDGET_EXHAUSTED",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "account": "SAVINGS",
+        "merchant": "BROKERAGE-NVDA",
+        "amountCents": 5000,
+        "fieldNames": [
+          "fromAccount",
+          "merchant",
+          "amountCents",
+          "currency",
+          "memo"
+        ],
+        "fieldSizes": {
+          "fromAccount": 7,
+          "merchant": 14,
+          "amountCents": 4,
+          "currency": 3,
+          "memo": 4
+        }
+      },
+      "actionHash": "W18ygo7R1NLKUbegePAvbqTAoTmRHvdmiIyuRTC8XDk",
+      "summary": "Denied: warrant budget exhausted",
+      "policyVersion": "pv_3",
+      "prevHash": "eoCPPsPu_91WQOQ6UHqsKMrsmkk1_Fpqr6viUUXTI84",
+      "hash": "xD8Ay2FHNa_0UYTDVcImcmbKs7SHa7aEHO4oFB8RcHc",
+      "gateSig": "poo-S6iIrLwfmraW0zsZrqFmojpGlAjJSV_tAxwlMGLU0sYQQtslnmS0XzhO9qpkDRzJlBFNkg5EdfxBuld6zw"
+    },
+    {
+      "_id": 20,
+      "seq": 20,
+      "ts": "2026-11-14T15:35:04.177Z",
+      "type": "DECISION",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": "run_01JD8R",
+      "decisionId": "dec_01JD8Q0011",
+      "decision": "allow",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "account": "SAVINGS",
+        "merchant": "BROKERAGE-NVDA",
+        "amountCents": 5000,
+        "fieldNames": [
+          "fromAccount",
+          "merchant",
+          "amountCents",
+          "currency",
+          "memo"
+        ],
+        "fieldSizes": {
+          "fromAccount": 7,
+          "merchant": 14,
+          "amountCents": 4,
+          "currency": 3,
+          "memo": 4
+        }
+      },
+      "actionHash": "W18ygo7R1NLKUbegePAvbqTAoTmRHvdmiIyuRTC8XDk",
+      "outcome": "executed",
+      "institutionRef": "ord_7751",
+      "summary": "Allowed: $50 of NVDA",
+      "policyVersion": "pv_3",
+      "prevHash": "xD8Ay2FHNa_0UYTDVcImcmbKs7SHa7aEHO4oFB8RcHc",
+      "hash": "hVb9rVK4C3Z25lAr6GwIje08AjLxWS-bWy2Ucl5fyEs",
+      "gateSig": "bbGyY6txR81-7GCDNvVsQeOZmXNjRgWmOqEaiW3T-RnDAtWxc9RZS7b4zU3M_FePQGSYQAOY9sVNgRlbBQLhmg"
+    },
+    {
+      "_id": 21,
+      "seq": 21,
+      "ts": "2026-11-14T15:35:04.184Z",
+      "type": "DECISION",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": "run_01JD8R",
+      "decisionId": "dec_01JD8Q0012",
+      "decision": "allow",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "account": "SAVINGS",
+        "merchant": "BROKERAGE-NVDA",
+        "amountCents": 5000,
+        "fieldNames": [
+          "fromAccount",
+          "merchant",
+          "amountCents",
+          "currency",
+          "memo"
+        ],
+        "fieldSizes": {
+          "fromAccount": 7,
+          "merchant": 14,
+          "amountCents": 4,
+          "currency": 3,
+          "memo": 4
+        }
+      },
+      "actionHash": "W18ygo7R1NLKUbegePAvbqTAoTmRHvdmiIyuRTC8XDk",
+      "outcome": "executed",
+      "institutionRef": "ord_7752",
+      "summary": "Allowed: $50 of NVDA",
+      "policyVersion": "pv_3",
+      "prevHash": "hVb9rVK4C3Z25lAr6GwIje08AjLxWS-bWy2Ucl5fyEs",
+      "hash": "-J1cR1C632Jr5-xwvufYr_8xiJVgqEJ_4lymtkj9qmg",
+      "gateSig": "3BC2PRjSc11XthVpswVvXaSmFBUUGIRJUisjhyjiKqAXNwPwSql_29zJfpBfuSSPTjp1hBXVGzbkoj_BN6S_MA"
+    },
+    {
+      "_id": 22,
+      "seq": 22,
+      "ts": "2026-11-14T15:35:04.191Z",
+      "type": "DECISION",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": "run_01JD8R",
+      "decisionId": "dec_01JD8Q0013",
+      "decision": "deny",
+      "reasonCode": "BUDGET_EXHAUSTED",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "account": "SAVINGS",
+        "merchant": "BROKERAGE-NVDA",
+        "amountCents": 5000,
+        "fieldNames": [
+          "fromAccount",
+          "merchant",
+          "amountCents",
+          "currency",
+          "memo"
+        ],
+        "fieldSizes": {
+          "fromAccount": 7,
+          "merchant": 14,
+          "amountCents": 4,
+          "currency": 3,
+          "memo": 4
+        }
+      },
+      "actionHash": "W18ygo7R1NLKUbegePAvbqTAoTmRHvdmiIyuRTC8XDk",
+      "summary": "Denied: warrant budget exhausted",
+      "policyVersion": "pv_3",
+      "prevHash": "-J1cR1C632Jr5-xwvufYr_8xiJVgqEJ_4lymtkj9qmg",
+      "hash": "kKY8ngvpX1nXnU7FY_Fc-KPuCrBnkCiQVbBIWcnfo4s",
+      "gateSig": "xyn-x0RIMUqfmonUSRQy77U5Jytl6YL6XrcYAIHcVpx1xVhBB85ru-Prbieb3L7StmBppb_H4aQpodIsw4oZtA"
+    },
+    {
+      "_id": 23,
+      "seq": 23,
+      "ts": "2026-11-14T15:35:04.198Z",
+      "type": "DECISION",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": "run_01JD8R",
+      "decisionId": "dec_01JD8Q0014",
+      "decision": "allow",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "account": "SAVINGS",
+        "merchant": "BROKERAGE-NVDA",
+        "amountCents": 5000,
+        "fieldNames": [
+          "fromAccount",
+          "merchant",
+          "amountCents",
+          "currency",
+          "memo"
+        ],
+        "fieldSizes": {
+          "fromAccount": 7,
+          "merchant": 14,
+          "amountCents": 4,
+          "currency": 3,
+          "memo": 4
+        }
+      },
+      "actionHash": "W18ygo7R1NLKUbegePAvbqTAoTmRHvdmiIyuRTC8XDk",
+      "outcome": "executed",
+      "institutionRef": "ord_7754",
+      "summary": "Allowed: $50 of NVDA",
+      "policyVersion": "pv_3",
+      "prevHash": "kKY8ngvpX1nXnU7FY_Fc-KPuCrBnkCiQVbBIWcnfo4s",
+      "hash": "kOkI6K909EOaf5mr85TAQQvV2LGb7gGnsq1-EkbzxeU",
+      "gateSig": "htjDpoFXcFTKBLZPwGhfOKD71Emy31eihcaMic0bApGawoNTM4uvji3LPZ_dwsqCY8ghJA1G9yZEJomtY9l5rw"
+    },
+    {
+      "_id": 24,
+      "seq": 24,
+      "ts": "2026-11-14T15:35:04.205Z",
+      "type": "DECISION",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": "run_01JD8R",
+      "decisionId": "dec_01JD8Q0015",
+      "decision": "deny",
+      "reasonCode": "BUDGET_EXHAUSTED",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "account": "SAVINGS",
+        "merchant": "BROKERAGE-NVDA",
+        "amountCents": 5000,
+        "fieldNames": [
+          "fromAccount",
+          "merchant",
+          "amountCents",
+          "currency",
+          "memo"
+        ],
+        "fieldSizes": {
+          "fromAccount": 7,
+          "merchant": 14,
+          "amountCents": 4,
+          "currency": 3,
+          "memo": 4
+        }
+      },
+      "actionHash": "W18ygo7R1NLKUbegePAvbqTAoTmRHvdmiIyuRTC8XDk",
+      "summary": "Denied: warrant budget exhausted",
+      "policyVersion": "pv_3",
+      "prevHash": "kOkI6K909EOaf5mr85TAQQvV2LGb7gGnsq1-EkbzxeU",
+      "hash": "aZ7NpSULd2lbmp2xlREIRe0IPxvwiDPGawg3nZ_xjZk",
+      "gateSig": "_hwEMxbCpffEyiQSJPxdXyMhJhXtA-WobnoHOjOGHYVG4jUgvOMwcoscvMVyly05x6hJ3G0ihZSzKFDx3CXzSw"
+    },
+    {
+      "_id": 25,
+      "seq": 25,
+      "ts": "2026-11-14T15:35:04.212Z",
+      "type": "DECISION",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": "run_01JD8R",
+      "decisionId": "dec_01JD8Q0016",
+      "decision": "deny",
+      "reasonCode": "BUDGET_EXHAUSTED",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "account": "SAVINGS",
+        "merchant": "BROKERAGE-NVDA",
+        "amountCents": 5000,
+        "fieldNames": [
+          "fromAccount",
+          "merchant",
+          "amountCents",
+          "currency",
+          "memo"
+        ],
+        "fieldSizes": {
+          "fromAccount": 7,
+          "merchant": 14,
+          "amountCents": 4,
+          "currency": 3,
+          "memo": 4
+        }
+      },
+      "actionHash": "W18ygo7R1NLKUbegePAvbqTAoTmRHvdmiIyuRTC8XDk",
+      "summary": "Denied: warrant budget exhausted",
+      "policyVersion": "pv_3",
+      "prevHash": "aZ7NpSULd2lbmp2xlREIRe0IPxvwiDPGawg3nZ_xjZk",
+      "hash": "eM35W5MrBpm_h7TbmJ93b_sVDPXcec_j90zDs7qcOAY",
+      "gateSig": "sWfwH94-piv-Ueip3NRzOkI2p4gPxdbFvcOICBiLMHhOx7DqDP2mSQp3BgHFea6oQCzEXpdeNdG6TD2t1qEo_A"
+    },
+    {
+      "_id": 26,
+      "seq": 26,
+      "ts": "2026-11-14T15:35:04.219Z",
+      "type": "DECISION",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": "run_01JD8R",
+      "decisionId": "dec_01JD8Q0017",
+      "decision": "deny",
+      "reasonCode": "BUDGET_EXHAUSTED",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "account": "SAVINGS",
+        "merchant": "BROKERAGE-NVDA",
+        "amountCents": 5000,
+        "fieldNames": [
+          "fromAccount",
+          "merchant",
+          "amountCents",
+          "currency",
+          "memo"
+        ],
+        "fieldSizes": {
+          "fromAccount": 7,
+          "merchant": 14,
+          "amountCents": 4,
+          "currency": 3,
+          "memo": 4
+        }
+      },
+      "actionHash": "W18ygo7R1NLKUbegePAvbqTAoTmRHvdmiIyuRTC8XDk",
+      "summary": "Denied: warrant budget exhausted",
+      "policyVersion": "pv_3",
+      "prevHash": "eM35W5MrBpm_h7TbmJ93b_sVDPXcec_j90zDs7qcOAY",
+      "hash": "OSPnqUtFq43RGAAfnoTEtDCm3mTlKMWbOUrmDHaH5P0",
+      "gateSig": "JPQTUyrXwWqzzIrplTJNxSPvpbQbqq0PihH61zTltFknPMctN4pPh3aQkow37pncCw_sm_v7AEyvU09yugVGPQ"
+    },
+    {
+      "_id": 27,
+      "seq": 27,
+      "ts": "2026-11-14T15:35:04.226Z",
+      "type": "DECISION",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": "run_01JD8R",
+      "decisionId": "dec_01JD8Q0018",
+      "decision": "allow",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "account": "SAVINGS",
+        "merchant": "BROKERAGE-NVDA",
+        "amountCents": 5000,
+        "fieldNames": [
+          "fromAccount",
+          "merchant",
+          "amountCents",
+          "currency",
+          "memo"
+        ],
+        "fieldSizes": {
+          "fromAccount": 7,
+          "merchant": 14,
+          "amountCents": 4,
+          "currency": 3,
+          "memo": 4
+        }
+      },
+      "actionHash": "W18ygo7R1NLKUbegePAvbqTAoTmRHvdmiIyuRTC8XDk",
+      "outcome": "executed",
+      "institutionRef": "ord_7758",
+      "summary": "Allowed: $50 of NVDA",
+      "policyVersion": "pv_3",
+      "prevHash": "OSPnqUtFq43RGAAfnoTEtDCm3mTlKMWbOUrmDHaH5P0",
+      "hash": "x_-Qrpt7fIvNcgQaBvb0_d6U_ti112yQgCtThbGeJAA",
+      "gateSig": "OSIIJ1c9Unu8e7q_TJ6G4dmblIlKOI5ALvVln5-90OpU-KnPB9kWba651h8tE-ShEsOnaSXtyFWBPf3HfBUqNg"
+    },
+    {
+      "_id": 28,
+      "seq": 28,
+      "ts": "2026-11-14T15:35:04.233Z",
+      "type": "DECISION",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": "run_01JD8R",
+      "decisionId": "dec_01JD8Q0019",
+      "decision": "deny",
+      "reasonCode": "BUDGET_EXHAUSTED",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "account": "SAVINGS",
+        "merchant": "BROKERAGE-NVDA",
+        "amountCents": 5000,
+        "fieldNames": [
+          "fromAccount",
+          "merchant",
+          "amountCents",
+          "currency",
+          "memo"
+        ],
+        "fieldSizes": {
+          "fromAccount": 7,
+          "merchant": 14,
+          "amountCents": 4,
+          "currency": 3,
+          "memo": 4
+        }
+      },
+      "actionHash": "W18ygo7R1NLKUbegePAvbqTAoTmRHvdmiIyuRTC8XDk",
+      "summary": "Denied: warrant budget exhausted",
+      "policyVersion": "pv_3",
+      "prevHash": "x_-Qrpt7fIvNcgQaBvb0_d6U_ti112yQgCtThbGeJAA",
+      "hash": "geiqmFoCYY0UIIeEpkOA8AnWbWDKRNayVmVVPcsBupo",
+      "gateSig": "ObQ9-IXRnjTaFiEhwjITr5CWPhlKYvA3_ij7ZR_RF0HWKgvM7_mSs7_tvGuQbKB97QvsQm3CTeQIUgVsS9L60g"
+    },
+    {
+      "_id": 29,
+      "seq": 29,
+      "ts": "2026-11-14T15:36:20.000Z",
+      "type": "REVOKED",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": "run_01JD8R",
+      "summary": "Warrant revoked by Ram",
+      "policyVersion": "pv_3",
+      "prevHash": "geiqmFoCYY0UIIeEpkOA8AnWbWDKRNayVmVVPcsBupo",
+      "hash": "kWTlYJY-7YR7WRc43wpSfyWP0qxelZIkrR4Q0U8vYto",
+      "gateSig": "7ajYe-30X4TxLpgzMVwP-jOe3u52szAzB3gAlOUFjH6WCMgou593MvyORctX2cnrl6hpLYBVjvXsKm4pLfmKbw"
+    },
+    {
+      "_id": 30,
+      "seq": 30,
+      "ts": "2026-11-14T15:36:21.000Z",
+      "type": "DECISION",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": "run_01JD8R",
+      "decisionId": "dec_01JD8R0001",
+      "decision": "deny",
+      "reasonCode": "WARRANT_REVOKED",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "account": "SAVINGS",
+        "merchant": "BROKERAGE-NVDA",
+        "amountCents": 5000,
+        "fieldNames": [
+          "fromAccount",
+          "merchant",
+          "amountCents",
+          "currency",
+          "memo"
+        ],
+        "fieldSizes": {
+          "fromAccount": 7,
+          "merchant": 14,
+          "amountCents": 4,
+          "currency": 3,
+          "memo": 4
+        }
+      },
+      "actionHash": "W18ygo7R1NLKUbegePAvbqTAoTmRHvdmiIyuRTC8XDk",
+      "summary": "Denied: warrant revoked",
+      "policyVersion": "pv_3",
+      "prevHash": "kWTlYJY-7YR7WRc43wpSfyWP0qxelZIkrR4Q0U8vYto",
+      "hash": "zBcbmADNkdToMNY7CrPM5Zb73Dm4aSvnxutLokICLA4",
+      "gateSig": "R-Z1vAVlbFQWnx_67TIRLTbPZU-EMf_JD0COViKXSc_K6pFrYNkCylVYLklzc35_iiqXb14kXrD12ZLIGQp6eg"
     }
   ]
 }
