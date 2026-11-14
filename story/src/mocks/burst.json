@@ -1,0 +1,1028 @@
+{
+  "items": [
+    {
+      "agentText": "Buying $50 of NVDA",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "params": {
+          "fromAccount": "SAVINGS",
+          "merchant": "BROKERAGE-NVDA",
+          "amountCents": 5000,
+          "currency": "USD",
+          "memo": "NVDA"
+        }
+      },
+      "decision": "allow",
+      "decisionId": "dec_b0",
+      "seq": 8,
+      "outcome": "executed",
+      "remainingCents": 45000,
+      "trace": {
+        "atomicUpdate": {
+          "filter": {
+            "_id": "wrt_01JD8NVDA",
+            "state.status": "active",
+            "state.remainingCents": {
+              "$gte": 50000
+            },
+            "expiresAt": {
+              "$gt": "2026-11-14T15:30:00.000Z"
+            }
+          },
+          "update": {
+            "$inc": {
+              "state.remainingCents": -50000,
+              "state.actionCount": 1
+            }
+          },
+          "matched": 1
+        },
+        "gateMs": 14
+      },
+      "receipt": {
+        "decisionId": "dec_01JD8P0001",
+        "aud": "fintech",
+        "iat": "2026-11-14T15:31:02.000Z",
+        "exp": "2026-11-14T15:32:02.000Z",
+        "actionHash": "aH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3",
+        "ledger": {
+          "seq": 3,
+          "hash": "Lq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9"
+        },
+        "gateSig": "gS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7pQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2"
+      },
+      "institutionChecks": {
+        "institution": "fintech",
+        "gateSignature": true,
+        "customerPasskey": true,
+        "terms": true,
+        "institutionRef": "ord_7731"
+      }
+    },
+    {
+      "agentText": "Buying $50 of NVDA",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "params": {
+          "fromAccount": "SAVINGS",
+          "merchant": "BROKERAGE-NVDA",
+          "amountCents": 5000,
+          "currency": "USD",
+          "memo": "NVDA"
+        }
+      },
+      "decision": "allow",
+      "decisionId": "dec_b1",
+      "seq": 9,
+      "outcome": "executed",
+      "remainingCents": 40000,
+      "trace": {
+        "atomicUpdate": {
+          "filter": {
+            "_id": "wrt_01JD8NVDA",
+            "state.status": "active",
+            "state.remainingCents": {
+              "$gte": 50000
+            },
+            "expiresAt": {
+              "$gt": "2026-11-14T15:30:00.000Z"
+            }
+          },
+          "update": {
+            "$inc": {
+              "state.remainingCents": -50000,
+              "state.actionCount": 1
+            }
+          },
+          "matched": 1
+        },
+        "gateMs": 14
+      },
+      "receipt": {
+        "decisionId": "dec_01JD8P0001",
+        "aud": "fintech",
+        "iat": "2026-11-14T15:31:02.000Z",
+        "exp": "2026-11-14T15:32:02.000Z",
+        "actionHash": "aH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3",
+        "ledger": {
+          "seq": 3,
+          "hash": "Lq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9"
+        },
+        "gateSig": "gS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7pQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2"
+      },
+      "institutionChecks": {
+        "institution": "fintech",
+        "gateSignature": true,
+        "customerPasskey": true,
+        "terms": true,
+        "institutionRef": "ord_7731"
+      }
+    },
+    {
+      "agentText": "Buying $50 of NVDA",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "params": {
+          "fromAccount": "SAVINGS",
+          "merchant": "BROKERAGE-NVDA",
+          "amountCents": 5000,
+          "currency": "USD",
+          "memo": "NVDA"
+        }
+      },
+      "decision": "allow",
+      "decisionId": "dec_b2",
+      "seq": 10,
+      "outcome": "executed",
+      "remainingCents": 35000,
+      "trace": {
+        "atomicUpdate": {
+          "filter": {
+            "_id": "wrt_01JD8NVDA",
+            "state.status": "active",
+            "state.remainingCents": {
+              "$gte": 50000
+            },
+            "expiresAt": {
+              "$gt": "2026-11-14T15:30:00.000Z"
+            }
+          },
+          "update": {
+            "$inc": {
+              "state.remainingCents": -50000,
+              "state.actionCount": 1
+            }
+          },
+          "matched": 1
+        },
+        "gateMs": 14
+      },
+      "receipt": {
+        "decisionId": "dec_01JD8P0001",
+        "aud": "fintech",
+        "iat": "2026-11-14T15:31:02.000Z",
+        "exp": "2026-11-14T15:32:02.000Z",
+        "actionHash": "aH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3",
+        "ledger": {
+          "seq": 3,
+          "hash": "Lq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9"
+        },
+        "gateSig": "gS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7pQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2"
+      },
+      "institutionChecks": {
+        "institution": "fintech",
+        "gateSignature": true,
+        "customerPasskey": true,
+        "terms": true,
+        "institutionRef": "ord_7731"
+      }
+    },
+    {
+      "agentText": "Buying $50 of NVDA",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "params": {
+          "fromAccount": "SAVINGS",
+          "merchant": "BROKERAGE-NVDA",
+          "amountCents": 5000,
+          "currency": "USD",
+          "memo": "NVDA"
+        }
+      },
+      "decision": "allow",
+      "decisionId": "dec_b3",
+      "seq": 11,
+      "outcome": "executed",
+      "remainingCents": 30000,
+      "trace": {
+        "atomicUpdate": {
+          "filter": {
+            "_id": "wrt_01JD8NVDA",
+            "state.status": "active",
+            "state.remainingCents": {
+              "$gte": 50000
+            },
+            "expiresAt": {
+              "$gt": "2026-11-14T15:30:00.000Z"
+            }
+          },
+          "update": {
+            "$inc": {
+              "state.remainingCents": -50000,
+              "state.actionCount": 1
+            }
+          },
+          "matched": 1
+        },
+        "gateMs": 14
+      },
+      "receipt": {
+        "decisionId": "dec_01JD8P0001",
+        "aud": "fintech",
+        "iat": "2026-11-14T15:31:02.000Z",
+        "exp": "2026-11-14T15:32:02.000Z",
+        "actionHash": "aH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3",
+        "ledger": {
+          "seq": 3,
+          "hash": "Lq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9"
+        },
+        "gateSig": "gS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7pQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2"
+      },
+      "institutionChecks": {
+        "institution": "fintech",
+        "gateSignature": true,
+        "customerPasskey": true,
+        "terms": true,
+        "institutionRef": "ord_7731"
+      }
+    },
+    {
+      "agentText": "Buying $50 of NVDA",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "params": {
+          "fromAccount": "SAVINGS",
+          "merchant": "BROKERAGE-NVDA",
+          "amountCents": 5000,
+          "currency": "USD",
+          "memo": "NVDA"
+        }
+      },
+      "decision": "allow",
+      "decisionId": "dec_b4",
+      "seq": 12,
+      "outcome": "executed",
+      "remainingCents": 25000,
+      "trace": {
+        "atomicUpdate": {
+          "filter": {
+            "_id": "wrt_01JD8NVDA",
+            "state.status": "active",
+            "state.remainingCents": {
+              "$gte": 50000
+            },
+            "expiresAt": {
+              "$gt": "2026-11-14T15:30:00.000Z"
+            }
+          },
+          "update": {
+            "$inc": {
+              "state.remainingCents": -50000,
+              "state.actionCount": 1
+            }
+          },
+          "matched": 1
+        },
+        "gateMs": 14
+      },
+      "receipt": {
+        "decisionId": "dec_01JD8P0001",
+        "aud": "fintech",
+        "iat": "2026-11-14T15:31:02.000Z",
+        "exp": "2026-11-14T15:32:02.000Z",
+        "actionHash": "aH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3",
+        "ledger": {
+          "seq": 3,
+          "hash": "Lq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9"
+        },
+        "gateSig": "gS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7pQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2"
+      },
+      "institutionChecks": {
+        "institution": "fintech",
+        "gateSignature": true,
+        "customerPasskey": true,
+        "terms": true,
+        "institutionRef": "ord_7731"
+      }
+    },
+    {
+      "agentText": "Buying $50 of NVDA",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "params": {
+          "fromAccount": "SAVINGS",
+          "merchant": "BROKERAGE-NVDA",
+          "amountCents": 5000,
+          "currency": "USD",
+          "memo": "NVDA"
+        }
+      },
+      "decision": "allow",
+      "decisionId": "dec_b5",
+      "seq": 13,
+      "outcome": "executed",
+      "remainingCents": 20000,
+      "trace": {
+        "atomicUpdate": {
+          "filter": {
+            "_id": "wrt_01JD8NVDA",
+            "state.status": "active",
+            "state.remainingCents": {
+              "$gte": 50000
+            },
+            "expiresAt": {
+              "$gt": "2026-11-14T15:30:00.000Z"
+            }
+          },
+          "update": {
+            "$inc": {
+              "state.remainingCents": -50000,
+              "state.actionCount": 1
+            }
+          },
+          "matched": 1
+        },
+        "gateMs": 14
+      },
+      "receipt": {
+        "decisionId": "dec_01JD8P0001",
+        "aud": "fintech",
+        "iat": "2026-11-14T15:31:02.000Z",
+        "exp": "2026-11-14T15:32:02.000Z",
+        "actionHash": "aH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3",
+        "ledger": {
+          "seq": 3,
+          "hash": "Lq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9"
+        },
+        "gateSig": "gS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7pQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2"
+      },
+      "institutionChecks": {
+        "institution": "fintech",
+        "gateSignature": true,
+        "customerPasskey": true,
+        "terms": true,
+        "institutionRef": "ord_7731"
+      }
+    },
+    {
+      "agentText": "Buying $50 of NVDA",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "params": {
+          "fromAccount": "SAVINGS",
+          "merchant": "BROKERAGE-NVDA",
+          "amountCents": 5000,
+          "currency": "USD",
+          "memo": "NVDA"
+        }
+      },
+      "decision": "allow",
+      "decisionId": "dec_b6",
+      "seq": 14,
+      "outcome": "executed",
+      "remainingCents": 15000,
+      "trace": {
+        "atomicUpdate": {
+          "filter": {
+            "_id": "wrt_01JD8NVDA",
+            "state.status": "active",
+            "state.remainingCents": {
+              "$gte": 50000
+            },
+            "expiresAt": {
+              "$gt": "2026-11-14T15:30:00.000Z"
+            }
+          },
+          "update": {
+            "$inc": {
+              "state.remainingCents": -50000,
+              "state.actionCount": 1
+            }
+          },
+          "matched": 1
+        },
+        "gateMs": 14
+      },
+      "receipt": {
+        "decisionId": "dec_01JD8P0001",
+        "aud": "fintech",
+        "iat": "2026-11-14T15:31:02.000Z",
+        "exp": "2026-11-14T15:32:02.000Z",
+        "actionHash": "aH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3",
+        "ledger": {
+          "seq": 3,
+          "hash": "Lq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9"
+        },
+        "gateSig": "gS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7pQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2"
+      },
+      "institutionChecks": {
+        "institution": "fintech",
+        "gateSignature": true,
+        "customerPasskey": true,
+        "terms": true,
+        "institutionRef": "ord_7731"
+      }
+    },
+    {
+      "agentText": "Buying $50 of NVDA",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "params": {
+          "fromAccount": "SAVINGS",
+          "merchant": "BROKERAGE-NVDA",
+          "amountCents": 5000,
+          "currency": "USD",
+          "memo": "NVDA"
+        }
+      },
+      "decision": "allow",
+      "decisionId": "dec_b7",
+      "seq": 15,
+      "outcome": "executed",
+      "remainingCents": 10000,
+      "trace": {
+        "atomicUpdate": {
+          "filter": {
+            "_id": "wrt_01JD8NVDA",
+            "state.status": "active",
+            "state.remainingCents": {
+              "$gte": 50000
+            },
+            "expiresAt": {
+              "$gt": "2026-11-14T15:30:00.000Z"
+            }
+          },
+          "update": {
+            "$inc": {
+              "state.remainingCents": -50000,
+              "state.actionCount": 1
+            }
+          },
+          "matched": 1
+        },
+        "gateMs": 14
+      },
+      "receipt": {
+        "decisionId": "dec_01JD8P0001",
+        "aud": "fintech",
+        "iat": "2026-11-14T15:31:02.000Z",
+        "exp": "2026-11-14T15:32:02.000Z",
+        "actionHash": "aH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3",
+        "ledger": {
+          "seq": 3,
+          "hash": "Lq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9"
+        },
+        "gateSig": "gS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7pQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2"
+      },
+      "institutionChecks": {
+        "institution": "fintech",
+        "gateSignature": true,
+        "customerPasskey": true,
+        "terms": true,
+        "institutionRef": "ord_7731"
+      }
+    },
+    {
+      "agentText": "Buying $50 of NVDA",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "params": {
+          "fromAccount": "SAVINGS",
+          "merchant": "BROKERAGE-NVDA",
+          "amountCents": 5000,
+          "currency": "USD",
+          "memo": "NVDA"
+        }
+      },
+      "decision": "allow",
+      "decisionId": "dec_b8",
+      "seq": 16,
+      "outcome": "executed",
+      "remainingCents": 5000,
+      "trace": {
+        "atomicUpdate": {
+          "filter": {
+            "_id": "wrt_01JD8NVDA",
+            "state.status": "active",
+            "state.remainingCents": {
+              "$gte": 50000
+            },
+            "expiresAt": {
+              "$gt": "2026-11-14T15:30:00.000Z"
+            }
+          },
+          "update": {
+            "$inc": {
+              "state.remainingCents": -50000,
+              "state.actionCount": 1
+            }
+          },
+          "matched": 1
+        },
+        "gateMs": 14
+      },
+      "receipt": {
+        "decisionId": "dec_01JD8P0001",
+        "aud": "fintech",
+        "iat": "2026-11-14T15:31:02.000Z",
+        "exp": "2026-11-14T15:32:02.000Z",
+        "actionHash": "aH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3",
+        "ledger": {
+          "seq": 3,
+          "hash": "Lq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9"
+        },
+        "gateSig": "gS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7pQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2"
+      },
+      "institutionChecks": {
+        "institution": "fintech",
+        "gateSignature": true,
+        "customerPasskey": true,
+        "terms": true,
+        "institutionRef": "ord_7731"
+      }
+    },
+    {
+      "agentText": "Buying $50 of NVDA",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "params": {
+          "fromAccount": "SAVINGS",
+          "merchant": "BROKERAGE-NVDA",
+          "amountCents": 5000,
+          "currency": "USD",
+          "memo": "NVDA"
+        }
+      },
+      "decision": "allow",
+      "decisionId": "dec_b9",
+      "seq": 17,
+      "outcome": "executed",
+      "remainingCents": 0,
+      "trace": {
+        "atomicUpdate": {
+          "filter": {
+            "_id": "wrt_01JD8NVDA",
+            "state.status": "active",
+            "state.remainingCents": {
+              "$gte": 50000
+            },
+            "expiresAt": {
+              "$gt": "2026-11-14T15:30:00.000Z"
+            }
+          },
+          "update": {
+            "$inc": {
+              "state.remainingCents": -50000,
+              "state.actionCount": 1
+            }
+          },
+          "matched": 1
+        },
+        "gateMs": 14
+      },
+      "receipt": {
+        "decisionId": "dec_01JD8P0001",
+        "aud": "fintech",
+        "iat": "2026-11-14T15:31:02.000Z",
+        "exp": "2026-11-14T15:32:02.000Z",
+        "actionHash": "aH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3",
+        "ledger": {
+          "seq": 3,
+          "hash": "Lq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9"
+        },
+        "gateSig": "gS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7pQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2"
+      },
+      "institutionChecks": {
+        "institution": "fintech",
+        "gateSignature": true,
+        "customerPasskey": true,
+        "terms": true,
+        "institutionRef": "ord_7731"
+      }
+    },
+    {
+      "agentText": "Buying $50 of NVDA",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "params": {
+          "fromAccount": "SAVINGS",
+          "merchant": "BROKERAGE-NVDA",
+          "amountCents": 5000,
+          "currency": "USD",
+          "memo": "NVDA"
+        }
+      },
+      "decision": "deny",
+      "reasonCode": "TOTAL_LIMIT",
+      "decisionId": "dec_b10",
+      "seq": 18,
+      "remainingCents": 0,
+      "trace": {
+        "atomicUpdate": {
+          "filter": {
+            "_id": "wrt_01JD8NVDA",
+            "state.status": "active",
+            "state.remainingCents": {
+              "$gte": 50000
+            },
+            "expiresAt": {
+              "$gt": "2026-11-14T15:30:00.000Z"
+            }
+          },
+          "update": {
+            "$inc": {
+              "state.remainingCents": -50000,
+              "state.actionCount": 1
+            }
+          },
+          "matched": 0
+        },
+        "gateMs": 14
+      }
+    },
+    {
+      "agentText": "Buying $50 of NVDA",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "params": {
+          "fromAccount": "SAVINGS",
+          "merchant": "BROKERAGE-NVDA",
+          "amountCents": 5000,
+          "currency": "USD",
+          "memo": "NVDA"
+        }
+      },
+      "decision": "deny",
+      "reasonCode": "TOTAL_LIMIT",
+      "decisionId": "dec_b11",
+      "seq": 19,
+      "remainingCents": 0,
+      "trace": {
+        "atomicUpdate": {
+          "filter": {
+            "_id": "wrt_01JD8NVDA",
+            "state.status": "active",
+            "state.remainingCents": {
+              "$gte": 50000
+            },
+            "expiresAt": {
+              "$gt": "2026-11-14T15:30:00.000Z"
+            }
+          },
+          "update": {
+            "$inc": {
+              "state.remainingCents": -50000,
+              "state.actionCount": 1
+            }
+          },
+          "matched": 0
+        },
+        "gateMs": 14
+      }
+    },
+    {
+      "agentText": "Buying $50 of NVDA",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "params": {
+          "fromAccount": "SAVINGS",
+          "merchant": "BROKERAGE-NVDA",
+          "amountCents": 5000,
+          "currency": "USD",
+          "memo": "NVDA"
+        }
+      },
+      "decision": "deny",
+      "reasonCode": "TOTAL_LIMIT",
+      "decisionId": "dec_b12",
+      "seq": 20,
+      "remainingCents": 0,
+      "trace": {
+        "atomicUpdate": {
+          "filter": {
+            "_id": "wrt_01JD8NVDA",
+            "state.status": "active",
+            "state.remainingCents": {
+              "$gte": 50000
+            },
+            "expiresAt": {
+              "$gt": "2026-11-14T15:30:00.000Z"
+            }
+          },
+          "update": {
+            "$inc": {
+              "state.remainingCents": -50000,
+              "state.actionCount": 1
+            }
+          },
+          "matched": 0
+        },
+        "gateMs": 14
+      }
+    },
+    {
+      "agentText": "Buying $50 of NVDA",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "params": {
+          "fromAccount": "SAVINGS",
+          "merchant": "BROKERAGE-NVDA",
+          "amountCents": 5000,
+          "currency": "USD",
+          "memo": "NVDA"
+        }
+      },
+      "decision": "deny",
+      "reasonCode": "TOTAL_LIMIT",
+      "decisionId": "dec_b13",
+      "seq": 21,
+      "remainingCents": 0,
+      "trace": {
+        "atomicUpdate": {
+          "filter": {
+            "_id": "wrt_01JD8NVDA",
+            "state.status": "active",
+            "state.remainingCents": {
+              "$gte": 50000
+            },
+            "expiresAt": {
+              "$gt": "2026-11-14T15:30:00.000Z"
+            }
+          },
+          "update": {
+            "$inc": {
+              "state.remainingCents": -50000,
+              "state.actionCount": 1
+            }
+          },
+          "matched": 0
+        },
+        "gateMs": 14
+      }
+    },
+    {
+      "agentText": "Buying $50 of NVDA",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "params": {
+          "fromAccount": "SAVINGS",
+          "merchant": "BROKERAGE-NVDA",
+          "amountCents": 5000,
+          "currency": "USD",
+          "memo": "NVDA"
+        }
+      },
+      "decision": "deny",
+      "reasonCode": "TOTAL_LIMIT",
+      "decisionId": "dec_b14",
+      "seq": 22,
+      "remainingCents": 0,
+      "trace": {
+        "atomicUpdate": {
+          "filter": {
+            "_id": "wrt_01JD8NVDA",
+            "state.status": "active",
+            "state.remainingCents": {
+              "$gte": 50000
+            },
+            "expiresAt": {
+              "$gt": "2026-11-14T15:30:00.000Z"
+            }
+          },
+          "update": {
+            "$inc": {
+              "state.remainingCents": -50000,
+              "state.actionCount": 1
+            }
+          },
+          "matched": 0
+        },
+        "gateMs": 14
+      }
+    },
+    {
+      "agentText": "Buying $50 of NVDA",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "params": {
+          "fromAccount": "SAVINGS",
+          "merchant": "BROKERAGE-NVDA",
+          "amountCents": 5000,
+          "currency": "USD",
+          "memo": "NVDA"
+        }
+      },
+      "decision": "deny",
+      "reasonCode": "TOTAL_LIMIT",
+      "decisionId": "dec_b15",
+      "seq": 23,
+      "remainingCents": 0,
+      "trace": {
+        "atomicUpdate": {
+          "filter": {
+            "_id": "wrt_01JD8NVDA",
+            "state.status": "active",
+            "state.remainingCents": {
+              "$gte": 50000
+            },
+            "expiresAt": {
+              "$gt": "2026-11-14T15:30:00.000Z"
+            }
+          },
+          "update": {
+            "$inc": {
+              "state.remainingCents": -50000,
+              "state.actionCount": 1
+            }
+          },
+          "matched": 0
+        },
+        "gateMs": 14
+      }
+    },
+    {
+      "agentText": "Buying $50 of NVDA",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "params": {
+          "fromAccount": "SAVINGS",
+          "merchant": "BROKERAGE-NVDA",
+          "amountCents": 5000,
+          "currency": "USD",
+          "memo": "NVDA"
+        }
+      },
+      "decision": "deny",
+      "reasonCode": "TOTAL_LIMIT",
+      "decisionId": "dec_b16",
+      "seq": 24,
+      "remainingCents": 0,
+      "trace": {
+        "atomicUpdate": {
+          "filter": {
+            "_id": "wrt_01JD8NVDA",
+            "state.status": "active",
+            "state.remainingCents": {
+              "$gte": 50000
+            },
+            "expiresAt": {
+              "$gt": "2026-11-14T15:30:00.000Z"
+            }
+          },
+          "update": {
+            "$inc": {
+              "state.remainingCents": -50000,
+              "state.actionCount": 1
+            }
+          },
+          "matched": 0
+        },
+        "gateMs": 14
+      }
+    },
+    {
+      "agentText": "Buying $50 of NVDA",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "params": {
+          "fromAccount": "SAVINGS",
+          "merchant": "BROKERAGE-NVDA",
+          "amountCents": 5000,
+          "currency": "USD",
+          "memo": "NVDA"
+        }
+      },
+      "decision": "deny",
+      "reasonCode": "TOTAL_LIMIT",
+      "decisionId": "dec_b17",
+      "seq": 25,
+      "remainingCents": 0,
+      "trace": {
+        "atomicUpdate": {
+          "filter": {
+            "_id": "wrt_01JD8NVDA",
+            "state.status": "active",
+            "state.remainingCents": {
+              "$gte": 50000
+            },
+            "expiresAt": {
+              "$gt": "2026-11-14T15:30:00.000Z"
+            }
+          },
+          "update": {
+            "$inc": {
+              "state.remainingCents": -50000,
+              "state.actionCount": 1
+            }
+          },
+          "matched": 0
+        },
+        "gateMs": 14
+      }
+    },
+    {
+      "agentText": "Buying $50 of NVDA",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "params": {
+          "fromAccount": "SAVINGS",
+          "merchant": "BROKERAGE-NVDA",
+          "amountCents": 5000,
+          "currency": "USD",
+          "memo": "NVDA"
+        }
+      },
+      "decision": "deny",
+      "reasonCode": "TOTAL_LIMIT",
+      "decisionId": "dec_b18",
+      "seq": 26,
+      "remainingCents": 0,
+      "trace": {
+        "atomicUpdate": {
+          "filter": {
+            "_id": "wrt_01JD8NVDA",
+            "state.status": "active",
+            "state.remainingCents": {
+              "$gte": 50000
+            },
+            "expiresAt": {
+              "$gt": "2026-11-14T15:30:00.000Z"
+            }
+          },
+          "update": {
+            "$inc": {
+              "state.remainingCents": -50000,
+              "state.actionCount": 1
+            }
+          },
+          "matched": 0
+        },
+        "gateMs": 14
+      }
+    },
+    {
+      "agentText": "Buying $50 of NVDA",
+      "action": {
+        "type": "payment.create",
+        "destination": "fintech",
+        "params": {
+          "fromAccount": "SAVINGS",
+          "merchant": "BROKERAGE-NVDA",
+          "amountCents": 5000,
+          "currency": "USD",
+          "memo": "NVDA"
+        }
+      },
+      "decision": "deny",
+      "reasonCode": "TOTAL_LIMIT",
+      "decisionId": "dec_b19",
+      "seq": 27,
+      "remainingCents": 0,
+      "trace": {
+        "atomicUpdate": {
+          "filter": {
+            "_id": "wrt_01JD8NVDA",
+            "state.status": "active",
+            "state.remainingCents": {
+              "$gte": 50000
+            },
+            "expiresAt": {
+              "$gt": "2026-11-14T15:30:00.000Z"
+            }
+          },
+          "update": {
+            "$inc": {
+              "state.remainingCents": -50000,
+              "state.actionCount": 1
+            }
+          },
+          "matched": 0
+        },
+        "gateMs": 14
+      }
+    }
+  ],
+  "warrant": {
+    "warrantId": "wrt_01JD8NVDA",
+    "status": "active",
+    "remainingCents": 0,
+    "totalLimitCents": 100000,
+    "perActionMaxCents": 50000,
+    "expiresAt": "2026-11-14T17:00:00.000-08:00"
+  },
+  "counts": {
+    "allowed": 10,
+    "denied": 10,
+    "remainingCents": 0,
+    "elapsedMs": 182
+  }
+}

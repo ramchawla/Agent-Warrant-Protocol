@@ -1,0 +1,13 @@
+{
+  "name": "policy_rules",
+  "definition": {
+    "fields": [
+      {
+        "type": "autoEmbed",
+        "model": "voyage-4",
+        "path": "rule"
+      }
+    ]
+  },
+  "status": "READY"
+}

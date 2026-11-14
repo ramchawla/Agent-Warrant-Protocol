@@ -1,0 +1,129 @@
+{
+  "items": [
+    {
+      "agentText": "Summarizing your portfolio",
+      "action": {
+        "type": "data.export",
+        "destination": "llm",
+        "params": {
+          "payload": {
+            "owner": "Ram",
+            "holdings": [
+              {
+                "symbol": "NVDA",
+                "valueCents": 50000
+              }
+            ]
+          }
+        }
+      },
+      "decision": "deny",
+      "reasonCode": "APPROVAL_REQUIRED",
+      "decisionId": "dec_01JD8P0007",
+      "seq": 7,
+      "remainingCents": 50000,
+      "trace": {
+        "atomicUpdate": {
+          "filter": {
+            "_id": "wrt_01JD8NVDA",
+            "state.status": "active",
+            "state.remainingCents": {
+              "$gte": 50000
+            },
+            "expiresAt": {
+              "$gt": "2026-11-14T15:30:00.000Z"
+            }
+          },
+          "update": {
+            "$inc": {
+              "state.remainingCents": -50000,
+              "state.actionCount": 1
+            }
+          },
+          "matched": 0
+        },
+        "gateMs": 14,
+        "minimize": {
+          "before": {
+            "owner": "Ram",
+            "ssn": "123-45-6789",
+            "accounts": [
+              "SAVINGS 0042 1188 9031"
+            ],
+            "holdings": [
+              {
+                "symbol": "NVDA",
+                "valueCents": 50000
+              }
+            ]
+          },
+          "after": {
+            "owner": "Ram",
+            "holdings": [
+              {
+                "symbol": "NVDA",
+                "valueCents": 50000
+              }
+            ]
+          },
+          "removed": [
+            "ssn",
+            "accounts"
+          ],
+          "tokensBefore": 64,
+          "tokensAfter": 38
+        },
+        "semantic": {
+          "pipeline": [
+            {
+              "$vectorSearch": {
+                "index": "policy_rules",
+                "path": "rule",
+                "query": "summarize portfolio statement",
+                "numCandidates": 50,
+                "limit": 3
+              }
+            },
+            {
+              "$project": {
+                "rule": 1,
+                "action": 1,
+                "score": {
+                  "$meta": "vectorSearchScore"
+                }
+              }
+            }
+          ],
+          "path": "vector",
+          "topScore": 0.86,
+          "rule": "Require Touch ID before any account statement leaves our network",
+          "policyId": "pol_ch6",
+          "action": "REQUIRE_FACEID"
+        },
+        "approvalChallenge": "cH6mcH6mcH6mcH6mcH6mcH6mcH6mcH6mcH6mcH6mcH6"
+      }
+    }
+  ],
+  "warrant": {
+    "warrantId": "wrt_01JD8NVDA",
+    "status": "active",
+    "remainingCents": 50000,
+    "totalLimitCents": 100000,
+    "perActionMaxCents": 50000,
+    "expiresAt": "2026-11-14T17:00:00.000-08:00"
+  },
+  "pending": {
+    "approvalId": "apr_01JD8P0007",
+    "challenge": "cH6mcH6mcH6mcH6mcH6mcH6mcH6mcH6mcH6mcH6mcH6",
+    "minimizedPayload": {
+      "owner": "Ram",
+      "holdings": [
+        {
+          "symbol": "NVDA",
+          "valueCents": 50000
+        }
+      ]
+    },
+    "reason": "Require Touch ID before any account statement leaves our network"
+  }
+}

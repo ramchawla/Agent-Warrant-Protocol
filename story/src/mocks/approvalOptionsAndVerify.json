@@ -1,0 +1,14 @@
+{
+  "released": true,
+  "sentToLlm": {
+    "owner": "Ram",
+    "holdings": [
+      {
+        "symbol": "NVDA",
+        "valueCents": 50000
+      }
+    ]
+  },
+  "llmReply": "You hold $500 of NVIDIA bought today from savings. Your warrant has $500 left until 5:00 pm.",
+  "llmSource": "canned"
+}

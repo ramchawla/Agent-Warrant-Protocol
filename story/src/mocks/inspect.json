@@ -1,0 +1,104 @@
+{
+  "warrantId": "wrt_01JD8NVDA",
+  "terms": {
+    "v": 1,
+    "userId": "usr_demo",
+    "agentId": "agt_demo",
+    "actions": [
+      "payment.create",
+      "data.export"
+    ],
+    "accounts": [
+      "SAVINGS"
+    ],
+    "merchants": [
+      "BROKERAGE-NVDA"
+    ],
+    "destinations": [
+      "fintech",
+      "llm"
+    ],
+    "fields": {
+      "payment.create": [
+        "fromAccount",
+        "merchant",
+        "amountCents",
+        "currency",
+        "memo"
+      ],
+      "data.export": [
+        "payload"
+      ]
+    },
+    "perActionMaxCents": 50000,
+    "totalLimitCents": 100000,
+    "notBefore": "2026-11-14T15:20:00.000Z",
+    "expiresAt": "2026-11-15T01:00:00.000Z"
+  },
+  "canonical": "{\"accounts\":[\"SAVINGS\"],\"actions\":[\"payment.create\",\"data.export\"],\"agentId\":\"agt_demo\",\"destinations\":[\"fintech\",\"llm\"],\"expiresAt\":\"2026-11-15T01:00:00.000Z\",\"fields\":{\"payment.create\":[\"fromAccount\",\"merchant\",\"amountCents\",\"currency\",\"memo\"],\"data.export\":[\"payload\"]},\"merchants\":[\"BROKERAGE-NVDA\"],\"notBefore\":\"2026-11-14T15:20:00.000Z\",\"perActionMaxCents\":50000,\"totalLimitCents\":100000,\"userId\":\"usr_demo\",\"v\":1}",
+  "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+  "challenge": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+  "approval": {
+    "credentialId": "cR1dcR1dcR1dcR1dcR1dcR1dcR1dcR1dcR1dcR1dcR1",
+    "clientDataJSON": {
+      "type": "webauthn.get",
+      "challenge": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "origin": "http://localhost:5173"
+    },
+    "authenticatorData": "aD0vaD0vaD0vaD0vaD0vaD0vaD0vaD0vaD0vaD0vaD0AQ",
+    "signature": "MEUCIQsG4nsG4nsG4nsG4nsG4nsG4nsG4nsG4nsG4nsG4nsG4rT8wrT8wrT8wrT8wrT8wrT8wrT8wrT8wrT8wrT8wrT8",
+    "userVerified": true,
+    "approvedAt": "2026-11-14T15:31:00.000Z"
+  },
+  "status": "active",
+  "document": {
+    "_id": "wrt_01JD8NVDA",
+    "terms": {
+      "v": 1,
+      "userId": "usr_demo",
+      "agentId": "agt_demo",
+      "actions": [
+        "payment.create",
+        "data.export"
+      ],
+      "accounts": [
+        "SAVINGS"
+      ],
+      "merchants": [
+        "BROKERAGE-NVDA"
+      ],
+      "destinations": [
+        "fintech",
+        "llm"
+      ],
+      "fields": {
+        "payment.create": [
+          "fromAccount",
+          "merchant",
+          "amountCents",
+          "currency",
+          "memo"
+        ],
+        "data.export": [
+          "payload"
+        ]
+      },
+      "perActionMaxCents": 50000,
+      "totalLimitCents": 100000,
+      "notBefore": "2026-11-14T15:20:00.000Z",
+      "expiresAt": "2026-11-15T01:00:00.000Z"
+    },
+    "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+    "approval": {
+      "kind": "passkey",
+      "credentialId": "cR1dcR1dcR1dcR1dcR1dcR1dcR1dcR1dcR1dcR1dcR1",
+      "rpId": "localhost",
+      "approvedAt": "2026-11-14T15:31:00.000Z"
+    },
+    "state": {
+      "status": "active",
+      "remainingCents": 100000,
+      "actionCount": 0
+    }
+  }
+}

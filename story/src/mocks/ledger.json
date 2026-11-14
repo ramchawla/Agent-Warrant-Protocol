@@ -1,0 +1,49 @@
+{
+  "events": [
+    {
+      "_id": 0,
+      "seq": 0,
+      "ts": "2026-11-14T15:30:00.000Z",
+      "type": "WARRANT_CREATED",
+      "warrantId": null,
+      "termsHash": null,
+      "agentId": "agt_demo",
+      "runId": null,
+      "summary": "Genesis",
+      "policyVersion": "awp-policy-1",
+      "prevHash": "0000000000000000000000000000000000000000000",
+      "hash": "Ax7Ax7Ax7Ax7Ax7Ax7Ax7Ax7Ax7Ax7Ax7Ax7Ax7Ax7A",
+      "gateSig": "gS0gS0gS0gS0gS0gS0gS0gS0gS0gS0gS0gS0gS0gS0g"
+    },
+    {
+      "_id": 1,
+      "seq": 1,
+      "ts": "2026-11-14T15:31:00.000Z",
+      "type": "WARRANT_CREATED",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": null,
+      "summary": "Ram created warrant wrt_01JD8NVDA",
+      "policyVersion": "awp-policy-1",
+      "prevHash": "Ax7Ax7Ax7Ax7Ax7Ax7Ax7Ax7Ax7Ax7Ax7Ax7Ax7Ax7A",
+      "hash": "Bx7Bx7Bx7Bx7Bx7Bx7Bx7Bx7Bx7Bx7Bx7Bx7Bx7Bx7B",
+      "gateSig": "gS1gS1gS1gS1gS1gS1gS1gS1gS1gS1gS1gS1gS1gS1g"
+    },
+    {
+      "_id": 2,
+      "seq": 2,
+      "ts": "2026-11-14T15:32:00.000Z",
+      "type": "WARRANT_APPROVED",
+      "warrantId": "wrt_01JD8NVDA",
+      "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+      "agentId": "agt_demo",
+      "runId": null,
+      "summary": "Ram approved warrant wrt_01JD8NVDA with Touch ID",
+      "policyVersion": "awp-policy-1",
+      "prevHash": "Bx7Bx7Bx7Bx7Bx7Bx7Bx7Bx7Bx7Bx7Bx7Bx7Bx7Bx7B",
+      "hash": "Cx7Cx7Cx7Cx7Cx7Cx7Cx7Cx7Cx7Cx7Cx7Cx7Cx7Cx7C",
+      "gateSig": "gS2gS2gS2gS2gS2gS2gS2gS2gS2gS2gS2gS2gS2gS2g"
+    }
+  ]
+}
