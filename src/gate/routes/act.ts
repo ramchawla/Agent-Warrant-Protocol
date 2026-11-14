@@ -257,7 +257,6 @@ async function settle(c: Ctx, pre: ReasonCode | undefined, now: Date, log: Fasti
 // ---- the request ----
 
 const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === "object" && v !== null && !Array.isArray(v);
-const shortString = (v: unknown, max: number): string | null => (typeof v === "string" && v.length >= 1 && v.length <= max ? v : null);
 const sizeOf = (v: unknown): number => {
   try {
     return jcs(v).length;
@@ -282,8 +281,9 @@ async function handle(authorization: string | undefined, rawBody: unknown, log: 
   } catch {
     body = undefined;
   }
-  const peek = (key: string, max: number): string | null => (isRecord(body) ? shortString(body[key], max) : null);
-  const who = { warrantId: peek("warrantId", 64), runId: peek("runId", 128), termsHash: null, decisionId: newId("dec") };
+  // warrantId and runId in the body are unverified until the warrant is loaded and its agent matches, so
+  // unauthenticated and malformed denials never name them: nobody can write events into another warrant's or run's timeline.
+  const who = { warrantId: null, runId: null, termsHash: null, decisionId: newId("dec") };
   const now = new Date();
 
   const agentId = await authenticateAgent(authorization);   // first, before the body is looked at

@@ -394,9 +394,12 @@ test("act endpoint", { skip }, async (t) => {
     assert.equal(byDecision(mismatch.body.decisionId)[0].agentId, agentB);
     const [u] = await auditEvents().find({ decisionId: unauth.body.decisionId }).toArray();
     assert.equal(u.agentId, null);
-    assert.equal(u.warrantId, w._id);
+    assert.equal(u.warrantId, null, "an unauthenticated denial must not name the claimed warrant");
+    assert.equal(u.runId, null);
     const [m] = await auditEvents().find({ decisionId: malformed.body.decisionId }).toArray();
     assert.match(m.summary, /fields: runId \d+, secretField \d+, warrantId \d+/);
+    assert.equal(m.warrantId, null, "a malformed denial must not name the claimed warrant");
+    assert.equal(m.runId, null);
 
     const text = JSON.stringify(events);
     for (const value of ["ZZZZZZZZ", "secret-client", "secret-value"]) assert.ok(!text.includes(value), `ledger must not hold ${value}`);
