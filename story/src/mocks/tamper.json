@@ -1,0 +1,8 @@
+{
+  "tampered": {
+    "seq": 3,
+    "field": "action.amountCents",
+    "before": 50000,
+    "after": 5000
+  }
+}

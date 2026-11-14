@@ -1,0 +1,10 @@
+{
+  "policies": [
+    {
+      "_id": "pol_seed1",
+      "rule": "Never send government ID numbers to a model",
+      "action": "DENY",
+      "createdAt": "2026-11-14T09:00:00.000Z"
+    }
+  ]
+}

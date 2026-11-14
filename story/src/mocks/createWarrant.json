@@ -1,0 +1,51 @@
+{
+  "warrantId": "wrt_01JD8NVDA",
+  "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+  "terms": {
+    "v": 1,
+    "userId": "usr_demo",
+    "agentId": "agt_demo",
+    "actions": [
+      "payment.create",
+      "data.export"
+    ],
+    "accounts": [
+      "SAVINGS"
+    ],
+    "merchants": [
+      "BROKERAGE-NVDA"
+    ],
+    "destinations": [
+      "fintech",
+      "llm"
+    ],
+    "fields": {
+      "payment.create": [
+        "fromAccount",
+        "merchant",
+        "amountCents",
+        "currency",
+        "memo"
+      ],
+      "data.export": [
+        "payload"
+      ]
+    },
+    "perActionMaxCents": 50000,
+    "totalLimitCents": 100000,
+    "notBefore": "2026-11-14T15:20:00.000Z",
+    "expiresAt": "2026-11-15T01:00:00.000Z"
+  },
+  "canonical": "{\"accounts\":[\"SAVINGS\"],\"actions\":[\"payment.create\",\"data.export\"],\"agentId\":\"agt_demo\",\"destinations\":[\"fintech\",\"llm\"],\"expiresAt\":\"2026-11-15T01:00:00.000Z\",\"fields\":{\"payment.create\":[\"fromAccount\",\"merchant\",\"amountCents\",\"currency\",\"memo\"],\"data.export\":[\"payload\"]},\"merchants\":[\"BROKERAGE-NVDA\"],\"notBefore\":\"2026-11-14T15:20:00.000Z\",\"perActionMaxCents\":50000,\"totalLimitCents\":100000,\"userId\":\"usr_demo\",\"v\":1}",
+  "plain": [
+    "Buy NVIDIA stock, $500 at a time",
+    "Never more than $1,000 in total",
+    "Only from your SAVINGS account",
+    "Until 5:00 pm today"
+  ],
+  "worstCase": {
+    "cents": 100000,
+    "sentence": "Worst case: $1,000 leaves your savings for NVIDIA, today.",
+    "severity": "green"
+  }
+}
