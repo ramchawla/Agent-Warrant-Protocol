@@ -1,14 +1,16 @@
 {
   "released": true,
   "sentToLlm": {
-    "owner": "Ram",
+    "owner": "Ram Chawla",
+    "period": "2026-11-14",
     "holdings": [
       {
         "symbol": "NVDA",
+        "shares": 3,
         "valueCents": 50000
       }
     ]
   },
-  "llmReply": "You hold $500 of NVIDIA bought today from savings. Your warrant has $500 left until 5:00 pm.",
+  "llmReply": "You hold 3 shares of NVIDIA worth $500, bought today from savings. Your warrant allows $500 more before it expires at 5:00 pm.",
   "llmSource": "canned"
 }

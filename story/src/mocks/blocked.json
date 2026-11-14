@@ -10,35 +10,44 @@
           "merchant": "BROKERAGE-NVDA",
           "amountCents": 500000,
           "currency": "USD",
-          "memo": "NVDA"
+          "memo": "NVDA buy"
         }
       },
       "decision": "deny",
       "reasonCode": "PER_ACTION_LIMIT",
-      "decisionId": "dec_01JD8P0004",
+      "decisionId": "dec_01JD8P4A1C",
       "seq": 4,
       "remainingCents": 50000,
       "trace": {
         "atomicUpdate": {
           "filter": {
             "_id": "wrt_01JD8NVDA",
-            "state.status": "active",
+            "status": "active",
+            "termsHash": "hk7xghAvREaDBWKRNcvXXW9bdWlrE8K4-fskaqwddl4",
+            "terms.merchants": "BROKERAGE-NVDA",
+            "terms.accounts": "SAVINGS",
+            "terms.perActionMaxCents": {
+              "$gte": 500000
+            },
             "state.remainingCents": {
-              "$gte": 50000
+              "$gte": 500000
             },
             "expiresAt": {
-              "$gt": "2026-11-14T15:30:00.000Z"
+              "$gt": "2026-11-14T20:31:02.114Z"
             }
           },
           "update": {
             "$inc": {
-              "state.remainingCents": -50000,
+              "state.remainingCents": -500000,
               "state.actionCount": 1
+            },
+            "$set": {
+              "state.lastDecisionAt": "2026-11-14T20:31:02.114Z"
             }
           },
           "matched": 0
         },
-        "gateMs": 14
+        "gateMs": 9
       }
     },
     {
@@ -51,35 +60,44 @@
           "merchant": "BROKERAGE-AAPL",
           "amountCents": 50000,
           "currency": "USD",
-          "memo": "NVDA"
+          "memo": "NVDA buy"
         }
       },
       "decision": "deny",
       "reasonCode": "MERCHANT_NOT_ALLOWED",
-      "decisionId": "dec_01JD8P0005",
+      "decisionId": "dec_01JD8P4B2D",
       "seq": 5,
       "remainingCents": 50000,
       "trace": {
         "atomicUpdate": {
           "filter": {
             "_id": "wrt_01JD8NVDA",
-            "state.status": "active",
+            "status": "active",
+            "termsHash": "hk7xghAvREaDBWKRNcvXXW9bdWlrE8K4-fskaqwddl4",
+            "terms.merchants": "BROKERAGE-AAPL",
+            "terms.accounts": "SAVINGS",
+            "terms.perActionMaxCents": {
+              "$gte": 50000
+            },
             "state.remainingCents": {
               "$gte": 50000
             },
             "expiresAt": {
-              "$gt": "2026-11-14T15:30:00.000Z"
+              "$gt": "2026-11-14T20:31:02.114Z"
             }
           },
           "update": {
             "$inc": {
               "state.remainingCents": -50000,
               "state.actionCount": 1
+            },
+            "$set": {
+              "state.lastDecisionAt": "2026-11-14T20:31:02.114Z"
             }
           },
           "matched": 0
         },
-        "gateMs": 14
+        "gateMs": 8
       }
     },
     {
@@ -88,35 +106,41 @@
         "type": "data.export",
         "destination": "https://collector.example/c",
         "params": {
-          "payload": "[accounts]"
+          "payload": {
+            "accounts": [
+              "SAVINGS",
+              "CHECKING"
+            ]
+          }
         }
       },
       "decision": "deny",
       "reasonCode": "DESTINATION_NOT_ALLOWED",
-      "decisionId": "dec_01JD8P0006",
+      "decisionId": "dec_01JD8P4C3E",
       "seq": 6,
       "remainingCents": 50000,
       "trace": {
         "atomicUpdate": {
           "filter": {
             "_id": "wrt_01JD8NVDA",
-            "state.status": "active",
-            "state.remainingCents": {
-              "$gte": 50000
-            },
+            "status": "active",
+            "termsHash": "hk7xghAvREaDBWKRNcvXXW9bdWlrE8K4-fskaqwddl4",
+            "terms.destinations": "https://collector.example/c",
             "expiresAt": {
-              "$gt": "2026-11-14T15:30:00.000Z"
+              "$gt": "2026-11-14T20:31:02.114Z"
             }
           },
           "update": {
             "$inc": {
-              "state.remainingCents": -50000,
               "state.actionCount": 1
+            },
+            "$set": {
+              "state.lastDecisionAt": "2026-11-14T20:31:02.114Z"
             }
           },
           "matched": 0
         },
-        "gateMs": 14
+        "gateMs": 7
       }
     }
   ],
@@ -126,6 +150,6 @@
     "remainingCents": 50000,
     "totalLimitCents": 100000,
     "perActionMaxCents": 50000,
-    "expiresAt": "2026-11-14T17:00:00.000-08:00"
+    "expiresAt": "2026-11-14T17:00:00.000-05:00"
   }
 }
