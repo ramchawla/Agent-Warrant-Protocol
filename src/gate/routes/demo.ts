@@ -203,7 +203,7 @@ async function institutionChecks(i: InstitutionId): Promise<Checks[]> {
 
 /** Runs the actions (in parallel when asked) and builds the story items from the real answers. */
 async function run(app: FastifyInstance, warrant: WarrantDoc, steps: { agentText: string; action: Action }[], parallel = false): Promise<DemoItem[]> {
-  await ensureAgent();
+  await Promise.all([ensureAgent(), ensureEnrolled()]);
   const runId = newId("run");
   const answers: ActBody[] = [];
   if (parallel) answers.push(...(await Promise.all(steps.map((s) => act(app, warrant._id, runId, s.action)))));
