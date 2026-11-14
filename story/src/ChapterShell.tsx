@@ -75,7 +75,7 @@ function useMockFlag() {
 }
 
 export function ChapterShell({ chapters }: { chapters: ChapterModule[] }) {
-  const { state, complete, clear } = useStory();
+  const { state, complete, clear, setWorld } = useStory();
   const [index, setIndex] = useState(0);
   const [dir, setDir] = useState(1);
   const [toast, setToast] = useState<string | null>(null);
@@ -104,14 +104,15 @@ export function ChapterShell({ chapters }: { chapters: ChapterModule[] }) {
   const reset = useCallback(async () => {
     say("Resetting the demo…");
     try {
-      await api.reset();
+      const r = await api.reset();
+      setWorld({ savingsCents: r.savingsCents });
       clear();
       go(0);
       say("Demo reset");
     } catch (e) {
       say(`Reset failed: ${(e as Error).message}`);
     }
-  }, [clear, go, say]);
+  }, [clear, go, say, setWorld]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

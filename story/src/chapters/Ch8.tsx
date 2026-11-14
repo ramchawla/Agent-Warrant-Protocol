@@ -13,7 +13,7 @@ import type { AuditEvent, LedgerVerifyResponse, TamperResponse, VerifyApprovalRe
 import { useStory } from "../store";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { Shorten } from "../components/Shorten";
-import { spring, usd } from "../components/util";
+import { reasonLine, spring, usd } from "../components/util";
 
 const actionLabel = "Re-verify signature";
 
@@ -39,6 +39,8 @@ const afterTamper = {
 
 // ---- presentation helpers ----
 const clock = (iso: string) => new Date(iso).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }).toLowerCase();
+/** A tampered value as the viewer reads it: cents fields in dollars, anything else as stored. */
+const shown = (field: string, v: unknown) => (/Cents$/.test(field) && typeof v === "number" ? usd(v) : String(v));
 const fullClock = (iso: string) => new Date(iso).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", second: "2-digit" }).toLowerCase();
 
 function label(e: AuditEvent) {
@@ -154,7 +156,11 @@ function Timeline({ events, verify, tampered }: { events: AuditEvent[]; verify: 
                     <span className={hit ? "text-red" : ""}>{usd(e.action.amountCents)}</span>
                   </span>
                 )}
-                {e.reasonCode && <span className="font-mono text-[11px] text-muted">{e.reasonCode}</span>}
+                {e.reasonCode && (
+                  <span className="text-[12px] text-muted">
+                    {reasonLine(e.reasonCode)} <span className="font-mono text-[11px] text-faint">{e.reasonCode}</span>
+                  </span>
+                )}
               </div>
               <div className="mt-0.5 truncate text-[13px] text-muted">{e.summary}</div>
               {s === "broken" && (
@@ -207,12 +213,13 @@ function Verdict({
 }
 
 function Artifact({ complete, Narrative }: ChapterProps) {
-  const { state } = useStory();
+  const { state, world } = useStory();
   const warrantId = state.warrantId ?? state.warrant?.warrantId ?? (api.isMock() ? "wrt_01JD8NVDA" : ""); // live: seeded from /api/demo/state
   const [events, setEvents] = useState<AuditEvent[] | null>(null);
   const [sig, setSig] = useState<VerifyApprovalResponse | null>(null);
   const [chain, setChain] = useState<LedgerVerifyResponse | null>(null);
   const [tampered, setTampered] = useState<TamperResponse["tampered"] | null>(null);
+  const [tamperedWarrant, setTamperedWarrant] = useState<TamperResponse["warrant"] | null>(null);
   const [busy, setBusy] = useState<"sig" | "chain" | "tamper" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -240,8 +247,9 @@ function Artifact({ complete, Narrative }: ChapterProps) {
 
   const tamper = () =>
     run("tamper", async () => {
-      const { tampered: t } = await api.tamper();
+      const { tampered: t, warrant: tw } = await api.tamper();
       setTampered(t);
+      setTamperedWarrant(tw ?? null);
       setSig(null);
       setChain(null);
       const l = await api.ledger();
@@ -320,8 +328,15 @@ function Artifact({ complete, Narrative }: ChapterProps) {
             >
               Someone with database access changed event {tampered.seq}:{" "}
               <span className="font-mono text-fg">{tampered.field}</span>{" "}
-              <span className="font-mono text-faint line-through">{String(tampered.before)}</span>{" "}
-              <span className="font-mono text-red">{String(tampered.after)}</span>
+              <span className="font-mono text-faint line-through">{shown(tampered.field, tampered.before)}</span>{" "}
+              <span className="font-mono text-red">{shown(tampered.field, tampered.after)}</span>
+              {tamperedWarrant && (
+                <>
+                  , and the warrant's <span className="font-mono text-fg">{tamperedWarrant.field}</span>{" "}
+                  <span className="font-mono text-faint line-through">{shown(tamperedWarrant.field, tamperedWarrant.before)}</span>{" "}
+                  <span className="font-mono text-red">{shown(tamperedWarrant.field, tamperedWarrant.after)}</span>
+                </>
+              )}
             </motion.p>
           )}
         </AnimatePresence>
@@ -329,7 +344,7 @@ function Artifact({ complete, Narrative }: ChapterProps) {
         <section className="rounded-2xl border border-line bg-sunk/80 px-4 pb-2 pt-3.5">
           <header className="mb-1 flex items-baseline justify-between gap-4 px-0.5">
             <h2 className="text-[14px] text-fg">The record</h2>
-            <span className="text-[12px] text-faint">MongoDB Atlas · audit ledger</span>
+            <span className="text-[12px] text-faint">MongoDB Atlas · <span className="font-mono">{world.databases?.gate ?? "…"}.audit_events</span></span>
           </header>
           {events ? (
             <Timeline events={events} verify={chain} tampered={tampered} />

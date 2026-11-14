@@ -41,10 +41,16 @@ function Val({ v }: { v: unknown }) {
  * Compact gate inspector: the findOneAndUpdate filter as one row per condition (fits the 60% stage without scrolling),
  * matched 0|1 and gate time. `fail` marks the condition the reason code points at.
  */
-export function AtomicInspector({ trace, fail, shown = true }: { trace: Trace; fail?: string; shown?: boolean }) {
+/** A warrant condition the claim failed: `path` in the stored warrant, the claim's value, one human line. */
+export type FailedCheck = { path: string; value: unknown; why: string };
+
+export function AtomicInspector({ trace, fail, check, shown = true }: { trace: Trace; fail?: string; check?: FailedCheck; shown?: boolean }) {
   const a = trace.atomicUpdate;
   const ok = a.matched === 1;
   const rows = Object.entries(a.filter);
+  // The gate checks the warrant's scope before the write; when it refuses there, the filter has no row for it, so the
+  // failed condition is shown under the filter instead.
+  const outside = check && !(fail && fail in a.filter) ? check : undefined;
   return (
     <motion.section
       initial={{ opacity: 0, y: 10 }}
@@ -77,6 +83,23 @@ export function AtomicInspector({ trace, fail, shown = true }: { trace: Trace; f
           );
         })}
       </dl>
+      {outside && (
+        <motion.div
+          initial={{ opacity: 0, y: 4 }}
+          animate={{ opacity: shown ? 1 : 0, y: 0 }}
+          transition={{ ...spring, delay: shown ? rows.length * 0.05 + 0.1 : 0 }}
+          className="border-t border-red/30 bg-red/[0.06] px-4 py-2.5"
+        >
+          <div className="text-[11.5px] text-red/80">Checked against the warrant first · {outside.why}</div>
+          <div className="mt-1 grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 @[24rem]:gap-x-4 font-mono text-[12.5px] leading-[1.55] text-red">
+            <span>{outside.path}</span>
+            <span className="min-w-0 break-all">
+              <Val v={outside.value} />
+              <span className="ml-2 whitespace-nowrap text-[11px] text-red/80">no match</span>
+            </span>
+          </div>
+        </motion.div>
+      )}
       <footer className="mt-auto grid grid-cols-2 border-t border-line">
         <div className="border-r border-line px-4 py-2.5">
           <div className="text-[12px] text-faint">matched</div>

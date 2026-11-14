@@ -9,8 +9,8 @@ import { useStory, useResult } from "../store";
 import { Meter } from "../components/Meter";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { Stamp } from "../components/Stamp";
-import { spring, usd } from "../components/util";
-import { AtomicInspector, Claim, ErrorNote, Ghost, failingKey } from "./s2/parts";
+import { reasonLine, spring, usd } from "../components/util";
+import { AtomicInspector, Claim, ErrorNote, Ghost, failingKey, type FailedCheck } from "./s2/parts";
 import { errText, useSteps } from "./s2/useSteps";
 
 const actionLabel = "Let the agent loose";
@@ -29,13 +29,25 @@ function why(it: DemoItem, perActionMaxCents: number) {
     case "DESTINATION_NOT_ALLOWED":
       return `${it.action.destination} is not an allowed destination`;
     default:
-      return it.reasonCode ?? "";
+      return reasonLine(it.reasonCode) || (it.reasonCode ?? "");
   }
+}
+
+/** The warrant condition this claim failed (path in the stored warrant, see src/gate/evaluate.ts), with the claim's value. */
+function failedCheck(it: DemoItem): FailedCheck | undefined {
+  const p = it.action.params;
+  const [path, value] =
+    it.reasonCode === "PER_ACTION_LIMIT" ? ["terms.perActionMaxCents", { $gte: Number(p.amountCents) }]
+    : it.reasonCode === "MERCHANT_NOT_ALLOWED" ? ["terms.scope.merchants", p.merchant]
+    : it.reasonCode === "DESTINATION_NOT_ALLOWED" ? ["terms.scope.destinations", it.action.destination]
+    : it.reasonCode === "ACCOUNT_NOT_ALLOWED" ? ["terms.scope.accounts", p.fromAccount ?? p.account]
+    : [];
+  return path ? { path, value, why: reasonLine(it.reasonCode) } : undefined;
 }
 
 function Artifact({ complete, Narrative }: ChapterProps) {
   const saved = useResult<DemoStepResponse>(5);
-  const { setResult, update } = useStory();
+  const { state, setResult, update } = useStory();
   const [res, setRes] = useState<DemoStepResponse | null>(saved ?? null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -90,7 +102,7 @@ function Artifact({ complete, Narrative }: ChapterProps) {
                       transition={spring}
                       className="mt-1.5 font-mono text-[12px] text-muted"
                     >
-                      {why(it, w?.perActionMaxCents ?? 50000)}
+                      {why(it, w?.perActionMaxCents ?? 0)}
                     </motion.p>
                   }
                 />
@@ -101,7 +113,7 @@ function Artifact({ complete, Narrative }: ChapterProps) {
 
         <div className="grid grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] gap-4">
           {current ? (
-            <AtomicInspector key={current.decisionId} trace={current.trace} fail={failingKey[current.reasonCode ?? ""]} />
+            <AtomicInspector key={current.decisionId} trace={current.trace} fail={failingKey[current.reasonCode ?? ""]} check={failedCheck(current)} />
           ) : (
             <Ghost h={290}>Each claim runs the same atomic write. Watch what it matches.</Ghost>
           )}
@@ -125,7 +137,7 @@ function Artifact({ complete, Narrative }: ChapterProps) {
               </AnimatePresence>
             </div>
             <div className="border-t border-line px-5 py-4">
-              <Meter label="Budget left" value={w?.remainingCents ?? 50000} max={w?.totalLimitCents ?? 100000} />
+              {(w ?? state.warrant) && <Meter label="Budget left" value={(w ?? state.warrant)!.remainingCents} max={(w ?? state.warrant)!.totalLimitCents} />}
             </div>
           </section>
         </div>

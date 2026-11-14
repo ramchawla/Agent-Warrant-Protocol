@@ -34,3 +34,33 @@ export function useElapsed(running = true, until = 8000, restartKey: unknown = n
 /** Characters of `text` revealed after `elapsed` ms at `cps` chars/sec, starting at `delay`. */
 export const typed = (text: string, elapsed: number, cps = 90, delay = 0) =>
   text.slice(0, Math.max(0, Math.floor(((elapsed - delay) / 1000) * cps)));
+
+/** Plain-language label for a policy action code (the code itself is shown small beside it). */
+export const policyAction = (code: string) =>
+  ({ REQUIRE_TOUCH_ID: "Touch ID required", DENY: "Blocked", ALLOW: "Allowed" })[code] ?? code;
+
+/** One short human line per gate reason code; unknown codes fall back to "". */
+export const reasonLine = (code?: string) =>
+  ({
+    PER_ACTION_LIMIT: "Over the per-purchase limit",
+    MERCHANT_NOT_ALLOWED: "Merchant not in the warrant",
+    DESTINATION_NOT_ALLOWED: "Destination not in the warrant",
+    ACCOUNT_NOT_ALLOWED: "Account not in the warrant",
+    BUDGET_EXHAUSTED: "Not enough budget left",
+    ACTION_NOT_ALLOWED: "Action not in the warrant",
+    FIELD_NOT_ALLOWED: "Field not in the warrant",
+    FIELD_CONSTRAINT: "Field outside its limits",
+    CURRENCY_MISMATCH: "Wrong currency",
+    AMOUNT_INVALID: "Invalid amount",
+    WARRANT_NOT_YET_VALID: "The warrant is not valid yet",
+    WARRANT_NOT_FOUND: "No such warrant",
+    AGENT_MISMATCH: "Wrong agent",
+    AGENT_UNAUTHENTICATED: "Agent not signed in",
+    MALFORMED_REQUEST: "Malformed request",
+    LEDGER_UNAVAILABLE: "Ledger unavailable",
+    WARRANT_REVOKED: "The warrant was revoked",
+    WARRANT_EXPIRED: "The warrant has expired",
+    WARRANT_NOT_ACTIVE: "The warrant is not active",
+    TERMS_TAMPERED: "The stored terms were changed",
+    APPROVAL_REQUIRED: "Waiting for Touch ID",
+  } as Record<string, string>)[code ?? ""] ?? "";

@@ -127,7 +127,19 @@ export const verifyApproval = (warrantId: string) =>
 
 export const work = () => (mock ? fixture<DemoStepResponse>("work") : post<DemoStepResponse>("/api/demo/work"));
 export const blocked = () => (mock ? fixture<DemoStepResponse>("blocked") : post<DemoStepResponse>("/api/demo/blocked"));
-export const sensitive = () => (mock ? fixture<DemoStepResponse>("sensitive") : post<DemoStepResponse>("/api/demo/sensitive"));
+export const sensitive = async () => {
+  if (!mock) return post<DemoStepResponse>("/api/demo/sensitive");
+  const r = await fixture<DemoStepResponse>("sensitive");
+  // ponytail: one fixture per route; a mock DENY rule turns the Touch ID hold into the blocked answer the gate gives
+  const sem = r.items[0]?.trace.semantic;
+  if (sem && mockRule) sem.rule = mockRule;
+  if (mockRuleAction === "DENY" && sem) {
+    sem.action = "DENY";
+    delete r.pending;
+    r.blocked = { reason: `Policy "${sem.rule}" blocks this (match ${sem.topScore.toFixed(2)}).` };
+  }
+  return r;
+};
 
 /** Fresh Touch ID for a pending sensitive release: options (challenge = SHA-256 of minimized payload) → startAuthentication → verify. */
 export async function approvalOptionsAndVerify(approvalId: string): Promise<ApprovalVerifyResponse> {
@@ -146,8 +158,16 @@ export const tamper = () => (mock ? fixture<TamperResponse>("tamper") : post<Tam
 export const ledger = () => (mock ? fixture<LedgerResponse>("ledger") : get<LedgerResponse>("/api/ledger", true));
 export const ledgerVerify = () => (mock ? fixture<LedgerVerifyResponse>("ledgerVerify") : get<LedgerVerifyResponse>("/api/ledger/verify", true));
 
-export const addPolicy = (rule: string, action?: string) =>
-  mock ? fixture<AddPolicyResponse>("addPolicy") : post<AddPolicyResponse>("/api/policies", { rule, action }, true);
+let mockRuleAction: string | undefined;
+let mockRule: string | undefined;
+export const addPolicy = async (rule: string, action?: string) => {
+  if (!mock) return post<AddPolicyResponse>("/api/policies", { rule, action }, true);
+  const r = await fixture<AddPolicyResponse>("addPolicy");
+  mockRuleAction = action;
+  mockRule = rule;
+  r.policy = { ...r.policy, rule, action: action ?? r.policy.action };
+  return r;
+};
 export const policies = () => (mock ? fixture<PoliciesResponse>("policies") : get<PoliciesResponse>("/api/policies", true));
 export const policyIndex = () => (mock ? fixture<PolicyIndexResponse>("policyIndex") : get<PolicyIndexResponse>("/api/policies/index", true));
 

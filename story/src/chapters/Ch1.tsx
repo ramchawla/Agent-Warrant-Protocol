@@ -13,7 +13,9 @@ import { compileFor } from "./s1/compile";
 
 const actionLabel = "Create the warrant";
 const SUGGESTIONS = ["Put my life savings into NVIDIA", "okay, $500 at a time, $1,000 max"];
-const SAVINGS_CENTS = 8400000; // the demo world's SAVINGS balance (docs/STORY-API.md)
+// ponytail: GET /api/demo/state does not send savingsCents yet; reset (R) does. Until either arrives, the documented
+// demo balance (docs/STORY-API.md) stands in. Backend: add savingsCents to /api/demo/state to drop this.
+const DOC_SAVINGS_CENTS = 8400000;
 
 type Kept = { text: string; compiled: CompileResponse | null; created: CreateWarrantResponse | null };
 
@@ -28,7 +30,8 @@ function Canonical({ text, tone }: { text: string; tone: string }) {
 }
 
 function Artifact({ complete, Narrative }: ChapterProps) {
-  const { update, setResult } = useStory();
+  const { update, setResult, world } = useStory();
+  const savingsCents = world.savingsCents ?? DOC_SAVINGS_CENTS;
   const kept = useResult<Kept>(1);
   const [text, setText] = useState(kept?.text ?? "");
   const [compiled, setCompiled] = useState<CompileResponse | null>(kept?.compiled ?? null);
@@ -172,12 +175,12 @@ function Artifact({ complete, Narrative }: ChapterProps) {
                 <motion.div
                   className={`h-full rounded-full ${red ? "bg-red" : "bg-green"}`}
                   initial={{ width: 0 }}
-                  animate={{ width: `${Math.max(1.2, Math.min(1, wc!.cents / SAVINGS_CENTS) * 100)}%` }}
+                  animate={{ width: `${Math.max(1.2, Math.min(1, wc!.cents / savingsCents) * 100)}%` }}
                   transition={{ ...spring, delay: 0.15 }}
                 />
               </div>
               <p className="mt-2 text-[12.5px] text-faint">
-                <span className={`font-mono ${tone}`}>{usd(wc!.cents)}</span> of {usd(SAVINGS_CENTS)} in savings at risk
+                <span className={`font-mono ${tone}`}>{usd(wc!.cents)}</span> of {usd(savingsCents)} in savings at risk
               </p>
             </motion.div>
 

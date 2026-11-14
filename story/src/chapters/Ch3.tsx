@@ -49,7 +49,8 @@ function EventCard({ e, delay, linkedIn }: { e: AuditEvent; delay: number; linke
 
 function Artifact({ complete, Narrative }: ChapterProps) {
   const reduce = useReducedMotion();
-  const { state, setResult } = useStory();
+  const { state, setResult, world } = useStory();
+  const db = world.databases?.gate ?? "…";
   const signed = useResult<InspectResponse>(2);
   const kept = useResult<Kept>(3);
   const [data, setData] = useState<Kept | null>(kept ?? null);
@@ -97,13 +98,13 @@ function Artifact({ complete, Narrative }: ChapterProps) {
       {!data || !doc ? (
         <div className="mx-auto flex max-w-[460px] flex-col items-center rounded-2xl border border-dashed border-[#0f3a4a] px-8 py-14 text-center">
           <Leaf size={22} className="text-atlas/70" aria-hidden />
-          <p className="mt-4 font-mono text-[14px] text-[#9fb7be]">awp_gate.warrants</p>
+          <p className="mt-4 font-mono text-[14px] text-[#9fb7be]">{db}.warrants</p>
           <p className="mt-2 text-[14px] text-faint">The signed warrant lands here.</p>
         </div>
       ) : (
         <div className="flex flex-col gap-4">
           <AtlasDoc
-            database="awp_gate"
+            database={db}
             collection="warrants"
             document={doc}
             highlight={HIGHLIGHT}

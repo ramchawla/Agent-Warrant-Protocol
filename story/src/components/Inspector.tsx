@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { motion } from "motion/react";
 import type { Trace } from "../types";
 import { CodeCard } from "./CodeCard";
-import { spring } from "./util";
+import { policyAction, spring } from "./util";
 
 function Row({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -84,8 +84,8 @@ export function Inspector({
             />
           </div>
           <p className="mt-2.5 text-[14px] leading-snug text-fg">“{s.rule}”</p>
-          <p className="mt-1 font-mono text-[12px] text-muted">
-            {s.action === "REQUIRE_TOUCH_ID" ? "Touch ID required" : s.action.toLowerCase()} · {s.policyId}
+          <p className="mt-1 text-[12px] text-muted">
+            {policyAction(s.action)} <span className="font-mono text-[11px] text-faint">{s.action} · {s.policyId}</span>
           </p>
         </div>
       )}

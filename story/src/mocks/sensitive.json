@@ -105,7 +105,7 @@
           "pipeline": [
             {
               "$vectorSearch": {
-                "index": "policy_rules",
+                "index": "egress_rule_vec",
                 "path": "rule",
                 "query": {
                   "text": "data.export to llm: portfolio summary with account statement fields"
@@ -156,6 +156,6 @@
         }
       ]
     },
-    "reason": "Require Touch ID before any account statement leaves our network"
+    "reason": "Policy \"Require Touch ID before any account statement leaves our network\" requires Touch ID (match 0.86)."
   }
 }

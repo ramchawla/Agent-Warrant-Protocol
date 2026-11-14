@@ -1,4 +1,4 @@
-// Stamp: ALLOWED / DENIED / TOUCH ID REQUIRED, lands with a small scale + rotate. Mount it when the decision arrives.
+// Stamp: ALLOWED / DENIED / TOUCH ID REQUIRED / BLOCKED, lands with a small scale + rotate. Mount it when the decision arrives.
 // <Stamp kind="denied" reason="PER_ACTION_LIMIT" />
 import { motion, useReducedMotion } from "motion/react";
 
@@ -6,6 +6,7 @@ const look = {
   allowed: { text: "ALLOWED", cls: "text-green border-green", rot: -6 },
   denied: { text: "DENIED", cls: "text-red border-red", rot: -8 },
   touchid: { text: "TOUCH ID REQUIRED", cls: "text-amber border-amber", rot: -5 },
+  blocked: { text: "BLOCKED", cls: "text-red border-red", rot: -7 },
 } as const;
 
 export function Stamp({

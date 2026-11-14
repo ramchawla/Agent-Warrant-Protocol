@@ -3,6 +3,12 @@
     "seq": 3,
     "field": "action.amountCents",
     "before": 50000,
-    "after": 5000
+    "after": 5000000
+  },
+  "warrant": {
+    "warrantId": "wrt_01JD8NVDA",
+    "field": "terms.totalLimitCents",
+    "before": 100000,
+    "after": 8400000
   }
 }

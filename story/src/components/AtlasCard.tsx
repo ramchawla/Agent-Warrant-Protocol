@@ -1,5 +1,6 @@
 // AtlasCard: a stored MongoDB Atlas document, Data Explorer style (database.collection header + document JSON).
-// <AtlasCard database="awp" collection="warrants" document={inspect.document} highlight="approval.signature" />
+// <AtlasCard database={world.databases.gate} collection="warrants" document={inspect.document} highlight="approval.signature" />
+import type { ReactNode } from "react";
 import { motion } from "motion/react";
 import { Leaf } from "lucide-react";
 import { CodeCard } from "./CodeCard";
@@ -17,7 +18,7 @@ export function AtlasCard({
   collection: string;
   document: Record<string, unknown>;
   highlight?: string;   // dot path painted amber (see CodeCard)
-  caption?: string;     // one line under the card, e.g. "We store the proof, never the biometric."
+  caption?: ReactNode;  // one line under the card, e.g. "We store the proof, never the biometric."
   maxHeight?: number;
 }) {
   return (

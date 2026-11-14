@@ -23,7 +23,7 @@ type Saved = { res: DemoStepResponse; checks: InstitutionChecks | null };
 
 function Artifact({ complete, Narrative }: ChapterProps) {
   const saved = useResult<Saved>(4);
-  const { setResult, update } = useStory();
+  const { state, setResult, update } = useStory();
   const [run, setRun] = useState<Saved | null>(saved ?? null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -51,12 +51,12 @@ function Artifact({ complete, Narrative }: ChapterProps) {
 
   const item = run?.res.items[0];
   const w = run?.res.warrant;
-  const amount = Number(item?.action.params.amountCents ?? 50000);
-  const merchant = String(item?.action.params.merchant ?? "BROKERAGE-NVDA");
+  const amount = Number(item?.action.params.amountCents ?? 0);
+  const merchant = item ? String(item.action.params.merchant) : undefined;
   const allow = item?.decision === "allow";
   const checks = run?.checks;
   const executed = item?.outcome === "executed";
-  const total = w?.totalLimitCents ?? 100000;
+  const total = w?.totalLimitCents ?? state.warrant?.totalLimitCents ?? 0;
   const meterValue = !item ? total : n >= 7 ? item.remainingCents : item.remainingCents + (allow ? amount : 0);
 
   return (
@@ -79,7 +79,7 @@ function Artifact({ complete, Narrative }: ChapterProps) {
 
         <Route
           stage={n >= 3 && allow ? 2 : n >= 1 ? 1 : 0}
-          packet={n >= 2 && allow ? `receipt · ${usd(amount)}` : `${usd(amount)} NVDA`}
+          packet={!item ? "order" : n >= 2 && allow ? `receipt · ${usd(amount)}` : `${usd(amount)} ${merchant?.replace(/^BROKERAGE-/, "")}`}
           verdict={n >= 2 ? item?.decision : undefined}
           dest={merchant}
         />
@@ -132,7 +132,7 @@ function Artifact({ complete, Narrative }: ChapterProps) {
         </div>
 
         <div className="rounded-2xl border border-line bg-raised/60 px-5 py-3.5">
-          <Meter label="Warrant budget left" value={meterValue} max={total} />
+          {total > 0 ? <Meter label="Warrant budget left" value={meterValue} max={total} /> : <p className="text-[13px] text-faint">Warrant budget appears once the warrant is signed.</p>}
         </div>
       </div>
     </>

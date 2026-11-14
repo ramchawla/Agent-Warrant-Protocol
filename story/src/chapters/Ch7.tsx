@@ -12,7 +12,7 @@ import { useResult, useStory } from "../store";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { Meter } from "../components/Meter";
 import { Stamp } from "../components/Stamp";
-import { spring, usd } from "../components/util";
+import { reasonLine, spring, usd } from "../components/util";
 
 const actionLabel = "Fire 20 at once";
 const GATE_X = 50; // % of arena width
@@ -99,7 +99,7 @@ function WarrantCard({ w, revoked }: { w: WarrantSummary | null; revoked: boolea
           Warrant <span className="font-mono text-[13px] text-muted">{w?.warrantId ?? "…"}</span>
         </motion.div>
         <span className={`rounded-full border px-2.5 py-0.5 text-[12px] ${w?.status === "revoked" ? "border-red/60 text-red" : "border-green/40 text-green"}`}>
-          {w?.status ?? "active"}
+          {w?.status ?? "…"}
         </span>
       </div>
       <motion.div
@@ -108,7 +108,7 @@ function WarrantCard({ w, revoked }: { w: WarrantSummary | null; revoked: boolea
         transition={{ duration: 0.8 }}
         className="mt-3"
       >
-        <Meter label="Budget left" value={w?.remainingCents ?? 50000} max={w?.totalLimitCents ?? 100000} />
+        {w ? <Meter label="Budget left" value={w.remainingCents} max={w.totalLimitCents} /> : <p className="text-[13px] text-faint">Budget appears once the warrant is signed.</p>}
       </motion.div>
     </div>
   );
@@ -122,7 +122,7 @@ function Artifact({ complete, Narrative }: ChapterProps) {
   const [phase, setPhase] = useState<Phase>(saved?.revoke ? "revoked" : saved?.burst ? "landed" : "idle");
   const [error, setError] = useState<string | null>(null);
 
-  // ponytail: before the burst the card shows the store's warrant (set by chapter 4); else the $500-left demo value
+  // before the burst the card shows the store's warrant (chapter 4, or /api/demo/state after a reload)
   const warrant = revoke?.warrant ?? burst?.warrant ?? state.warrant;
 
   const fire = async () => {
@@ -198,7 +198,7 @@ function Artifact({ complete, Narrative }: ChapterProps) {
               <motion.p key="w" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="pt-2 text-[15px] text-muted">
                 {phase === "flying"
                   ? "Twenty purchases of $50 hit the gate at the same moment…"
-                  : `Twenty purchases of $50, fired at once, against ${usd(warrant?.remainingCents ?? 50000)} left.`}
+                  : `Twenty purchases of $50, fired at once${warrant ? `, against ${usd(warrant.remainingCents)} left` : ""}.`}
               </motion.p>
             )}
           </AnimatePresence>
@@ -216,6 +216,9 @@ function Artifact({ complete, Narrative }: ChapterProps) {
               <div className="min-w-0">
                 <div className="text-[12px] text-faint">Next claim · ledger event {after.seq}</div>
                 <div className="mt-1 text-[16px] text-fg">{after.agentText}</div>
+                {after.decision === "deny" && reasonLine(after.reasonCode) && (
+                  <div className="mt-1 text-[14px] text-red">{reasonLine(after.reasonCode)}</div>
+                )}
                 <div className="mt-1 font-mono text-[12px] text-muted">
                   matched {after.trace.atomicUpdate.matched} · {after.trace.gateMs} ms
                 </div>

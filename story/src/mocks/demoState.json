@@ -15,5 +15,10 @@
   "ledgerHead": {
     "seq": 1,
     "hash": "b4XdlCt5CebUrtZGTSqorF_vOwhudVMuveKUlraD9Ls"
+  },
+  "databases": {
+    "gate": "awp_gate",
+    "bank": "awp_bank",
+    "fintech": "awp_fintech"
   }
 }

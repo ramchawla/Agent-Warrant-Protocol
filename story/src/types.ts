@@ -42,6 +42,7 @@ export type DemoStepResponse = {
   items: DemoItem[];
   warrant: WarrantSummary;
   pending?: { approvalId: string; challenge: string; minimizedPayload: Record<string, unknown>; reason: string };   // sensitive only
+  blocked?: { reason: string };                                                                                     // sensitive only: a DENY policy matched best
   counts?: { allowed: number; denied: number; remainingCents: number; elapsedMs: number };                          // burst only
 };
 
@@ -59,7 +60,10 @@ export type CompileResponse = { terms: Terms; canonical: string; plain: string[]
 
 export type CreateWarrantResponse = { warrantId: string; termsHash: string; terms: Terms; canonical: string; plain: string[]; worstCase: WorstCase };
 
-export type DemoStateResponse = { warrant: WarrantSummary | null; user: DemoUser; ledgerHead: { seq: number; hash: string } };
+export type Databases = { gate: string; bank: string; fintech: string };
+
+/** savingsCents is not sent by the gate yet (only by reset); read it when it is. */
+export type DemoStateResponse = { warrant: WarrantSummary | null; user: DemoUser; ledgerHead: { seq: number; hash: string }; databases: Databases; savingsCents?: number };
 
 export type SessionResponse = { userId: string };
 
@@ -95,7 +99,10 @@ export type PolicyIndexResponse = { name: string; definition: Record<string, unk
 
 export type ApprovalVerifyResponse = { released: true; sentToLlm: Record<string, unknown>; llmReply: string; llmSource: "claude" | "canned" };
 
-export type TamperResponse = { tampered: { seq: number; field: string; before: unknown; after: unknown } };
+export type TamperResponse = {
+  tampered: { seq: number; field: string; before: unknown; after: unknown };
+  warrant?: { warrantId: string; field: string; before: unknown; after: unknown };
+};
 
 export type AuditEvent = {
   _id: number;

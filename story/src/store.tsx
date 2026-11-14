@@ -2,7 +2,7 @@
 // Usage: const { state, update, setResult } = useStory();  update({ warrantId, termsHash });  setResult(4, response);
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import * as api from "./api";
-import type { WarrantSummary } from "./types";
+import type { Databases, WarrantSummary } from "./types";
 
 export type StoryState = {
   warrantId: string | null;
@@ -14,8 +14,13 @@ export type StoryState = {
 
 const initial: StoryState = { warrantId: null, termsHash: null, warrant: null, results: {}, completed: {} };
 
+/** Facts about the demo world from the gate (GET /api/demo/state, POST /api/demo/reset). Survives clear(). */
+export type World = { databases: Databases | null; savingsCents: number | null };
+
 type Ctx = {
   state: StoryState;
+  world: World;
+  setWorld: (patch: Partial<World>) => void;
   update: (patch: Partial<Omit<StoryState, "results" | "completed">>) => void;
   setResult: (chapter: number, value: unknown) => void;
   complete: (chapter: number) => void;
@@ -33,14 +38,22 @@ export function StoryProvider({ children }: { children: ReactNode }) {
     [],
   );
   const clear = useCallback(() => setState(initial), []);
+  const [world, setW] = useState<World>({ databases: null, savingsCents: null });
+  const setWorld = useCallback<Ctx["setWorld"]>((patch) => setW((w) => ({ ...w, ...patch })), []);
   // After a page reload mid-demo, pick the live warrant back up so later chapters still point at it.
   useEffect(() => {
     api.demoState().then(
-      (d) => d.warrant && setState((s) => (s.warrantId ? s : { ...s, warrantId: d.warrant!.warrantId, warrant: s.warrant ?? d.warrant })),
+      (d) => {
+        setW((w) => ({ databases: d.databases ?? w.databases, savingsCents: d.savingsCents ?? w.savingsCents }));
+        if (d.warrant) setState((s) => (s.warrantId ? s : { ...s, warrantId: d.warrant!.warrantId, warrant: s.warrant ?? d.warrant }));
+      },
       () => {},
     );
   }, []);
-  const value = useMemo(() => ({ state, update, setResult, complete, clear }), [state, update, setResult, complete, clear]);
+  const value = useMemo(
+    () => ({ state, world, setWorld, update, setResult, complete, clear }),
+    [state, world, setWorld, update, setResult, complete, clear],
+  );
   return <StoryContext.Provider value={value}>{children}</StoryContext.Provider>;
 }
 

@@ -1,11 +1,12 @@
 // Chapter 9. Shape documented at the top of src/ChapterShell.tsx.
 // Closing architecture: Touch ID → warrant → gate → brokerage across the top, MongoDB Atlas underneath, value pulses
-// travelling the wires. No API calls. Team line is a placeholder until Max confirms names.
+// travelling the wires. No API calls (the database name comes from the store's /api/demo/state).
 import { useEffect, type ReactNode } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { Bot, Fingerprint, Landmark, Leaf, ScrollText, ShieldCheck, type LucideIcon } from "lucide-react";
 import type { ChapterModule, ChapterProps } from "../ChapterShell";
 import { spring } from "../components/util";
+import { useStory } from "../store";
 
 const TEAM = "Ram Chawla · Jackson Lippert";
 
@@ -18,8 +19,8 @@ const nodes: { icon: LucideIcon; title: string; sub: string; tone: string }[] = 
 
 const collections = [
   { name: "warrants", note: "terms + passkey proof" },
-  { name: "ledger", note: "hash-chained events" },
-  { name: "policies", note: "plain English + vector index" },
+  { name: "audit_events", note: "hash-chained events" },
+  { name: "egress_policies", note: "plain English + vector index" },
   { name: "change streams", note: "revocation, live" },
 ];
 
@@ -63,6 +64,7 @@ function Box({ i, children, className = "" }: { i: number; children: ReactNode; 
 
 function Artifact({ complete }: ChapterProps) {
   useEffect(complete, [complete]);
+  const db = useStory().world.databases?.gate;
   return (
     <div className="flex flex-col">
       {/* the agent only ever talks to the gate */}
@@ -101,6 +103,7 @@ function Artifact({ complete }: ChapterProps) {
         <header className="flex items-center gap-2.5 border-b border-[#0f3a4a] bg-atlas-slate px-4 py-3">
           <Leaf size={16} className="text-atlas" strokeWidth={2} aria-hidden />
           <span className="text-[14px] text-[#e8edeb]">MongoDB Atlas</span>
+          {db && <span className="font-mono text-[13px] text-[#c1ccd1]">{db}</span>}
           <span className="ml-auto text-[12px] text-[#7fa3ad]">one source of truth</span>
         </header>
         <ul className="grid grid-cols-2 gap-px bg-[#0f3a4a] sm:grid-cols-4">

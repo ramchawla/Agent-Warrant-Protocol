@@ -1,11 +1,16 @@
 {
-  "name": "policy_rules",
+  "name": "egress_rule_vec",
   "definition": {
     "fields": [
       {
         "type": "autoEmbed",
-        "model": "voyage-4",
-        "path": "rule"
+        "modality": "text",
+        "path": "rule",
+        "model": "voyage-4"
+      },
+      {
+        "type": "filter",
+        "path": "action"
       }
     ]
   },

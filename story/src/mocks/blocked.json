@@ -1,7 +1,7 @@
 {
   "items": [
     {
-      "agentText": "NVDA up 3% 🚀 Doubling down: $5,000",
+      "agentText": "NVDA up 3% \ud83d\ude80 Doubling down: $5,000",
       "action": {
         "type": "payment.create",
         "destination": "fintech",
@@ -22,27 +22,18 @@
         "atomicUpdate": {
           "filter": {
             "_id": "wrt_01JD8NVDA",
-            "status": "active",
-            "termsHash": "hk7xghAvREaDBWKRNcvXXW9bdWlrE8K4-fskaqwddl4",
-            "terms.merchants": "BROKERAGE-NVDA",
-            "terms.accounts": "SAVINGS",
-            "terms.perActionMaxCents": {
-              "$gte": 500000
+            "state.status": "active",
+            "expiresAt": {
+              "$gt": "2026-11-14T20:31:02.114Z"
             },
             "state.remainingCents": {
               "$gte": 500000
-            },
-            "expiresAt": {
-              "$gt": "2026-11-14T20:31:02.114Z"
             }
           },
           "update": {
             "$inc": {
               "state.remainingCents": -500000,
               "state.actionCount": 1
-            },
-            "$set": {
-              "state.lastDecisionAt": "2026-11-14T20:31:02.114Z"
             }
           },
           "matched": 0
@@ -72,27 +63,18 @@
         "atomicUpdate": {
           "filter": {
             "_id": "wrt_01JD8NVDA",
-            "status": "active",
-            "termsHash": "hk7xghAvREaDBWKRNcvXXW9bdWlrE8K4-fskaqwddl4",
-            "terms.merchants": "BROKERAGE-AAPL",
-            "terms.accounts": "SAVINGS",
-            "terms.perActionMaxCents": {
-              "$gte": 50000
+            "state.status": "active",
+            "expiresAt": {
+              "$gt": "2026-11-14T20:31:02.114Z"
             },
             "state.remainingCents": {
               "$gte": 50000
-            },
-            "expiresAt": {
-              "$gt": "2026-11-14T20:31:02.114Z"
             }
           },
           "update": {
             "$inc": {
               "state.remainingCents": -50000,
               "state.actionCount": 1
-            },
-            "$set": {
-              "state.lastDecisionAt": "2026-11-14T20:31:02.114Z"
             }
           },
           "matched": 0
@@ -123,19 +105,18 @@
         "atomicUpdate": {
           "filter": {
             "_id": "wrt_01JD8NVDA",
-            "status": "active",
-            "termsHash": "hk7xghAvREaDBWKRNcvXXW9bdWlrE8K4-fskaqwddl4",
-            "terms.destinations": "https://collector.example/c",
+            "state.status": "active",
             "expiresAt": {
               "$gt": "2026-11-14T20:31:02.114Z"
+            },
+            "state.remainingCents": {
+              "$gte": 0
             }
           },
           "update": {
             "$inc": {
+              "state.remainingCents": 0,
               "state.actionCount": 1
-            },
-            "$set": {
-              "state.lastDecisionAt": "2026-11-14T20:31:02.114Z"
             }
           },
           "matched": 0

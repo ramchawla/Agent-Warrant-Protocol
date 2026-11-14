@@ -13,7 +13,7 @@ import { CodeCard } from "../components/CodeCard";
 import { HashFlow } from "../components/HashFlow";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { Stamp } from "../components/Stamp";
-import { spring } from "../components/util";
+import { policyAction, spring } from "../components/util";
 import { ErrorNote, Ghost } from "./s2/parts";
 import { errText, useSteps } from "./s2/useSteps";
 
@@ -32,12 +32,15 @@ type Saved = {
 };
 
 const STEPS = ["Write a rule", "Strip the data", "Match by meaning", "Release"];
+const ACTIONS = ["REQUIRE_TOUCH_ID", "DENY"] as const;
+type RuleAction = (typeof ACTIONS)[number];
 
 function Artifact({ complete, Narrative }: ChapterProps) {
   const saved = useResult<Saved>(6);
-  const { setResult } = useStory();
+  const { setResult, world } = useStory();
   const [s, setS] = useState<Saved>(saved ?? {});
   const [rule, setRule] = useState(saved?.rule ?? "");
+  const [act, setAct] = useState<RuleAction>("REQUIRE_TOUCH_ID");
   const [busy, setBusy] = useState<null | "add" | "sens" | "touch">(null);
   const [err, setErr] = useState<string | null>(null);
   const [revisit] = useState(!!saved?.sens);
@@ -55,7 +58,7 @@ function Artifact({ complete, Narrative }: ChapterProps) {
     setErr(null);
     try {
       const [added, index] = await Promise.all([
-        api.addPolicy(rule.trim(), "REQUIRE_TOUCH_ID"),
+        api.addPolicy(rule.trim(), act),
         api.policyIndex().catch(() => null),
       ]);
       save({ rule: rule.trim(), added, index });
@@ -102,6 +105,7 @@ function Artifact({ complete, Narrative }: ChapterProps) {
 
   const item = s.sens?.items[0];
   const pending = s.sens?.pending;
+  const blocked = s.sens?.blocked;
   const stage = s.verify ? 3 : s.sens ? (n >= 3 ? 2 : 1) : 0;
 
   return (
@@ -115,9 +119,27 @@ function Artifact({ complete, Narrative }: ChapterProps) {
               if (rule.trim()) void add();
             }}
           >
-            <label htmlFor="ch6-rule" className="text-[13px] text-muted">
-              New policy, in plain English
-            </label>
+            <div className="flex items-center justify-between gap-3">
+              <label htmlFor="ch6-rule" className="text-[13px] text-muted">
+                New policy, in plain English
+              </label>
+              <div role="radiogroup" aria-label="When the rule matches" className="inline-flex rounded-full border border-line-strong p-0.5 text-[12.5px]">
+                {ACTIONS.map((a) => (
+                  <button
+                    key={a}
+                    type="button"
+                    role="radio"
+                    aria-checked={act === a}
+                    onClick={() => setAct(a)}
+                    className={`rounded-full px-3 py-1 transition-colors ${
+                      act === a ? (a === "DENY" ? "bg-red/15 text-red" : "bg-amber/15 text-amber") : "text-muted hover:text-fg"
+                    }`}
+                  >
+                    {a === "DENY" ? "Block" : policyAction(a)}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="flex w-full items-center gap-2 rounded-full border border-line-strong bg-raised py-1 pl-5 pr-1 focus-within:border-muted">
               <input
                 id="ch6-rule"
@@ -185,11 +207,19 @@ function Artifact({ complete, Narrative }: ChapterProps) {
               {s.added ? (
                 <>
                   <AtlasCard
-                    database="awp"
+                    database={world.databases?.gate ?? "…"}
                     collection="egress_policies"
                     document={s.added.policy}
                     highlight="rule"
-                    caption={`We wrote ${Object.keys(s.added.policy).join(", ")}. No embedding.`}
+                    caption={
+                      <>
+                        We wrote {Object.keys(s.added.policy).join(", ")}. No embedding.
+                        <span className="ml-3 whitespace-nowrap">
+                          action: <span className={s.added.policy.action === "DENY" ? "text-red" : "text-amber"}>{policyAction(s.added.policy.action)}</span>{" "}
+                          <span className="font-mono text-[11.5px] text-[#7fa3ad]">{s.added.policy.action}</span>
+                        </span>
+                      </>
+                    }
                   />
                   <IndexCard index={s.index} />
                 </>
@@ -204,9 +234,14 @@ function Artifact({ complete, Narrative }: ChapterProps) {
               <AgentBubble text={item.agentText} />
               {item.trace.minimize && n >= 1 && <Redaction m={item.trace.minimize} strike={n >= 2} />}
               {item.trace.semantic && n >= 3 && (
-                <MatchCard sem={item.trace.semantic} fill={n >= 4} stamp={n >= 5 && !!pending} />
+                <MatchCard sem={item.trace.semantic} fill={n >= 4} stamp={n >= 5 ? (blocked ? "blocked" : pending ? "touchid" : null) : null} />
               )}
-              {n >= 5 && !pending && <p className="text-[14px] text-muted">No rule asked for Touch ID, so the stripped payload went out.</p>}
+              {n >= 5 && blocked && (
+                <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} role="status" className="text-[14px] leading-snug text-red">
+                  {blocked.reason} Nothing left the network.
+                </motion.p>
+              )}
+              {n >= 5 && !pending && !blocked && <p className="text-[14px] text-muted">No rule asked for Touch ID, so the stripped payload went out.</p>}
             </motion.div>
           )}
 
@@ -328,7 +363,7 @@ function Redaction({ m, strike }: { m: Minimize; strike: boolean }) {
 
 type Semantic = NonNullable<DemoStepResponse["items"][number]["trace"]["semantic"]>;
 
-function MatchCard({ sem, fill, stamp }: { sem: Semantic; fill: boolean; stamp: boolean }) {
+function MatchCard({ sem, fill, stamp }: { sem: Semantic; fill: boolean; stamp: "touchid" | "blocked" | null }) {
   const vector = sem.path === "vector";
   const stage = sem.pipeline[0] ?? {};
   return (
@@ -352,12 +387,14 @@ function MatchCard({ sem, fill, stamp }: { sem: Semantic; fill: boolean; stamp: 
           />
         </div>
         <p className="mt-3 text-[14px] leading-snug text-fg">“{sem.rule}”</p>
-        <p className="mt-1 font-mono text-[12px] text-faint">path: {sem.path}</p>
+        <p className="mt-1 text-[12px] text-faint">
+          {policyAction(sem.action)} <span className="font-mono text-[11px]">{sem.action}</span> · {vector ? "matched by meaning" : "matched by keywords"}
+        </p>
         <div className="mt-auto flex min-h-[64px] items-end justify-center pt-2">
           {stamp && (
             <>
-              <span className="hidden @[21rem]:inline-flex"><Stamp kind="touchid" /></span>
-              <span className="@[21rem]:hidden"><Stamp kind="touchid" size="sm" /></span>
+              <span className="hidden @[21rem]:inline-flex"><Stamp kind={stamp} /></span>
+              <span className="@[21rem]:hidden"><Stamp kind={stamp} size="sm" /></span>
             </>
           )}
         </div>
