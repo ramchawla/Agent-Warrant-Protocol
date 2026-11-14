@@ -154,6 +154,11 @@ function Artifact({ complete, Narrative }: ChapterProps) {
             Approve with Touch ID
           </PrimaryButton>
         ) : null}
+        {busy === "touch" && (
+          <p role="status" className="text-[13px] text-muted">
+            Touch ID, then the stripped payload goes to Claude on this laptop. The reply takes about 10 s…
+          </p>
+        )}
         {err && <ErrorNote>{err}</ErrorNote>}
       </Narrative>
 
