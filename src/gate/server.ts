@@ -54,8 +54,16 @@ function isReviewer(req: FastifyRequest): boolean {
   return typeof presented === "string" && timingSafeEqual(digest(presented), digest(config.reviewerToken));
 }
 
+// Request logs must not carry the reviewer token when it arrives as ?token=.
+const redactToken = (url: string): string => url.replace(/([?&]token=)[^&]*/g, "$1[redacted]");
+const loggerOptions = {
+  serializers: {
+    req: (req: FastifyRequest) => ({ method: req.method, url: redactToken(req.url), remoteAddress: req.ip }),
+  },
+};
+
 export async function buildServer(options: { logger?: boolean } = {}): Promise<FastifyInstance> {
-  const app = Fastify({ logger: options.logger ?? false });
+  const app = Fastify({ logger: options.logger ? loggerOptions : false });
 
   // With SESSION_SECRET unset, sessions are signed with a per-process random key and end at restart.
   if (!config.sessionSecret) app.log.warn("SESSION_SECRET is not set; sessions will not survive a restart");
