@@ -1,0 +1,119 @@
+{
+  "_comment": "Fixture for institution.html?fixture=1 (PRD 8.5 InstitutionLogEntry), matching test/fixtures/events.json. Used only until the institution server has GET /log and GET /check. Owner: Jackson.",
+  "bank": {
+    "check": { "ok": true, "checked": 3 },
+    "entries": [
+      {
+        "ts": "2026-11-14T19:03:40.000Z",
+        "decisionId": "dec_7af91afe0a32e08ad2a65bb0",
+        "action": { "type": "kyc.refresh", "account": "A1" },
+        "checks": [
+          { "name": "gate signature", "ok": true },
+          { "name": "audience and expiry", "ok": true },
+          { "name": "first time seen", "ok": false, "detail": "This receipt was already used at 7:02:26 PM. Returned the stored result; nothing ran twice." }
+        ],
+        "result": "duplicate",
+        "institutionRef": "bank_kyc_000101",
+        "ledger": { "seq": 3, "hash": "g3EAJsAJ69v-NZqX3tlav-HTpi_IH51YPdVmSP6uG00" }
+      },
+      {
+        "ts": "2026-11-14T19:03:00.000Z",
+        "checks": [
+          { "name": "gate signature", "ok": false, "detail": "No receipt signed by the gate. Someone called the bank directly." }
+        ],
+        "result": "rejected",
+        "reason": "gate signature"
+      },
+      {
+        "ts": "2026-11-14T19:02:31.500Z",
+        "decisionId": "dec_56da3271aa1f6cfa75bbac95",
+        "action": { "type": "kyc.refresh", "account": "A2" },
+        "checks": [
+          { "name": "gate signature", "ok": true },
+          { "name": "audience and expiry", "ok": true },
+          { "name": "first time seen", "ok": true },
+          { "name": "passkey signature", "ok": true },
+          { "name": "scope and limits", "ok": true },
+          { "name": "action hash", "ok": true },
+          { "name": "own policy", "ok": true }
+        ],
+        "result": "executed",
+        "institutionRef": "bank_kyc_000102",
+        "ledger": { "seq": 5, "hash": "7tMRQ_mFq-2L0yJ7J0O4oEvNbB6IbRZXhXkt6D131o8" }
+      },
+      {
+        "ts": "2026-11-14T19:02:26.200Z",
+        "decisionId": "dec_7af91afe0a32e08ad2a65bb0",
+        "action": { "type": "kyc.refresh", "account": "A1" },
+        "checks": [
+          { "name": "gate signature", "ok": true },
+          { "name": "audience and expiry", "ok": true },
+          { "name": "first time seen", "ok": true },
+          { "name": "passkey signature", "ok": true },
+          { "name": "scope and limits", "ok": true },
+          { "name": "action hash", "ok": true },
+          { "name": "own policy", "ok": true }
+        ],
+        "result": "executed",
+        "institutionRef": "bank_kyc_000101",
+        "ledger": { "seq": 3, "hash": "g3EAJsAJ69v-NZqX3tlav-HTpi_IH51YPdVmSP6uG00" }
+      }
+    ]
+  },
+  "fintech": {
+    "check": { "ok": true, "checked": 2 },
+    "entries": [
+      {
+        "ts": "2026-11-14T19:03:28.900Z",
+        "decisionId": "dec_9c620f39179bed30489cf78c",
+        "action": { "type": "payment.create", "account": "A1", "merchant": "M1", "amountCents": 5000 },
+        "checks": [
+          { "name": "gate signature", "ok": true },
+          { "name": "audience and expiry", "ok": true },
+          { "name": "first time seen", "ok": true },
+          { "name": "passkey signature", "ok": true },
+          { "name": "scope and limits", "ok": true },
+          { "name": "action hash", "ok": true },
+          { "name": "own policy", "ok": true }
+        ],
+        "result": "executed",
+        "institutionRef": "fin_pay_000202",
+        "ledger": { "seq": 21, "hash": "FYsz1CfqERmMnzCR23hiPB_DZT32Kra_UqcTq0mMyDE" }
+      },
+      {
+        "ts": "2026-11-14T19:03:21.600Z",
+        "decisionId": "dec_c368301ef60edd8004cc2753",
+        "action": { "type": "payment.create", "account": "A1", "merchant": "M1", "amountCents": 5000 },
+        "checks": [
+          { "name": "gate signature", "ok": true },
+          { "name": "audience and expiry", "ok": true },
+          { "name": "first time seen", "ok": true },
+          { "name": "passkey signature", "ok": true },
+          { "name": "scope and limits", "ok": true },
+          { "name": "action hash", "ok": true },
+          { "name": "own policy", "ok": false, "detail": "Above the fintech's own limit for this merchant, even though the customer's warrant allows it." }
+        ],
+        "result": "rejected",
+        "reason": "own policy",
+        "ledger": { "seq": 19, "hash": "94wVik42Y1kjkSMeCMMGUDTJQXyiwuVqZ_vkNAxgrGw" }
+      },
+      {
+        "ts": "2026-11-14T19:02:40.500Z",
+        "decisionId": "dec_466eee2f55fa7749d467f8f6",
+        "action": { "type": "payment.create", "account": "A1", "merchant": "M1", "amountCents": 3000 },
+        "checks": [
+          { "name": "gate signature", "ok": true },
+          { "name": "audience and expiry", "ok": true },
+          { "name": "first time seen", "ok": true },
+          { "name": "passkey signature", "ok": true },
+          { "name": "scope and limits", "ok": true },
+          { "name": "action hash", "ok": true },
+          { "name": "own policy", "ok": true }
+        ],
+        "result": "executed",
+        "institutionRef": "fin_pay_000201",
+        "ledger": { "seq": 7, "hash": "4Y0VIVHwCrH5iEo4e0UkF_c3nuseJ0_B8XtxXlQZdY0" }
+      }
+    ]
+  }
+}

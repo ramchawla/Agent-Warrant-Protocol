@@ -3,70 +3,62 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Agent Warrant Protocol</title>
+  <title>My agent</title>
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <!-- Owner: Jackson. Customer: register a passkey and create a warrant (task 3, REQ-001, REQ-002) -->
+  <!-- Owner: Jackson. Customer view (REQ-012, Stories 1, 5, 6): passkey, warrants, activity with traces, revoke. -->
   <main>
     <header>
-      <h1>Agent Warrant Protocol</h1>
-      <p>Don't give agents your keys. Give them a warrant.</p>
+      <h1>My agent</h1>
+      <p>What your agent may do, what it did, and what it was stopped from.</p>
     </header>
 
     <section id="passkey">
-      <h2>1. Your passkey</h2>
-      <p class="muted" id="who">Checking your session…</p>
-      <label for="name">Your name</label>
-      <input type="text" id="name" value="Demo customer" maxlength="80">
-      <button id="register">Register a passkey on this device</button>
-      <button id="reenroll" class="secondary" hidden>Enroll again at the bank and fintech</button>
+      <div class="bar">
+        <span id="who" class="muted">Checking your session…</span>
+        <span style="flex:1"></span>
+        <button id="register" class="secondary">Register a passkey on this device</button>
+        <button id="reenroll" class="secondary" hidden>Enroll again at the bank and fintech</button>
+      </div>
+      <div id="name-row" hidden>
+        <label for="name">Your name</label>
+        <input type="text" id="name" value="Demo customer" maxlength="80">
+      </div>
       <div id="passkey-msg" class="msg" hidden></div>
     </section>
 
-    <section id="warrant">
-      <h2>2. What may your agent do?</h2>
-      <label for="template">Start from</label>
-      <select id="template">
-        <option value="demo">KYC refresh and payments (demo warrant)</option>
-        <option value="kyc">KYC refresh only</option>
-        <option value="pay">Payments only</option>
-      </select>
+    <div id="warrants"></div>
 
-      <label for="agent">Agent ID</label>
-      <input type="text" id="agent" value="agt_demo" autocomplete="off">
-
-      <label>Actions</label>
-      <div class="checks">
-        <label><input type="checkbox" id="act-kyc"> Refresh KYC records (bank)</label>
-        <label><input type="checkbox" id="act-pay"> Make payments (fintech)</label>
-      </div>
-
-      <div class="row">
-        <div>
-          <label for="accounts">Accounts</label>
-          <input type="text" id="accounts" placeholder="A1, A2, A3">
+    <section>
+      <details id="new-warrant">
+        <summary><h2 style="display:inline">Give your agent a new warrant</h2></summary>
+        <label for="template">Start from</label>
+        <select id="template">
+          <option value="demo">KYC refresh and payments (demo warrant)</option>
+          <option value="kyc">KYC refresh only</option>
+          <option value="pay">Payments only</option>
+        </select>
+        <label for="agent">Agent ID</label>
+        <input type="text" id="agent" value="agt_demo" autocomplete="off">
+        <label>Actions</label>
+        <div class="checks">
+          <label><input type="checkbox" id="act-kyc"> Refresh KYC records (bank)</label>
+          <label><input type="checkbox" id="act-pay"> Make payments (fintech)</label>
         </div>
-        <div>
-          <label for="merchants">Merchants (payments)</label>
-          <input type="text" id="merchants" placeholder="M1">
+        <div class="row">
+          <div><label for="accounts">Accounts</label><input type="text" id="accounts" placeholder="A1, A2, A3"></div>
+          <div><label for="merchants">Merchants (payments)</label><input type="text" id="merchants" placeholder="M1"></div>
         </div>
-      </div>
-      <div class="row">
-        <div>
-          <label for="per">Most per payment (CAD)</label>
-          <input type="text" id="per" inputmode="decimal">
+        <div class="row">
+          <div><label for="per">Most per payment (CAD)</label><input type="text" id="per" inputmode="decimal"></div>
+          <div><label for="total">Most in total (CAD)</label><input type="text" id="total" inputmode="decimal"></div>
         </div>
-        <div>
-          <label for="total">Most in total (CAD)</label>
-          <input type="text" id="total" inputmode="decimal">
-        </div>
-      </div>
-      <label for="until">Ends today at</label>
-      <input type="time" id="until">
-
-      <button id="create" disabled>Review terms</button>
-      <div id="warrant-msg" class="msg" hidden></div>
+        <label for="until">Ends today at</label>
+        <input type="time" id="until">
+        <button id="create" disabled>Review terms</button>
+        <div id="warrant-msg" class="msg" hidden></div>
+      </details>
     </section>
   </main>
 
@@ -74,37 +66,22 @@
   <script src="/app.js"></script>
   <script>
   "use strict";
-  const { api, userId, toCents, list, say, passkeyError } = window.AWP;
+  const { api, userId, toCents, list, say, passkeyError, el } = window.AWP;
   const $ = (id) => document.getElementById(id);
+  const params = new URLSearchParams(location.search);
+  const PRESENT = params.get("present") === "1";
+  let restartOnce = params.get("restart") === "1";
+  let signedIn = null;
 
-  // Allowed parameter names per action (PRD 8.5, 8.9). Fixed here, not typed by the customer.
-  const FIELDS = {
-    "kyc.refresh": ["account", "fields"],
-    "payment.create": ["fromAccount", "merchant", "amountCents", "currency", "memo"],
-    "data.export": [],
-  };
-  const DESTINATION = { "kyc.refresh": "bank", "payment.create": "fintech" };
-  const TEMPLATES = {
-    demo: { kyc: true, pay: true, accounts: "A1, A2, A3, A4, A5", merchants: "M1", per: "50.00", total: "120.00", until: "17:00" },
-    kyc: { kyc: true, pay: false, accounts: "A1, A2, A3, A4, A5", merchants: "", per: "0.00", total: "0.00", until: "17:00" },
-    pay: { kyc: false, pay: true, accounts: "A1", merchants: "M1", per: "10.00", total: "100.00", until: "17:00" },
-  };
-
-  function applyTemplate(name) {
-    const t = TEMPLATES[name];
-    $("act-kyc").checked = t.kyc;
-    $("act-pay").checked = t.pay;
-    $("accounts").value = t.accounts;
-    $("merchants").value = t.merchants;
-    $("per").value = t.per;
-    $("total").value = t.total;
-    $("until").value = t.until;
-  }
-
+  // ================= passkey (REQ-001) =================
   function setSignedIn(id) {
-    $("who").textContent = id ? `Signed in as ${id}.` : "Not signed in. Register a passkey to start.";
-    $("create").disabled = !id;
+    signedIn = id;
+    $("who").textContent = id ? `Signed in with your passkey (${id}).` : "Not signed in. Register a passkey on this device to start.";
+    $("register").hidden = !!id;
+    $("name-row").hidden = !!id;
     $("reenroll").hidden = !id;
+    $("create").disabled = !id;
+    if (id) refresh();
   }
 
   async function checkSession() {
@@ -112,16 +89,12 @@
     catch { setSignedIn(null); }
   }
 
-  function enrolledText(e) {
-    const mark = (ok) => (ok ? "yes" : "not yet");
-    return `Bank enrolled: ${mark(e.bank)}. Fintech enrolled: ${mark(e.fintech)}.`;
-  }
+  const enrolledText = (e) => `Bank enrolled: ${e.bank ? "yes" : "not yet"}. Fintech enrolled: ${e.fintech ? "yes" : "not yet"}.`;
 
   $("register").addEventListener("click", async () => {
     const msg = $("passkey-msg");
-    const button = $("register");
-    button.disabled = true;
-    say(msg, "info", "Follow the prompt on this device…");
+    $("register").disabled = true;
+    say(msg, "info", "Follow the prompt on this device. Choose Windows Hello or Touch ID, not a password manager.");
     try {
       const id = userId();
       const optionsJSON = await api("POST", "/api/passkey/register/options", { userId: id, name: $("name").value.trim() || undefined });
@@ -132,58 +105,186 @@
     } catch (err) {
       say(msg, "error", passkeyError(err));
     } finally {
-      button.disabled = false;
+      $("register").disabled = false;
     }
   });
 
   $("reenroll").addEventListener("click", async () => {
-    const msg = $("passkey-msg");
     try {
       const { enrolled } = await api("POST", "/api/passkey/enroll", {});
-      say(msg, enrolled.bank && enrolled.fintech ? "ok" : "info", enrolledText(enrolled));
-    } catch (err) {
-      say(msg, "error", err.message);
-    }
+      say($("passkey-msg"), enrolled.bank && enrolled.fintech ? "ok" : "info", enrolledText(enrolled));
+    } catch (err) { say($("passkey-msg"), "error", err.message); }
   });
 
+  // ================= warrants, activity and traces (REQ-012) =================
+  const openTraces = new Set();        // "warrantId:seq" the viewer opened
+  const seen = new Set();              // items already shown once
+  let firstLoad = true;
+  let presenting = null;               // key of the trace presenter mode is revealing
+
+  const money = (c) => `$${(c / 100).toLocaleString("en-CA", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const time = (iso) => new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit", second: "2-digit" });
+  const ICON = { ok: "✓", failed: "✕", "not-reached": "–", flag: "!" };
+  const KIND_ICON = { allowed: "✓", blocked: "✕", created: "•", approved: "•", revoked: "■", child: "↳" };
+
+  function traceList(item, reveal) {
+    const ol = el("ol", { class: "trace" });
+    item.steps.forEach((s, i) => {
+      const li = el("li", { class: `step ${s.status}` },
+        el("span", { class: "step-icon", "aria-hidden": "true" }, ICON[s.status]),
+        el("div", {}, el("b", {}, s.label), el("div", { class: "step-detail" }, s.detail)));
+      if (reveal) { li.style.opacity = "0"; setTimeout(() => { li.style.transition = "opacity .35s"; li.style.opacity = "1"; }, 650 * i); }
+      ol.append(li);
+    });
+    return ol;
+  }
+
+  function activityRow(w, item) {
+    const key = `${w._id}:${item.seq}`;
+    const fresh = !firstLoad && !seen.has(key);
+    seen.add(key);
+    if (fresh && PRESENT && (item.kind === "allowed" || item.kind === "blocked")) { openTraces.clear(); openTraces.add(key); presenting = key; }
+    const open = openTraces.has(key);
+    const row = el("li", { class: `activity ${item.kind}${fresh ? " new" : ""}` });
+    const head = el("button", { class: "activity-head", type: "button", "aria-expanded": String(open) },
+      el("span", { class: `kind-icon ${item.kind}`, "aria-hidden": "true" }, KIND_ICON[item.kind] || "•"),
+      el("span", { class: "headline" }, item.headline),
+      el("span", { class: "when" }, time(item.ts) + (item.remainingAfterCents !== undefined && item.kind === "allowed" ? ` · ${money(item.remainingAfterCents)} left` : "")));
+    head.addEventListener("click", () => { open ? openTraces.delete(key) : openTraces.add(key); presenting = null; renderAll(); });
+    row.append(head);
+    if (open) {
+      row.append(el("div", { class: "trace-box" }, el("div", { class: "trace-title" }, "How AWP handled this"), traceList(item, presenting === key && fresh)));
+    }
+    return row;
+  }
+
+  function warrantCard(w, activity) {
+    const status = activity ? activity.warrant.status : w.state.status;
+    const left = activity ? activity.warrant.remainingCents : w.state.remainingCents;
+    const total = w.terms.totalLimitCents;
+    const plain = w.plain.slice();
+    const worst = plain.pop();
+
+    const card = el("section", { class: "warrant" });
+    card.append(el("h2", {}, `Agent ${w.terms.agentId} `, el("span", { class: `badge ${status}` }, status)));
+
+    if (total > 0) {
+      const pct = Math.max(0, Math.min(100, Math.round((left / total) * 100)));
+      card.append(el("div", { class: "money" }, el("b", {}, money(left)), ` of ${money(total)} left`),
+        el("div", { class: "meter" }, el("div", { class: "meter-fill", style: `width:${pct}%` })));
+    }
+    card.append(el("div", { class: "worst" }, worst));
+    card.append(el("details", { class: "terms-details" }, el("summary", {}, "Full terms you signed"), el("ol", { class: "terms" }, ...plain.map((l) => el("li", {}, l)))));
+
+    const actions = el("div", { class: "bar" });
+    if (status === "active") {
+      const revoke = el("button", { class: "danger" }, "Revoke now");
+      revoke.addEventListener("click", () => revokeWarrant(w._id, revoke));
+      actions.append(revoke);
+    } else if (status === "pending") {
+      actions.append(el("a", { class: "button-link", href: `/approve.html?id=${encodeURIComponent(w._id)}` }, "Review and approve"));
+    }
+    actions.append(el("span", { id: `msg-${w._id}`, class: "muted" }));
+    card.append(actions);
+
+    const items = activity ? activity.items.slice().reverse() : [];
+    const agentItems = items.filter((i) => i.kind === "allowed" || i.kind === "blocked");
+    const blocked = agentItems.filter((i) => i.kind === "blocked").length;
+    card.append(el("h3", { class: "activity-title" }, "What your agent did",
+      el("span", { class: "muted" }, ` ${agentItems.length - blocked} allowed, ${blocked} blocked`)));
+    card.append(items.length ? el("ul", { class: "activity-list" }, ...items.map((i) => activityRow(w, i)))
+      : el("p", { class: "muted" }, "Nothing yet."));
+    return card;
+  }
+
+  let lastData = null;
+  function renderAll() {
+    if (!lastData) return;
+    const { list: ws, activity } = lastData;
+    $("warrants").replaceChildren(...(ws.length ? ws.map((w) => warrantCard(w, activity[w._id])) :
+      [el("section", {}, el("p", { class: "muted" }, "No warrants yet. Give your agent one below."))]));
+    if (presenting) {
+      const box = document.querySelector(".activity.new .trace-box");
+      if (box) box.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    firstLoad = false;
+  }
+
+  let refreshing = false;
+  async function refresh() {
+    if (!signedIn || refreshing) return;
+    refreshing = true;
+    try {
+      const { warrants: ws } = await api("GET", "/api/warrants");
+      const activity = {};
+      for (const w of ws.slice(0, 3)) {
+        const q = restartOnce ? "?restart=1" : "";
+        try { activity[w._id] = await api("GET", `/api/warrants/${encodeURIComponent(w._id)}/activity${q}`); } catch {}
+      }
+      restartOnce = false;
+      const before = lastData ? JSON.stringify(lastData.activity) + lastData.list.length : "";
+      lastData = { list: ws, activity };
+      if (JSON.stringify(activity) + ws.length !== before) renderAll();
+    } catch (err) {
+      if (err.status === 401) setSignedIn(null);
+    } finally {
+      refreshing = false;
+    }
+  }
+  setInterval(refresh, 2000);
+
+  async function revokeWarrant(id, button) {
+    button.disabled = true;
+    button.classList.add("busy");
+    const msg = $(`msg-${id}`);
+    try {
+      const r = await api("POST", `/api/warrants/${encodeURIComponent(id)}/revoke`, {});
+      msg.textContent = `Revoked (${r.revoked}). Your agent's next action will be blocked.`;
+      refresh();
+    } catch (err) {
+      msg.textContent = err.status === 501 ? "Revoke is not built on the gate yet (task 9)." : `Revoke failed: ${err.message}`;
+      button.disabled = false;
+      button.classList.remove("busy");
+    }
+  }
+
+  // ================= new warrant (REQ-002, Story 1) =================
+  const FIELDS = { "kyc.refresh": ["account", "fields"], "payment.create": ["fromAccount", "merchant", "amountCents", "currency", "memo"] };
+  const DESTINATION = { "kyc.refresh": "bank", "payment.create": "fintech" };
+  const TEMPLATES = {
+    demo: { kyc: true, pay: true, accounts: "A1, A2, A3, A4, A5", merchants: "M1", per: "50.00", total: "120.00", until: "17:00" },
+    kyc: { kyc: true, pay: false, accounts: "A1, A2, A3, A4, A5", merchants: "", per: "0.00", total: "0.00", until: "17:00" },
+    pay: { kyc: false, pay: true, accounts: "A1", merchants: "M1", per: "10.00", total: "100.00", until: "17:00" },
+  };
+  function applyTemplate(name) {
+    const t = TEMPLATES[name];
+    $("act-kyc").checked = t.kyc; $("act-pay").checked = t.pay;
+    $("accounts").value = t.accounts; $("merchants").value = t.merchants;
+    $("per").value = t.per; $("total").value = t.total; $("until").value = t.until;
+  }
   function readTerms() {
     const actions = [];
     if ($("act-kyc").checked) actions.push("kyc.refresh");
     if ($("act-pay").checked) actions.push("payment.create");
     if (actions.length === 0) throw new Error("Pick at least one action.");
-
-    const per = toCents($("per").value);
-    const total = toCents($("total").value);
+    const per = toCents($("per").value), total = toCents($("total").value);
     if (per === null || total === null) throw new Error("Amounts must look like 50 or 50.00.");
     if (per > total) throw new Error("The most per payment cannot be more than the total.");
-
     const [h, m] = ($("until").value || "").split(":").map(Number);
     if (Number.isNaN(h) || Number.isNaN(m)) throw new Error("Pick an end time.");
-    const end = new Date();
-    end.setHours(h, m, 0, 0);
+    const end = new Date(); end.setHours(h, m, 0, 0);
     if (end <= new Date()) throw new Error("The end time has already passed today.");
-
     const fields = {};
     for (const a of actions) fields[a] = FIELDS[a];
+    const pays = actions.includes("payment.create");
     return {
-      v: 1,
-      userId: userId(),
-      agentId: $("agent").value.trim(),
-      scope: {
-        actions,
-        accounts: list($("accounts").value),
-        merchants: actions.includes("payment.create") ? list($("merchants").value) : [],
-        destinations: [...new Set(actions.map((a) => DESTINATION[a]))],
-        fields,
-      },
-      currency: "CAD",
-      perActionMaxCents: actions.includes("payment.create") ? per : 0,
-      totalLimitCents: actions.includes("payment.create") ? total : 0,
-      notBefore: new Date().toISOString(),
-      expiresAt: end.toISOString(),
+      v: 1, userId: userId(), agentId: $("agent").value.trim(),
+      scope: { actions, accounts: list($("accounts").value), merchants: pays ? list($("merchants").value) : [],
+        destinations: [...new Set(actions.map((a) => DESTINATION[a]))], fields },
+      currency: "CAD", perActionMaxCents: pays ? per : 0, totalLimitCents: pays ? total : 0,
+      notBefore: new Date().toISOString(), expiresAt: end.toISOString(),
     };
   }
-
   $("create").addEventListener("click", async () => {
     const msg = $("warrant-msg");
     try {
@@ -191,11 +292,8 @@
       say(msg, "info", "Creating…");
       const { warrantId } = await api("POST", "/api/warrants", { terms });
       location.href = `/approve.html?id=${encodeURIComponent(warrantId)}`;
-    } catch (err) {
-      say(msg, "error", err.message);
-    }
+    } catch (err) { say(msg, "error", err.message); }
   });
-
   $("template").addEventListener("change", (e) => applyTemplate(e.target.value));
   applyTemplate("demo");
   checkSession();

@@ -1,8 +1,9 @@
 // Fixed templates (Story 1, REQ-015): plain terms, the worst-case line, and the spoken text.
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { money, nameList, plainTerms, spokenTerms, termsWarnings, when, worstCaseLine } from "../src/gate/templates.ts";
-import type { Terms } from "../src/shared/types.ts";
+import { readFileSync } from "node:fs";
+import { buildActivity, money, nameList, plainTerms, spokenTerms, termsWarnings, when, worstCaseLine } from "../src/gate/templates.ts";
+import type { AuditEvent, Terms } from "../src/shared/types.ts";
 
 function at(h: number, m = 0): string {
   const d = new Date();
@@ -78,4 +79,68 @@ test("warnings flag terms that can never work or that allow export", () => {
   assert.equal(termsWarnings(noBank).length, 1);
   const exporting: Terms = { ...W1, scope: { ...W1.scope, actions: ["data.export"] } };
   assert.ok(termsWarnings(exporting).some((w) => w.includes("data export")));
+});
+
+// ---- activity and the "How AWP handled this" trace (REQ-012), on the fixture ledger ----
+const FIXTURE: AuditEvent[] = JSON.parse(readFileSync(new URL("./fixtures/events.json", import.meta.url), "utf8"));
+const activity = buildActivity(12000, FIXTURE.filter((e) => e.warrantId === "wrt_8c4e2a6f0b1d3957e9a7c5f3"));
+const item = (seq: number) => {
+  const found = activity.find((i) => i.seq === seq);
+  assert.ok(found, `no activity item for #${seq}`);
+  return found;
+};
+const statuses = (seq: number) => item(seq).steps.map((s) => s.status);
+
+test("activity has one item per agent decision and warrant event, not per execution", () => {
+  const decisions = FIXTURE.filter((e) => e.type === "DECISION" && e.warrantId === "wrt_8c4e2a6f0b1d3957e9a7c5f3").length;
+  assert.equal(activity.filter((i) => i.kind === "allowed" || i.kind === "blocked").length, decisions);
+  assert.ok(!activity.some((i) => FIXTURE.find((e) => e.seq === i.seq)?.type === "EXECUTION"));
+  assert.deepEqual(activity.map((i) => i.seq), [...activity.map((i) => i.seq)].sort((a, b) => a - b));
+});
+
+test("an executed payment shows every step passing and the money left", () => {
+  const paid = item(7);
+  assert.equal(paid.headline, "Paid M1 $30.00 from A1");
+  assert.equal(paid.outcome, "executed");
+  assert.equal(paid.remainingAfterCents, 9000);
+  assert.ok(statuses(7).every((s) => s === "ok"));
+  assert.match(paid.steps.find((s) => s.label.startsWith("Budget"))!.detail, /\$120\.00 → \$90\.00 left/);
+  assert.match(paid.steps.at(-1)!.detail, /fin_pay_000201/);
+});
+
+test("a blocked action stops at the failing rule and nothing is sent", () => {
+  const a9 = item(9);
+  assert.equal(a9.kind, "blocked");
+  assert.match(a9.headline, /account A9 is not in your warrant/);
+  assert.deepEqual(statuses(9), ["ok", "ok", "failed", "not-reached", "ok", "not-reached"]);
+  assert.match(a9.steps[2].detail, /action type ✓, destination ✓, account ✗/);
+  assert.equal(a9.steps.at(-1)!.detail, "Nothing was sent to any bank or fintech.");
+});
+
+test("each denial reason fails at the right step", () => {
+  assert.equal(item(17).steps[1].status, "failed");                       // AGENT_MISMATCH: warrant step
+  assert.equal(item(25).steps[3].status, "failed");                       // BUDGET_EXHAUSTED: budget step
+  assert.equal(item(28).steps[3].status, "failed");                       // WARRANT_REVOKED: budget step
+  assert.match(item(13).headline, /export data to collector\.example: blocked/);
+  assert.match(item(15).headline, /clientList/);
+  assert.match(item(16).headline, /memo field was too long/);
+});
+
+test("a rejected execution releases the money; an unknown one keeps it held", () => {
+  assert.equal(item(19).outcome, "rejected");
+  assert.equal(item(19).remainingAfterCents, 9000);                      // released back
+  assert.equal(item(21).remainingAfterCents, 4000);
+  assert.equal(item(23).outcome, "unknown");
+  assert.equal(item(23).remainingAfterCents, 3000);                      // held
+  assert.equal(item(23).steps.at(-1)!.status, "flag");
+});
+
+test("an allowed action with no execution record is flagged", () => {
+  assert.equal(item(26).outcome, "none");
+  assert.match(item(26).headline, /no execution record/);
+  assert.equal(item(26).steps.at(-1)!.status, "flag");
+});
+
+test("the trace is deterministic", () => {
+  assert.deepEqual(buildActivity(12000, structuredClone(FIXTURE)), buildActivity(12000, FIXTURE));
 });

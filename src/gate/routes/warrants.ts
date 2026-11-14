@@ -1,15 +1,41 @@
-// Warrant create, get and approve (REQ-002, REQ-003). Owner: Jackson, task 3.
+// Warrant create, list, get, activity and approve (REQ-002, REQ-003, REQ-012). Owner: Jackson, tasks 3 and 10.
 // Approval calls issueOptions and verifyAndActivate from ../approval.ts.
+import { readFileSync } from "node:fs";
 import type { AuthenticationResponseJSON } from "@simplewebauthn/server";
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
 import { termsHash } from "../../shared/canonical.ts";
+import { config } from "../../shared/config.ts";
 import { newId, newNonce } from "../../shared/ids.ts";
-import type { ActionType, Terms, WarrantDoc } from "../../shared/types.ts";
+import type { ActionType, AuditEvent, Terms, WarrantDoc } from "../../shared/types.ts";
 import { issueOptions, verifyAndActivate } from "../approval.ts";
-import { agents, mongo, warrants } from "../db.ts";
+import { agents, auditEvents, mongo, warrants } from "../db.ts";
 import { appendEvent } from "../ledger.ts";
-import { money, plainTerms, termsWarnings, when } from "../templates.ts";
+import { buildActivity, money, plainTerms, termsWarnings, when } from "../templates.ts";
+
+// ---- Fixtures (AWP_FIXTURES=1 only): warrant W1 and its 28 ledger events, so the customer view can be
+// built and rehearsed before the real ledger exists. Events are revealed one every 1.2 s from the first
+// activity request, like a live run; ?restart=1 starts the replay again.
+const FIXTURE_REPLAY_MS = 1_200;
+let fixtureStart: number | null = null;
+const fixtureWarrant = (): WarrantDoc => {
+  const raw = JSON.parse(readFileSync(new URL("../../../test/fixtures/warrant.json", import.meta.url), "utf8"));
+  delete raw._comment;
+  return { ...raw, expiresAt: new Date(raw.expiresAt), createdAt: new Date(raw.createdAt) };
+};
+const fixtureEvents = (): AuditEvent[] => JSON.parse(readFileSync(new URL("../../../test/fixtures/events.json", import.meta.url), "utf8"));
+function fixtureRevealed(restart: boolean): AuditEvent[] {
+  if (restart || fixtureStart === null) fixtureStart = Date.now();
+  const shown = Math.floor((Date.now() - fixtureStart) / FIXTURE_REPLAY_MS) + 1;
+  return fixtureEvents().slice(0, shown);
+}
+/** The fixture warrant as the replay has reached it: active until its REVOKED event is shown. */
+function fixtureState(doc: WarrantDoc, events: AuditEvent[]): WarrantDoc {
+  const items = buildActivity(doc.terms.totalLimitCents, events.filter((e) => e.warrantId === doc._id));
+  const left = [...items].reverse().find((i) => i.remainingAfterCents !== undefined)?.remainingAfterCents ?? doc.terms.totalLimitCents;
+  const revoked = events.some((e) => e.type === "REVOKED" && e.warrantId === doc._id);
+  return { ...doc, state: { ...doc.state, status: revoked ? "revoked" : "active", remainingCents: left } };
+}
 
 const fail = (statusCode: number, message: string): Error => Object.assign(new Error(message), { statusCode });
 
@@ -59,6 +85,10 @@ function parse<T>(schema: z.ZodType<T>, value: unknown, what: string): T {
 /** The warrant, if the caller may see it: its own user, or a reviewer. Otherwise 404 (no hint that it exists). */
 async function loadVisible(req: FastifyRequest, opts: { ownerOnly: boolean }): Promise<WarrantDoc> {
   const { id } = parse(IdParams, req.params, "warrant id");
+  if (config.fixtures && id === fixtureWarrant()._id) {
+    if (!req.userId && !req.reviewer) throw fail(404, "warrant not found");
+    return fixtureState(fixtureWarrant(), fixtureRevealed(false));
+  }
   const doc = await warrants().findOne({ _id: id });
   const owner = doc && req.userId && doc.terms.userId === req.userId;
   if (!doc || !(owner || (!opts.ownerOnly && req.reviewer))) throw fail(404, "warrant not found");
@@ -136,6 +166,34 @@ export default async function warrantRoutes(app: FastifyInstance): Promise<void>
     }
 
     return { warrantId, termsHash: hash, status: "pending" as const, plain: plainTerms(terms), warnings: termsWarnings(terms) };
+  });
+
+  // v3.1: the session user's warrants, newest first -> {warrants: (WarrantDoc & {plain})[]}
+  app.get("/api/warrants", { preHandler: app.requireSession }, async (req) => {
+    const mine = await warrants().find({ "terms.userId": req.userId! }).sort({ createdAt: -1 }).limit(20).toArray();
+    if (config.fixtures) mine.unshift(fixtureState(fixtureWarrant(), fixtureRevealed(false)));
+    return { warrants: mine.map((doc) => ({ ...doc, plain: plainTerms(doc.terms), warnings: termsWarnings(doc.terms) })) };
+  });
+
+  // v3.1: ?afterSeq -> {warrant: {status, remainingCents, totalLimitCents}, items: ActivityItem[]}
+  app.get("/api/warrants/:id/activity", { preHandler: app.requireSessionOrReviewer }, async (req) => {
+    const query = parse(z.object({ afterSeq: z.coerce.number().int().min(0).optional(), restart: z.string().optional() }), req.query, "query");
+    let doc: WarrantDoc;
+    let events: AuditEvent[];
+    if (config.fixtures && (req.params as { id?: string }).id === fixtureWarrant()._id) {
+      const revealed = fixtureRevealed(query.restart === "1");
+      doc = fixtureState(fixtureWarrant(), revealed);
+      events = revealed.filter((e) => e.warrantId === doc._id);
+    } else {
+      doc = await loadVisible(req, { ownerOnly: false });
+      events = await auditEvents().find({ warrantId: doc._id }).sort({ _id: 1 }).toArray();
+    }
+    // The running "left" figure needs every event, so filter by afterSeq only after building.
+    const items = buildActivity(doc.terms.totalLimitCents, events).filter((i) => query.afterSeq === undefined || i.seq > query.afterSeq);
+    return {
+      warrant: { status: doc.state.status, remainingCents: doc.state.remainingCents, totalLimitCents: doc.terms.totalLimitCents },
+      items,
+    };
   });
 
   // -> WarrantDoc plus plain

@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Incoming agent requests</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <!-- Owner: Jackson. Institution view (REQ-012, Stories 3, 4, 5). Served by each institution at its own GET /
+       (bank :4001, fintech :4002), so everything here is the institution's own record: GET /log and GET /check.
+       ?fixture=1 (&inst=fintech, &tamper=1) shows src/web/fixtures/institution-log.json until those routes exist. -->
+  <main>
+    <header>
+      <h1 id="title">Incoming agent requests</h1>
+      <p>Every request an AI agent sent us, and how we checked it ourselves before doing anything.</p>
+    </header>
+
+    <section>
+      <div class="bar">
+        <button id="check">Check the gate's ledger against our checkpoints</button>
+        <span id="check-out" class="muted">Not checked yet.</span>
+      </div>
+      <div class="stats" id="stats"></div>
+      <p class="muted" id="source"></p>
+    </section>
+
+    <section>
+      <h2>Requests, newest first</h2>
+      <ul id="log" class="activity-list"></ul>
+      <p class="muted" id="empty" hidden>No agent requests yet.</p>
+    </section>
+
+    <section>
+      <h2>What we never saw</h2>
+      <p class="muted">Blocked attempts (a wrong account, an over-limit payment, an outside address) stop at the gate and are never sent to us. The customer sees those in their own view, each with its trace.</p>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+  <script>
+  "use strict";
+  const { el } = window.AWP;
+  const $ = (id) => document.getElementById(id);
+  const params = new URLSearchParams(location.search);
+  const FIXTURE = params.get("fixture") === "1";
+  const PRESENT = params.get("present") === "1";
+
+  // Section 8.7 order. Checks after the first failure did not run.
+  const ORDER = ["gate signature", "audience and expiry", "first time seen", "passkey signature", "delegation chain", "scope and limits", "action hash", "own policy"];
+  const EXPLAIN = {
+    "gate signature": "The receipt is signed by the gate, under the gate key we pinned ourselves.",
+    "audience and expiry": "Addressed to us, and inside its 60-second life.",
+    "first time seen": "We have not seen this receipt before, so it cannot run twice.",
+    "passkey signature": "The customer's passkey signed these exact terms, checked with the public key we enrolled ourselves.",
+    "delegation chain": "Each helper agent's warrant is a subset of the one above it.",
+    "scope and limits": "The action is inside the signed terms: account, merchant, per-payment limit, expiry.",
+    "action hash": "The action we received is exactly the one the gate decided on.",
+    "own policy": "Our own rules, which can refuse what the customer allowed.",
+  };
+
+  const money = (c) => `$${(c / 100).toLocaleString("en-CA", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const time = (iso) => new Date(iso).toLocaleTimeString([], { hour: "numeric", minute: "2-digit", second: "2-digit" });
+
+  let institution = FIXTURE ? (params.get("inst") === "fintech" ? "fintech" : "bank") : null;
+  let fixtureData = null;
+
+  async function getJson(url) {
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) { const e = new Error(`HTTP ${res.status}`); e.status = res.status; throw e; }
+    return res.json();
+  }
+
+  async function loadLog() {
+    if (FIXTURE) {
+      fixtureData ??= await getJson("/fixtures/institution-log.json");
+      return { institution, entries: fixtureData[institution].entries };
+    }
+    return getJson("/log");
+  }
+
+  function headline(e) {
+    const a = e.action;
+    let what = "A request without a readable receipt";
+    if (a && a.type === "payment.create") what = `Payment of ${a.amountCents !== undefined ? money(a.amountCents) : "?"} to ${a.merchant} from ${a.account}`;
+    else if (a && a.type === "kyc.refresh") what = `KYC refresh on ${a.account}`;
+    else if (a) what = a.type;
+    if (e.result === "executed") return `${what}: executed`;
+    if (e.result === "duplicate") return `${what}: same receipt presented again, not run twice`;
+    return `${what}: refused at "${e.reason || "check"}"`;
+  }
+
+  const openKeys = new Set();
+  const seen = new Set();
+  let first = true;
+
+  function row(e, i) {
+    const key = `${e.ts}|${e.decisionId || i}`;
+    const fresh = !first && !seen.has(key);
+    seen.add(key);
+    if (fresh && PRESENT) { openKeys.clear(); openKeys.add(key); }
+    const open = openKeys.has(key);
+    const kind = e.result === "executed" ? "allowed" : e.result === "duplicate" ? "created" : "blocked";
+    const li = el("li", { class: `activity ${kind}${fresh ? " new" : ""}` });
+    const head = el("button", { class: "activity-head", type: "button", "aria-expanded": String(open) },
+      el("span", { class: `kind-icon ${kind}`, "aria-hidden": "true" }, e.result === "executed" ? "✓" : e.result === "duplicate" ? "=" : "✕"),
+      el("span", { class: "headline" }, headline(e)),
+      el("span", { class: "when" }, time(e.ts)));
+    head.addEventListener("click", () => { open ? openKeys.delete(key) : openKeys.add(key); render(); });
+    li.append(head);
+    if (open) {
+      const ran = new Map(e.checks.map((c) => [c.name, c]));
+      const failedAt = e.checks.findIndex((c) => !c.ok);
+      const names = ORDER.filter((n) => ran.has(n) || n !== "delegation chain");
+      const ol = el("ol", { class: "trace" });
+      let stopped = false;
+      names.forEach((n, idx) => {
+        const c = ran.get(n);
+        const status = stopped ? "not-reached" : !c ? "not-reached" : c.ok ? "ok" : "failed";
+        if (c && !c.ok) stopped = true;
+        const detail = status === "not-reached" ? "Not reached." : (c.detail || EXPLAIN[n]);
+        const step = el("li", { class: `step ${status}` },
+          el("span", { class: "step-icon", "aria-hidden": "true" }, { ok: "✓", failed: "✕", "not-reached": "–" }[status]),
+          el("div", {}, el("b", {}, n.charAt(0).toUpperCase() + n.slice(1)), el("div", { class: "step-detail" }, detail)));
+        if (fresh && PRESENT) { step.style.opacity = "0"; setTimeout(() => { step.style.transition = "opacity .35s"; step.style.opacity = "1"; }, 650 * idx); }
+        ol.append(step);
+      });
+      const tail = [];
+      if (e.institutionRef) tail.push(`Our reference ${e.institutionRef}.`);
+      if (e.ledger) tail.push(`We kept the gate's ledger checkpoint #${e.ledger.seq} (${e.ledger.hash.slice(0, 6)}…).`);
+      if (e.decisionId) tail.push(`Decision ${e.decisionId}.`);
+      li.append(el("div", { class: "trace-box" }, el("div", { class: "trace-title" }, "How we checked it"), ol,
+        tail.length ? el("p", { class: "muted" }, tail.join(" ")) : ""));
+    }
+    return li;
+  }
+
+  let entries = [];
+  function render() {
+    const executed = entries.filter((e) => e.result === "executed").length;
+    const refused = entries.filter((e) => e.result === "rejected").length;
+    const dupes = entries.filter((e) => e.result === "duplicate").length;
+    $("stats").replaceChildren(...[[executed, "executed"], [refused, "refused by our checks"], [dupes, "replays stopped"]]
+      .map(([n, l]) => el("div", { class: "stat" }, el("b", {}, String(n)), el("span", {}, l))));
+    $("log").replaceChildren(...entries.map(row));
+    $("empty").hidden = entries.length > 0;
+    first = false;
+  }
+
+  async function refresh() {
+    try {
+      const data = await loadLog();
+      institution = data.institution || institution;
+      const name = institution === "fintech" ? "Fintech" : "Bank";
+      $("title").textContent = `${name}: incoming agent requests`;
+      document.title = `${name}: incoming agent requests`;
+      $("source").textContent = FIXTURE ? "Fixture data (src/web/fixtures/institution-log.json), until the institution server has GET /log." : `Our own records, from the ${institution}'s database.`;
+      const json = JSON.stringify(data.entries);
+      if (json !== JSON.stringify(entries)) { entries = data.entries; render(); }
+    } catch (err) {
+      $("source").textContent = err.status === 404
+        ? "This institution does not serve GET /log yet (task 8). Add ?fixture=1 to preview with fixture data."
+        : `Could not load our log: ${err.message}`;
+    }
+  }
+
+  $("check").addEventListener("click", async () => {
+    const out = $("check-out");
+    out.className = "muted";
+    out.textContent = "Checking…";
+    try {
+      let r;
+      if (FIXTURE) {
+        fixtureData ??= await getJson("/fixtures/institution-log.json");
+        r = params.get("tamper") === "1" ? { ok: false, checked: fixtureData[institution].check.checked, firstMismatchSeq: institution === "fintech" ? 21 : 5 } : fixtureData[institution].check;
+      } else {
+        r = await getJson("/check");
+      }
+      if (r.ok) {
+        out.className = "chain-ok";
+        out.textContent = `Matches: all ${r.checked} of our checkpoints agree with the gate's ledger, and every gate signature is valid.`;
+      } else {
+        out.className = "chain-bad";
+        out.textContent = `MISMATCH at ledger entry #${r.firstMismatchSeq}: the gate's record no longer matches the checkpoint we kept. Someone changed history.`;
+      }
+      if (FIXTURE) out.textContent += " (fixture)";
+    } catch (err) {
+      out.className = "chain-bad";
+      out.textContent = err.status === 404 ? "This institution does not serve GET /check yet (task 8)." : `Could not check: ${err.message}`;
+    }
+  });
+
+  refresh();
+  setInterval(refresh, 2000);
+  </script>
+</body>
+</html>
