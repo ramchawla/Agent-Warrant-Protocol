@@ -31,7 +31,7 @@ type Saved = {
   verify?: ApprovalVerifyResponse;
 };
 
-const STEPS = ["Write the rule", "Strip the payload", "Match by meaning", "Release with Touch ID"];
+const STEPS = ["Write a rule", "Strip the data", "Match by meaning", "Release"];
 
 function Artifact({ complete, Narrative }: ChapterProps) {
   const saved = useResult<Saved>(6);
@@ -310,7 +310,7 @@ function MatchCard({ sem, fill, stamp }: { sem: Semantic; fill: boolean; stamp: 
         value={stage}
         maxHeight={210}
       />
-      <div className="relative flex flex-col rounded-xl border border-line bg-raised/95 p-4">
+      <div className="@container relative flex flex-col rounded-xl border border-line bg-raised/95 p-4">
         <div className="flex items-baseline justify-between">
           <span className="text-[13px] text-muted">{vector ? "Similarity to your rule" : "Keyword match score"}</span>
           <span className="font-mono text-[22px] text-amber">{fill ? sem.topScore.toFixed(2) : "0.00"}</span>
@@ -326,7 +326,12 @@ function MatchCard({ sem, fill, stamp }: { sem: Semantic; fill: boolean; stamp: 
         <p className="mt-3 text-[14px] leading-snug text-fg">“{sem.rule}”</p>
         <p className="mt-1 font-mono text-[12px] text-faint">path: {sem.path}</p>
         <div className="mt-auto flex min-h-[64px] items-end justify-center pt-2">
-          {stamp && <Stamp kind="touchid" reason={sem.action === "REQUIRE_FACEID" ? undefined : sem.action} />}
+          {stamp && (
+            <>
+              <span className="hidden @[21rem]:inline-flex"><Stamp kind="touchid" /></span>
+              <span className="@[21rem]:hidden"><Stamp kind="touchid" size="sm" /></span>
+            </>
+          )}
         </div>
       </div>
     </motion.section>

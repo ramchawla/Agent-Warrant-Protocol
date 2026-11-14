@@ -68,8 +68,8 @@ function Artifact({ complete, Narrative }: ChapterProps) {
         {err && <ErrorNote>{err}</ErrorNote>}
       </Narrative>
 
-      <div className="flex flex-col gap-5">
-        <div className="min-h-[68px]">
+      <div className="flex flex-col gap-4">
+        <div className="min-h-[64px]">
           {item ? (
             <AgentBubble text={item.agentText} />
           ) : (
@@ -84,7 +84,7 @@ function Artifact({ complete, Narrative }: ChapterProps) {
           dest={merchant}
         />
 
-        <div className="grid grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-4">
+        <div className="grid grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] gap-4">
           {item && n >= 2 ? <AtomicInspector trace={item.trace} /> : <Ghost>The gate's atomic write appears here.</Ghost>}
 
           {item && n >= 3 && item.receipt ? (
@@ -92,7 +92,7 @@ function Artifact({ complete, Narrative }: ChapterProps) {
               initial={{ opacity: 0, x: 16 }}
               animate={{ opacity: 1, x: 0 }}
               transition={spring}
-              className="flex flex-col rounded-2xl border border-line bg-raised/95"
+              className="@container flex flex-col rounded-2xl border border-line bg-raised/95"
               aria-label="The brokerage's own checks"
             >
               <header className="border-b border-line px-4 py-3">
@@ -128,7 +128,7 @@ function Artifact({ complete, Narrative }: ChapterProps) {
           )}
         </div>
 
-        <div className="rounded-2xl border border-line bg-raised/60 px-5 py-4">
+        <div className="rounded-2xl border border-line bg-raised/60 px-5 py-3.5">
           <Meter label="Warrant budget left" value={meterValue} max={total} />
         </div>
       </div>

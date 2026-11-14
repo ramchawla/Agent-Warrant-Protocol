@@ -6,12 +6,11 @@ import type { ChapterModule, ChapterProps } from "../ChapterShell";
 import * as api from "../api";
 import type { DemoItem, DemoStepResponse } from "../types";
 import { useStory, useResult } from "../store";
-import { AgentBubble } from "../components/AgentBubble";
 import { Meter } from "../components/Meter";
 import { PrimaryButton } from "../components/PrimaryButton";
 import { Stamp } from "../components/Stamp";
 import { spring, usd } from "../components/util";
-import { AtomicInspector, ErrorNote, Ghost, failingKey } from "./s2/parts";
+import { AtomicInspector, Claim, ErrorNote, Ghost, failingKey } from "./s2/parts";
 import { errText, useSteps } from "./s2/useSteps";
 
 const actionLabel = "Let the agent loose";
@@ -76,29 +75,31 @@ function Artifact({ complete, Narrative }: ChapterProps) {
       </Narrative>
 
       <div className="flex flex-col gap-5">
-        <ol className="flex min-h-[262px] flex-col gap-3" aria-label="Agent claims">
+        <ol className="flex min-h-[240px] flex-col gap-3.5" aria-label="Agent claims">
           {!res && <p className="pt-2 text-[15px] text-faint">The agent still holds the same warrant. Now it starts improvising.</p>}
           {items.map((it, i) =>
             n >= i * 2 + 1 ? (
               <li key={it.decisionId}>
-                <AgentBubble
+                <Claim
                   text={it.agentText}
                   aside={n >= i * 2 + 2 ? <Stamp kind={it.decision === "allow" ? "allowed" : "denied"} reason={it.reasonCode} size="sm" /> : null}
+                  note={
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: n >= i * 2 + 2 ? 1 : 0 }}
+                      transition={spring}
+                      className="mt-1.5 font-mono text-[12px] text-muted"
+                    >
+                      {why(it, w?.perActionMaxCents ?? 50000)}
+                    </motion.p>
+                  }
                 />
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: n >= i * 2 + 2 ? 1 : 0 }}
-                  transition={spring}
-                  className="mt-1.5 pl-11 font-mono text-[12px] text-muted"
-                >
-                  {why(it, w?.perActionMaxCents ?? 50000)}
-                </motion.p>
               </li>
             ) : null,
           )}
         </ol>
 
-        <div className="grid grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] gap-4">
+        <div className="grid grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] gap-4">
           {current ? (
             <AtomicInspector key={current.decisionId} trace={current.trace} fail={failingKey[current.reasonCode ?? ""]} />
           ) : (
@@ -112,7 +113,7 @@ function Artifact({ complete, Narrative }: ChapterProps) {
             </header>
             <div className="flex flex-1 flex-col justify-center px-5 py-4">
               <div className="flex items-baseline gap-3">
-                <span className={`font-display text-[64px] leading-none ${landed ? "text-fg" : "text-faint"}`}>{reached}</span>
+                <span className={`font-display text-[clamp(44px,5vw,64px)] leading-none ${landed ? "text-fg" : "text-faint"}`}>{reached}</span>
                 <span className="text-[14px] text-muted">orders received</span>
               </div>
               <AnimatePresence>
@@ -124,7 +125,7 @@ function Artifact({ complete, Narrative }: ChapterProps) {
               </AnimatePresence>
             </div>
             <div className="border-t border-line px-5 py-4">
-              <Meter label="Budget, untouched" value={w?.remainingCents ?? 50000} max={w?.totalLimitCents ?? 100000} />
+              <Meter label="Budget left" value={w?.remainingCents ?? 50000} max={w?.totalLimitCents ?? 100000} />
             </div>
           </section>
         </div>

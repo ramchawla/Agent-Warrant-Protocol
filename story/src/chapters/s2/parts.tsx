@@ -20,6 +20,20 @@ export const failingKey: Record<string, string> = {
 
 function Val({ v }: { v: unknown }) {
   if (typeof v === "string" && /^[A-Za-z0-9_-]{30,}$/.test(v)) return <Shorten value={v} head={10} tail={6} tone="muted" />;
+  // { "$gte": 50000 } reads as "$gte 50000": same query, half the width
+  if (v && typeof v === "object" && !Array.isArray(v)) {
+    const ops = Object.entries(v as Record<string, unknown>);
+    if (ops.every(([k]) => k.startsWith("$")))
+      return (
+        <span>
+          {ops.map(([k, x]) => (
+            <span key={k}>
+              <span className="text-amber/90">{k}</span> {JSON.stringify(x)}{" "}
+            </span>
+          ))}
+        </span>
+      );
+  }
   return <span>{JSON.stringify(v)}</span>;
 }
 
@@ -37,13 +51,13 @@ export function AtomicInspector({ trace, fail, shown = true }: { trace: Trace; f
       animate={{ opacity: shown ? 1 : 0.35, y: 0 }}
       transition={spring}
       aria-label="Gate inspector"
-      className="flex flex-col rounded-2xl border border-line bg-raised/95"
+      className="@container flex flex-col rounded-2xl border border-line bg-raised/95"
     >
       <header className="flex items-baseline justify-between gap-3 border-b border-line px-4 py-3">
-        <h3 className="text-[14px] font-medium text-fg">One atomic write</h3>
-        <span className="font-mono text-[12px] text-faint">warrants.findOneAndUpdate</span>
+        <h3 className="whitespace-nowrap text-[14px] font-medium text-fg">One atomic write</h3>
+        <span className="hidden truncate font-mono text-[12px] text-faint @[23rem]:inline">warrants.findOneAndUpdate</span>
       </header>
-      <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-1 px-4 py-3 font-mono text-[12.5px] leading-[1.55]">
+      <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 @[24rem]:gap-x-4 gap-y-1 px-4 py-3 font-mono text-[12.5px] leading-[1.55]">
         {rows.map(([k, v], i) => {
           const bad = fail === k;
           return (
@@ -57,7 +71,7 @@ export function AtomicInspector({ trace, fail, shown = true }: { trace: Trace; f
               <dt className={bad ? "text-red" : "text-muted"}>{k}</dt>
               <dd className={`min-w-0 break-all ${bad ? "text-red" : "text-fg"}`}>
                 <Val v={v} />
-                {bad && <span className="ml-2 text-[11px] text-red/80">no match</span>}
+                {bad && <span className="ml-2 whitespace-nowrap text-[11px] text-red/80">no match</span>}
               </dd>
             </motion.div>
           );
@@ -153,8 +167,8 @@ export function CheckRow({ label, ok, on, detail }: { label: string; ok: boolean
       >
         {ok ? <Check size={14} strokeWidth={2.5} aria-hidden /> : <X size={14} strokeWidth={2.5} aria-hidden />}
       </motion.span>
-      <span className={`text-[14px] transition-colors duration-300 ${on ? "text-fg" : "text-faint"}`}>{label}</span>
-      {detail && on && <span className="ml-auto font-mono text-[12px] text-muted">{detail}</span>}
+      <span className={`whitespace-nowrap text-[14px] transition-colors duration-300 ${on ? "text-fg" : "text-faint"}`}>{label}</span>
+      {detail && on && <span className="ml-auto hidden whitespace-nowrap font-mono text-[12px] text-muted @[20rem]:inline">{detail}</span>}
     </li>
   );
 }
@@ -172,5 +186,23 @@ export function Ghost({ children, h = 300 }: { children: ReactNode; h?: number }
     <div style={{ minHeight: h }} className="grid place-items-center rounded-2xl border border-dashed border-line px-6 text-center text-[13px] text-faint">
       {children}
     </div>
+  );
+}
+
+/** Agent claim without the name line (tighter than AgentBubble, for stacks of claims). */
+export function Claim({ text, aside, note }: { text: string; aside?: ReactNode; note?: ReactNode }) {
+  return (
+    <motion.div initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={spring} className="flex items-start gap-3">
+      <span className="mt-1 grid h-8 w-8 shrink-0 place-items-center rounded-full border border-line-strong bg-raised text-muted">
+        <Bot size={16} strokeWidth={1.75} aria-hidden />
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-4">
+          <p className="rounded-2xl rounded-tl-sm border border-line bg-raised px-4 py-2.5 text-[16px] leading-snug text-fg">{text}</p>
+          {aside}
+        </div>
+        {note}
+      </div>
+    </motion.div>
   );
 }
