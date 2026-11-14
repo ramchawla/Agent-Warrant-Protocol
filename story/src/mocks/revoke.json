@@ -15,8 +15,8 @@
       },
       "decision": "deny",
       "reasonCode": "WARRANT_REVOKED",
-      "decisionId": "dec_01JD8P00028",
-      "seq": 28,
+      "decisionId": "dec_01JD8R0001",
+      "seq": 30,
       "remainingCents": 0,
       "trace": {
         "atomicUpdate": {
@@ -24,21 +24,21 @@
             "_id": "wrt_01JD8NVDA",
             "state.status": "active",
             "state.remainingCents": {
-              "$gte": 50000
+              "$gte": 5000
             },
             "expiresAt": {
-              "$gt": "2026-11-14T15:30:00.000Z"
+              "$gt": "2026-11-14T15:35:04.000Z"
             }
           },
           "update": {
             "$inc": {
-              "state.remainingCents": -50000,
+              "state.remainingCents": -5000,
               "state.actionCount": 1
             }
           },
           "matched": 0
         },
-        "gateMs": 14
+        "gateMs": 7
       }
     }
   ],
