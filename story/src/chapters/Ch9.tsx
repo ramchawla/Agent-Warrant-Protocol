@@ -7,7 +7,7 @@ import { Bot, Fingerprint, Landmark, Leaf, ScrollText, ShieldCheck, type LucideI
 import type { ChapterModule, ChapterProps } from "../ChapterShell";
 import { spring } from "../components/util";
 
-const TEAM = "Ram · Jackson"; // placeholder, Max to confirm
+const TEAM = "Ram Chawla · Jackson Lippert";
 
 const nodes: { icon: LucideIcon; title: string; sub: string; tone: string }[] = [
   { icon: Fingerprint, title: "Touch ID", sub: "a real person signs", tone: "text-amber" },
