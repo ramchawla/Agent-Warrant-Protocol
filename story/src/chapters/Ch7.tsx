@@ -190,8 +190,8 @@ function Artifact({ complete, Narrative }: ChapterProps) {
                   {usd(c.remainingCents)} left
                 </p>
                 <p className="mt-2.5 text-[14px] text-muted">
-                  {c.allowed + c.denied} purchases in parallel, all decided in{" "}
-                  <span className="font-mono text-fg">{c.elapsedMs.toLocaleString()} ms</span>. Each is one atomic write, so no two can spend the same dollar.
+                  {/* ponytail: live elapsedMs is ~20 s (each allowed buy settles at the brokerage), so it is not shown */}
+                  {c.allowed + c.denied} purchases in parallel. Each is one atomic write, so no two can spend the same dollar.
                 </p>
               </motion.div>
             ) : (

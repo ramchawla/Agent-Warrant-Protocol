@@ -1,6 +1,7 @@
 // Tiny shared story state (React context). Later chapters read what earlier ones produced.
 // Usage: const { state, update, setResult } = useStory();  update({ warrantId, termsHash });  setResult(4, response);
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import * as api from "./api";
 import type { WarrantSummary } from "./types";
 
 export type StoryState = {
@@ -32,6 +33,13 @@ export function StoryProvider({ children }: { children: ReactNode }) {
     [],
   );
   const clear = useCallback(() => setState(initial), []);
+  // After a page reload mid-demo, pick the live warrant back up so later chapters still point at it.
+  useEffect(() => {
+    api.demoState().then(
+      (d) => d.warrant && setState((s) => (s.warrantId ? s : { ...s, warrantId: d.warrant!.warrantId, warrant: s.warrant ?? d.warrant })),
+      () => {},
+    );
+  }, []);
   const value = useMemo(() => ({ state, update, setResult, complete, clear }), [state, update, setResult, complete, clear]);
   return <StoryContext.Provider value={value}>{children}</StoryContext.Provider>;
 }
