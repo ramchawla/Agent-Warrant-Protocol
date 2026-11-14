@@ -256,8 +256,29 @@ const compact = (v: unknown) => {
   return t.length > 64 ? t.slice(0, 61) + "…" : t;
 };
 
+/** removed entries are "customer.ssn (SSN)" or "note (email masked)": path plus why. Groups them by path. */
+function removedRows(removed: string[]) {
+  const rows = new Map<string, { labels: string[]; masked: boolean }>();
+  for (const r of removed) {
+    const [, path = r, label = ""] = /^(.+?) \((.+)\)$/.exec(r) ?? [];
+    const row = rows.get(path) ?? { labels: [], masked: false };
+    row.labels.push(label.replace(/ masked$/, ""));
+    row.masked ||= label.endsWith("masked");
+    rows.set(path, row);
+  }
+  return [...rows].map(([path, row]) => ({ path, ...row }));
+}
+
+/** Reads "accounts[0].number" out of an object. */
+function at(obj: unknown, path: string): unknown {
+  return path.split(/\.|\[(\d+)\]/).filter(Boolean).reduce<unknown>((o, k) => (o && typeof o === "object" ? (o as Record<string, unknown>)[k] : undefined), obj);
+}
+
 function Redaction({ m, strike }: { m: Minimize; strike: boolean }) {
   const pct = Math.round((1 - m.tokensAfter / Math.max(1, m.tokensBefore)) * 100);
+  const rows = removedRows(m.removed);
+  const touched = new Set(rows.map((r) => r.path.split(/[.[]/)[0]));
+  const kept = Object.keys(m.before).filter((k) => !touched.has(k));
   return (
     <motion.section initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={spring} className="rounded-2xl border border-line bg-raised/95">
       <header className="flex items-center justify-between gap-3 border-b border-line px-4 py-3">
@@ -270,30 +291,32 @@ function Redaction({ m, strike }: { m: Minimize; strike: boolean }) {
         </span>
       </header>
       <ul className="px-4 py-2.5 font-mono text-[13px] leading-[1.75]">
-        {Object.entries(m.before).map(([k, v], i) => {
-          const gone = m.removed.includes(k);
-          return (
-            <li key={k} className="relative flex gap-3">
-              <span className={gone && strike ? "text-red/80" : "text-muted"}>{k}</span>
-              <span className="relative min-w-0 truncate text-fg">
-                <motion.span initial={false} animate={{ opacity: gone && strike ? 0.45 : 1 }} transition={{ delay: i * 0.08 }} className={gone && strike ? "text-red" : ""}>
-                  {compact(v)}
-                </motion.span>
-                {gone && (
-                  <motion.span
-                    aria-hidden
-                    className="absolute left-0 top-1/2 h-[1.5px] bg-red"
-                    initial={false}
-                    animate={{ width: strike ? "100%" : "0%" }}
-                    transition={{ duration: 0.45, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
-                  />
-                )}
+        {rows.map(({ path, labels, masked }, i) => (
+          <li key={path} className="relative flex gap-3">
+            <span className={`shrink-0 ${strike ? "text-red/80" : "text-muted"}`}>{path}</span>
+            <span className="relative min-w-0 truncate text-fg">
+              <motion.span initial={false} animate={{ opacity: strike ? 0.45 : 1 }} transition={{ delay: i * 0.08 }} className={strike ? "text-red" : ""}>
+                {compact(at(m.before, path))}
+              </motion.span>
+              <motion.span
+                aria-hidden
+                className="absolute left-0 top-1/2 h-[1.5px] bg-red"
+                initial={false}
+                animate={{ width: strike ? "100%" : "0%" }}
+                transition={{ duration: 0.45, delay: i * 0.08, ease: [0.22, 1, 0.36, 1] }}
+              />
+            </span>
+            {strike && (
+              <span className="ml-auto shrink-0 text-[11px] text-red/80">
+                {labels.join(", ")} {masked ? "masked" : "removed"}
               </span>
-              {gone && strike && <span className="ml-auto shrink-0 text-[11px] text-red/80">removed</span>}
-            </li>
-          );
-        })}
+            )}
+          </li>
+        ))}
       </ul>
+      {kept.length > 0 && (
+        <p className="border-t border-line px-4 py-2 font-mono text-[12px] text-faint">kept: {kept.join(", ")}</p>
+      )}
     </motion.section>
   );
 }
@@ -339,7 +362,7 @@ function MatchCard({ sem, fill, stamp }: { sem: Semantic; fill: boolean; stamp: 
 }
 
 function LlmPanel({ verify, removed }: { verify: ApprovalVerifyResponse; removed: string[] }) {
-  const absent = removed.filter((k) => !(k in verify.sentToLlm));
+  const absent = removedRows(removed).filter((r) => !r.masked && at(verify.sentToLlm, r.path) === undefined).map((r) => r.path);
   const claude = verify.llmSource === "claude";
   return (
     <motion.section

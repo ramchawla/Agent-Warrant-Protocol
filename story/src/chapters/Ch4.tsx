@@ -109,16 +109,19 @@ function Artifact({ complete, Narrative }: ChapterProps) {
               <div className="mt-auto flex min-h-[68px] items-center border-t border-line px-4 py-3">
                 <AnimatePresence>
                   {n >= 7 && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 1.5, rotate: -10 }}
-                      animate={{ opacity: 1, scale: 1, rotate: -3 }}
-                      transition={{ type: "spring", stiffness: 520, damping: 26, mass: 0.7 }}
-                      className={`inline-flex items-baseline gap-3 rounded-md border-2 px-3 py-1 ${executed ? "border-green text-green" : "border-red text-red"}`}
-                      role="status"
-                    >
-                      <span className="text-[18px] font-semibold tracking-[0.12em]">{executed ? "EXECUTED" : "REJECTED"}</span>
-                      {checks?.institutionRef && <span className="font-mono text-[12px] opacity-80">{checks.institutionRef}</span>}
-                    </motion.div>
+                    <div className="flex min-w-0 flex-col items-start gap-1.5">
+                      <motion.div
+                        initial={{ opacity: 0, scale: 1.5, rotate: -10 }}
+                        animate={{ opacity: 1, scale: 1, rotate: -3 }}
+                        transition={{ type: "spring", stiffness: 520, damping: 26, mass: 0.7 }}
+                        className={`inline-flex rounded-md border-2 px-3 py-1 ${executed ? "border-green text-green" : "border-red text-red"}`}
+                        role="status"
+                      >
+                        <span className="text-[18px] font-semibold tracking-[0.12em]">{executed ? "EXECUTED" : "REJECTED"}</span>
+                      </motion.div>
+                      {/* ponytail: the real ref (fin_pay_<16 hex>) is too long to sit inside the stamp */}
+                      {checks?.institutionRef && <span className="max-w-full truncate font-mono text-[11.5px] text-faint">{checks.institutionRef}</span>}
+                    </div>
                   )}
                 </AnimatePresence>
               </div>
