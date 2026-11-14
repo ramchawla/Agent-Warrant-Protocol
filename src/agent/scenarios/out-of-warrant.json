@@ -1,0 +1,5 @@
+[
+  { "label": "KYC refresh A9 (not in warrant)", "action": { "type": "kyc.refresh", "destination": "bank", "params": { "account": "A9", "fields": ["name", "address"] } }, "expect": "ACCOUNT_NOT_ALLOWED" },
+  { "label": "Pay $80.00 to M1 (over $50 cap)", "action": { "type": "payment.create", "destination": "fintech", "params": { "fromAccount": "A1", "merchant": "M1", "amountCents": 8000, "currency": "CAD" } }, "expect": "PER_ACTION_LIMIT" },
+  { "label": "Pay $20.00 to M2 (not in warrant)", "action": { "type": "payment.create", "destination": "fintech", "params": { "fromAccount": "A1", "merchant": "M2", "amountCents": 2000, "currency": "CAD" } }, "expect": "MERCHANT_NOT_ALLOWED" }
+]

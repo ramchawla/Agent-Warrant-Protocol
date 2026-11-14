@@ -1,0 +1,6 @@
+[
+  { "label": "KYC refresh A1", "action": { "type": "kyc.refresh", "destination": "bank", "params": { "account": "A1", "fields": ["name", "address"] } }, "expect": "allow" },
+  { "label": "KYC refresh A2", "action": { "type": "kyc.refresh", "destination": "bank", "params": { "account": "A2", "fields": ["name", "address"] } }, "expect": "allow" },
+  { "label": "KYC refresh A3", "action": { "type": "kyc.refresh", "destination": "bank", "params": { "account": "A3", "fields": ["name", "address"] } }, "expect": "allow" },
+  { "label": "Pay $30.00 to M1 from A1", "action": { "type": "payment.create", "destination": "fintech", "params": { "fromAccount": "A1", "merchant": "M1", "amountCents": 3000, "currency": "CAD", "memo": "invoice 1042" } }, "expect": "allow" }
+]

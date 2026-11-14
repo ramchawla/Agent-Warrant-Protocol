@@ -1,0 +1,3 @@
+[
+  { "label": "Pay $10.00 to M1", "action": { "type": "payment.create", "destination": "fintech", "params": { "fromAccount": "A1", "merchant": "M1", "amountCents": 1000, "currency": "CAD" } }, "count": 20, "parallel": true }
+]
