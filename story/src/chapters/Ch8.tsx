@@ -54,7 +54,8 @@ function label(e: AuditEvent) {
 
 type Row = { kind: "one"; e: AuditEvent } | { kind: "burst"; events: AuditEvent[] };
 
-/** Consecutive DECISION events within one second of each other (≥5) render as one burst row. */
+/** Runs of ≥5 consecutive same-type DECISION or EXECUTION events, each within 3 s of the previous, render as one row.
+ *  Live, the 20-way burst lands as ~0.6 s-apart decisions followed by the brokerage executions. */
 function group(events: AuditEvent[]): Row[] {
   const rows: Row[] = [];
   let run: AuditEvent[] = [];
@@ -63,12 +64,13 @@ function group(events: AuditEvent[]): Row[] {
     else run.forEach((e) => rows.push({ kind: "one", e }));
     run = [];
   };
+  const groupable = (e: AuditEvent) => e.type === "DECISION" || e.type === "EXECUTION";
   for (const e of events) {
-    const near = run.length && e.type === "DECISION" && Date.parse(e.ts) - Date.parse(run[0].ts) < 1000;
-    if (near) run.push(e);
+    const prev = run[run.length - 1];
+    if (prev && e.type === prev.type && Date.parse(e.ts) - Date.parse(prev.ts) < 3000) run.push(e);
     else {
       flush();
-      if (e.type === "DECISION") run.push(e);
+      if (groupable(e)) run.push(e);
       else rows.push({ kind: "one", e });
     }
   }
@@ -111,14 +113,18 @@ function Timeline({ events, verify, tampered }: { events: AuditEvent[]; verify: 
               <span className="w-[44px] shrink-0 pt-[3px] font-mono text-[12px] tabular-nums text-faint">{first}–{last}</span>
               <div className="min-w-0 flex-1">
                 <div className="text-[14px] text-fg">
-                  {r.events.length} purchases at once <span className="text-muted">· {allowed} allowed · {r.events.length - allowed} denied</span>
+                  {r.events[0].type === "EXECUTION" ? (
+                    <>{r.events.length} executed by the brokerage</>
+                  ) : (
+                    <>{r.events.length} purchases at once <span className="text-muted">· {allowed} allowed · {r.events.length - allowed} denied</span></>
+                  )}
                 </div>
                 <div className="mt-1.5 flex flex-wrap gap-1">
                   {r.events.map((e) => (
                     <span
                       key={e.seq}
                       title={`#${e.seq} ${e.summary}`}
-                      className={`h-2 w-2 rounded-full ${e.seq === broken ? "ring-2 ring-red" : ""} ${e.decision === "allow" ? "bg-green/80" : "bg-red/70"}`}
+                      className={`h-2 w-2 rounded-full ${e.seq === broken ? "ring-2 ring-red" : ""} ${e.decision === "allow" || e.type === "EXECUTION" ? "bg-green/80" : "bg-red/70"}`}
                     />
                   ))}
                 </div>
@@ -202,7 +208,7 @@ function Verdict({
 
 function Artifact({ complete, Narrative }: ChapterProps) {
   const { state } = useStory();
-  const warrantId = state.warrantId ?? state.warrant?.warrantId ?? "wrt_01JD8NVDA"; // ponytail: demo warrant id when entered directly
+  const warrantId = state.warrantId ?? state.warrant?.warrantId ?? (api.isMock() ? "wrt_01JD8NVDA" : ""); // live: seeded from /api/demo/state
   const [events, setEvents] = useState<AuditEvent[] | null>(null);
   const [sig, setSig] = useState<VerifyApprovalResponse | null>(null);
   const [chain, setChain] = useState<LedgerVerifyResponse | null>(null);
