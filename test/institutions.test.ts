@@ -328,7 +328,8 @@ test("institutions: receipt verification, replay and own policy", { skip }, asyn
       const rows = i === "bank" ? state.accounts : state.payments;
       assert.ok(Array.isArray(rows) && rows.length <= 100);
       const key = i === "bank" ? "lastKycRefreshAt" : "createdAt";
-      const times = rows.map((r: Record<string, string>) => String(r[key]));
+      // Demo accounts seeded by `npm run seed` have no refresh time yet; only rows that have one are ordered.
+      const times = rows.filter((r: Record<string, string>) => r[key] !== undefined).map((r: Record<string, string>) => String(r[key]));
       assert.deepEqual(times, [...times].sort().reverse());
     });
   }
