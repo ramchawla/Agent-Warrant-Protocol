@@ -4,12 +4,201 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Agent Warrant Protocol</title>
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <!-- Stub. Owner: Jackson. Customer: register a passkey and create a warrant (task 3) -->
-  <h1>Agent Warrant Protocol</h1>
-  <p>Customer: register a passkey and create a warrant (task 3). Not built yet.</p>
+  <!-- Owner: Jackson. Customer: register a passkey and create a warrant (task 3, REQ-001, REQ-002) -->
+  <main>
+    <header>
+      <h1>Agent Warrant Protocol</h1>
+      <p>Don't give agents your keys. Give them a warrant.</p>
+    </header>
+
+    <section id="passkey">
+      <h2>1. Your passkey</h2>
+      <p class="muted" id="who">Checking your session…</p>
+      <label for="name">Your name</label>
+      <input type="text" id="name" value="Demo customer" maxlength="80">
+      <button id="register">Register a passkey on this device</button>
+      <button id="reenroll" class="secondary" hidden>Enroll again at the bank and fintech</button>
+      <div id="passkey-msg" class="msg" hidden></div>
+    </section>
+
+    <section id="warrant">
+      <h2>2. What may your agent do?</h2>
+      <label for="template">Start from</label>
+      <select id="template">
+        <option value="demo">KYC refresh and payments (demo warrant)</option>
+        <option value="kyc">KYC refresh only</option>
+        <option value="pay">Payments only</option>
+      </select>
+
+      <label for="agent">Agent ID</label>
+      <input type="text" id="agent" value="agt_demo" autocomplete="off">
+
+      <label>Actions</label>
+      <div class="checks">
+        <label><input type="checkbox" id="act-kyc"> Refresh KYC records (bank)</label>
+        <label><input type="checkbox" id="act-pay"> Make payments (fintech)</label>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="accounts">Accounts</label>
+          <input type="text" id="accounts" placeholder="A1, A2, A3">
+        </div>
+        <div>
+          <label for="merchants">Merchants (payments)</label>
+          <input type="text" id="merchants" placeholder="M1">
+        </div>
+      </div>
+      <div class="row">
+        <div>
+          <label for="per">Most per payment (CAD)</label>
+          <input type="text" id="per" inputmode="decimal">
+        </div>
+        <div>
+          <label for="total">Most in total (CAD)</label>
+          <input type="text" id="total" inputmode="decimal">
+        </div>
+      </div>
+      <label for="until">Ends today at</label>
+      <input type="time" id="until">
+
+      <button id="create" disabled>Review terms</button>
+      <div id="warrant-msg" class="msg" hidden></div>
+    </section>
+  </main>
+
   <script src="/vendor/index.umd.min.js"></script>
   <script src="/app.js"></script>
+  <script>
+  "use strict";
+  const { api, userId, toCents, list, say, passkeyError } = window.AWP;
+  const $ = (id) => document.getElementById(id);
+
+  // Allowed parameter names per action (PRD 8.5, 8.9). Fixed here, not typed by the customer.
+  const FIELDS = {
+    "kyc.refresh": ["account", "fields"],
+    "payment.create": ["fromAccount", "merchant", "amountCents", "currency", "memo"],
+    "data.export": [],
+  };
+  const DESTINATION = { "kyc.refresh": "bank", "payment.create": "fintech" };
+  const TEMPLATES = {
+    demo: { kyc: true, pay: true, accounts: "A1, A2, A3, A4, A5", merchants: "M1", per: "50.00", total: "120.00", until: "17:00" },
+    kyc: { kyc: true, pay: false, accounts: "A1, A2, A3, A4, A5", merchants: "", per: "0.00", total: "0.00", until: "17:00" },
+    pay: { kyc: false, pay: true, accounts: "A1", merchants: "M1", per: "10.00", total: "100.00", until: "17:00" },
+  };
+
+  function applyTemplate(name) {
+    const t = TEMPLATES[name];
+    $("act-kyc").checked = t.kyc;
+    $("act-pay").checked = t.pay;
+    $("accounts").value = t.accounts;
+    $("merchants").value = t.merchants;
+    $("per").value = t.per;
+    $("total").value = t.total;
+    $("until").value = t.until;
+  }
+
+  function setSignedIn(id) {
+    $("who").textContent = id ? `Signed in as ${id}.` : "Not signed in. Register a passkey to start.";
+    $("create").disabled = !id;
+    $("reenroll").hidden = !id;
+  }
+
+  async function checkSession() {
+    try { setSignedIn((await api("GET", "/api/passkey/session")).userId); }
+    catch { setSignedIn(null); }
+  }
+
+  function enrolledText(e) {
+    const mark = (ok) => (ok ? "yes" : "not yet");
+    return `Bank enrolled: ${mark(e.bank)}. Fintech enrolled: ${mark(e.fintech)}.`;
+  }
+
+  $("register").addEventListener("click", async () => {
+    const msg = $("passkey-msg");
+    const button = $("register");
+    button.disabled = true;
+    say(msg, "info", "Follow the prompt on this device…");
+    try {
+      const id = userId();
+      const optionsJSON = await api("POST", "/api/passkey/register/options", { userId: id, name: $("name").value.trim() || undefined });
+      const response = await SimpleWebAuthnBrowser.startRegistration({ optionsJSON });
+      const result = await api("POST", "/api/passkey/register/verify", { userId: id, response });
+      say(msg, result.enrolled.bank && result.enrolled.fintech ? "ok" : "info", `Passkey registered. ${enrolledText(result.enrolled)}`);
+      setSignedIn(id);
+    } catch (err) {
+      say(msg, "error", passkeyError(err));
+    } finally {
+      button.disabled = false;
+    }
+  });
+
+  $("reenroll").addEventListener("click", async () => {
+    const msg = $("passkey-msg");
+    try {
+      const { enrolled } = await api("POST", "/api/passkey/enroll", {});
+      say(msg, enrolled.bank && enrolled.fintech ? "ok" : "info", enrolledText(enrolled));
+    } catch (err) {
+      say(msg, "error", err.message);
+    }
+  });
+
+  function readTerms() {
+    const actions = [];
+    if ($("act-kyc").checked) actions.push("kyc.refresh");
+    if ($("act-pay").checked) actions.push("payment.create");
+    if (actions.length === 0) throw new Error("Pick at least one action.");
+
+    const per = toCents($("per").value);
+    const total = toCents($("total").value);
+    if (per === null || total === null) throw new Error("Amounts must look like 50 or 50.00.");
+    if (per > total) throw new Error("The most per payment cannot be more than the total.");
+
+    const [h, m] = ($("until").value || "").split(":").map(Number);
+    if (Number.isNaN(h) || Number.isNaN(m)) throw new Error("Pick an end time.");
+    const end = new Date();
+    end.setHours(h, m, 0, 0);
+    if (end <= new Date()) throw new Error("The end time has already passed today.");
+
+    const fields = {};
+    for (const a of actions) fields[a] = FIELDS[a];
+    return {
+      v: 1,
+      userId: userId(),
+      agentId: $("agent").value.trim(),
+      scope: {
+        actions,
+        accounts: list($("accounts").value),
+        merchants: actions.includes("payment.create") ? list($("merchants").value) : [],
+        destinations: [...new Set(actions.map((a) => DESTINATION[a]))],
+        fields,
+      },
+      currency: "CAD",
+      perActionMaxCents: actions.includes("payment.create") ? per : 0,
+      totalLimitCents: actions.includes("payment.create") ? total : 0,
+      notBefore: new Date().toISOString(),
+      expiresAt: end.toISOString(),
+    };
+  }
+
+  $("create").addEventListener("click", async () => {
+    const msg = $("warrant-msg");
+    try {
+      const terms = readTerms();
+      say(msg, "info", "Creating…");
+      const { warrantId } = await api("POST", "/api/warrants", { terms });
+      location.href = `/approve.html?id=${encodeURIComponent(warrantId)}`;
+    } catch (err) {
+      say(msg, "error", err.message);
+    }
+  });
+
+  $("template").addEventListener("change", (e) => applyTemplate(e.target.value));
+  applyTemplate("demo");
+  checkSession();
+  </script>
 </body>
 </html>

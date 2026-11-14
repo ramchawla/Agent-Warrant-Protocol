@@ -3,13 +3,80 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Agent Warrant Protocol</title>
+  <title>Approve warrant</title>
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <!-- Stub. Owner: Jackson. Customer: review and approve a warrant (task 3) -->
-  <h1>Agent Warrant Protocol</h1>
-  <p>Customer: review and approve a warrant (task 3). Not built yet.</p>
+  <!-- Owner: Jackson. Customer: review and approve a warrant (task 3, Story 1, REQ-003) -->
+  <main>
+    <header>
+      <h1>Approve this warrant</h1>
+      <p>Your passkey signs exactly these terms. Change one word and the signature no longer matches.</p>
+    </header>
+
+    <section>
+      <h2>Your agent may <span id="status" class="badge"></span></h2>
+      <ol id="terms" class="terms"></ol>
+      <div id="worst" class="worst" hidden></div>
+      <ul id="warnings" class="warnings" hidden></ul>
+      <p class="fingerprint" id="hash"></p>
+      <button id="approve" disabled>Approve with passkey</button>
+      <div id="msg" class="msg" hidden></div>
+      <p class="muted"><a href="/">Back</a></p>
+    </section>
+  </main>
+
   <script src="/vendor/index.umd.min.js"></script>
   <script src="/app.js"></script>
+  <script>
+  "use strict";
+  const { api, say, passkeyError, el } = window.AWP;
+  const $ = (id) => document.getElementById(id);
+  const warrantId = new URLSearchParams(location.search).get("id") || "";
+  let displayedHash = null;
+
+  function render(doc) {
+    const lines = doc.plain.slice();
+    const worst = lines.pop();                         // the worst-case line is always last
+    $("terms").replaceChildren(...lines.map((l) => el("li", {}, l)));
+    $("worst").textContent = worst;
+    $("worst").hidden = false;
+    $("warnings").replaceChildren(...(doc.warnings || []).map((w) => el("li", {}, w)));
+    $("warnings").hidden = !(doc.warnings && doc.warnings.length);
+    $("status").textContent = doc.state.status;
+    $("status").className = `badge ${doc.state.status}`;
+    $("hash").textContent = `Terms fingerprint (SHA-256): ${doc.termsHash}`;
+    displayedHash = doc.termsHash;
+    $("approve").disabled = doc.state.status !== "pending";
+    if (doc.state.status === "active") say($("msg"), "ok", "Approved. Your agent can now act inside these terms, and nothing outside them.");
+  }
+
+  async function load() {
+    try {
+      render(await api("GET", `/api/warrants/${encodeURIComponent(warrantId)}`));
+    } catch (err) {
+      say($("msg"), "error", err.status === 401 ? "Sign in with your passkey on the home page first." : err.message);
+    }
+  }
+
+  $("approve").addEventListener("click", async () => {
+    const msg = $("msg");
+    const button = $("approve");
+    button.disabled = true;
+    say(msg, "info", "Confirm with your fingerprint or face on this device…");
+    try {
+      // Send the hash this page displayed; the gate refuses (409) if the stored terms differ.
+      const optionsJSON = await api("POST", `/api/warrants/${encodeURIComponent(warrantId)}/approve/options`, { termsHash: displayedHash });
+      const response = await SimpleWebAuthnBrowser.startAuthentication({ optionsJSON });
+      await api("POST", `/api/warrants/${encodeURIComponent(warrantId)}/approve/verify`, { response });
+      await load();
+    } catch (err) {
+      say(msg, "error", err.status === 409 ? `Not approved: ${err.message}` : passkeyError(err));
+      button.disabled = false;
+    }
+  });
+
+  load();
+  </script>
 </body>
 </html>
