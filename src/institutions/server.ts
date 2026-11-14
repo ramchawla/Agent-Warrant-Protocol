@@ -58,7 +58,7 @@ type Result = { status: number; body: Record<string, unknown> };
 type Seen = { _id: string; state: "processing" | "done"; receivedAt: Date; result?: Result };
 
 // Verifier reason -> HTTP status: 400 malformed; 403 scope, limit or chain refusals; otherwise 401 (signature, credential, audience, expiry, terms hash).
-const FORBIDDEN = new Set(["CHAIN_NOT_SUBSET", "WARRANT_EXPIRED", "ACTION_OUT_OF_SCOPE", "AMOUNT_OVER_LIMIT", "ACTION_HASH_MISMATCH"]);
+const FORBIDDEN = new Set(["CHAIN_NOT_SUBSET", "WARRANT_EXPIRED", "ACTION_OUT_OF_SCOPE", "AMOUNT_OVER_LIMIT", "ACTION_HASH_MISMATCH", "WARRANT_NOT_YET_VALID"]);
 const statusFor = (reason: string): number => (reason === "MALFORMED" ? 400 : FORBIDDEN.has(reason) ? 403 : 401);
 
 const digest = (text: string): Buffer => createHash("sha256").update(text).digest();
@@ -128,11 +128,17 @@ export async function buildInstitution(institution: InstitutionId, options: { lo
     const body = EnrollBody.safeParse(req.body);
     if (!body.success) return reply.code(400).send({ error: "invalid enrollment" });
     const { userId, credential } = body.data;
-    await credentialsColl.updateOne(
-      { _id: credential.id },
-      { $set: { userId, publicKey: new Binary(fromB64url(credential.publicKey)), enrolledAt: new Date() } },
-      { upsert: true },
-    );
+    // Insert-only: a credential ID is never rebound to another user or given a new key. Repeating an identical enrollment is fine.
+    const publicKey = new Binary(fromB64url(credential.publicKey));
+    try {
+      await credentialsColl.insertOne({ _id: credential.id, userId, publicKey, enrolledAt: new Date() });
+    } catch (error) {
+      if ((error as { code?: number }).code !== 11000) throw error;
+      const existing = await credentialsColl.findOne({ _id: credential.id });
+      if (existing?.userId !== userId || !Buffer.from(existing.publicKey.value()).equals(Buffer.from(publicKey.value()))) {
+        return reply.code(409).send({ error: "credential already enrolled with different details" });
+      }
+    }
     return { enrolled: true };
   });
 

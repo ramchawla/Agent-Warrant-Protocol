@@ -293,6 +293,21 @@ test("institutions: receipt verification, replay and own policy", { skip }, asyn
       assert.equal(again.json().duplicate, true);
     });
 
+    await t.test(`${i}: enrollment never rebinds an existing credential`, async () => {
+      const { userId, auth } = await enrolledUser();
+      // The same enrollment again is idempotent.
+      assert.equal((await enroll(i, userId, auth)).statusCode, 200);
+      // Another user cannot claim the credential ID.
+      assert.equal((await enroll(i, newId("usr"), auth)).statusCode, 409);
+      // Nor can the ID be given a different public key.
+      const other = createSoftAuthenticator();
+      const swap = await apps[i].inject({ method: "POST", url: "/enroll", headers: enrollHeaders, payload: { userId, credential: { id: auth.credentialId, publicKey: b64url(other.publicKey) } } });
+      assert.equal(swap.statusCode, 409);
+      const stored = await dbOf(i).collection("enrolled_credentials").findOne({ _id: auth.credentialId as never });
+      assert.equal(stored?.userId, userId);
+      assert.deepEqual(Buffer.from(stored?.publicKey.value()), Buffer.from(auth.publicKey));
+    });
+
     await t.test(`${i}: enrollment needs the secret and a well-formed body`, async () => {
       const auth = createSoftAuthenticator();
       const userId = newId("usr");
