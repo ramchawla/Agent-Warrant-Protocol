@@ -7,10 +7,24 @@
         "destination": "llm",
         "params": {
           "payload": {
-            "owner": "Ram",
+            "owner": "Ram Chawla",
+            "ssn": "123-45-6789",
+            "accounts": [
+              {
+                "name": "SAVINGS",
+                "number": "0042 1188 9031"
+              },
+              {
+                "name": "CHECKING",
+                "number": "0042 7719 2210"
+              }
+            ],
+            "routingNumber": "021000021",
+            "period": "2026-11-14",
             "holdings": [
               {
                 "symbol": "NVDA",
+                "shares": 3,
                 "valueCents": 50000
               }
             ]
@@ -19,59 +33,73 @@
       },
       "decision": "deny",
       "reasonCode": "APPROVAL_REQUIRED",
-      "decisionId": "dec_01JD8P0007",
+      "decisionId": "dec_01JD8P5D4F",
       "seq": 7,
       "remainingCents": 50000,
       "trace": {
         "atomicUpdate": {
           "filter": {
             "_id": "wrt_01JD8NVDA",
-            "state.status": "active",
-            "state.remainingCents": {
-              "$gte": 50000
-            },
+            "status": "active",
+            "termsHash": "hk7xghAvREaDBWKRNcvXXW9bdWlrE8K4-fskaqwddl4",
+            "terms.destinations": "llm",
             "expiresAt": {
-              "$gt": "2026-11-14T15:30:00.000Z"
+              "$gt": "2026-11-14T20:31:02.114Z"
             }
           },
           "update": {
             "$inc": {
-              "state.remainingCents": -50000,
               "state.actionCount": 1
+            },
+            "$set": {
+              "state.lastDecisionAt": "2026-11-14T20:31:02.114Z"
             }
           },
-          "matched": 0
+          "matched": 1
         },
-        "gateMs": 14,
+        "gateMs": 212,
         "minimize": {
           "before": {
-            "owner": "Ram",
+            "owner": "Ram Chawla",
             "ssn": "123-45-6789",
             "accounts": [
-              "SAVINGS 0042 1188 9031"
+              {
+                "name": "SAVINGS",
+                "number": "0042 1188 9031"
+              },
+              {
+                "name": "CHECKING",
+                "number": "0042 7719 2210"
+              }
             ],
+            "routingNumber": "021000021",
+            "period": "2026-11-14",
             "holdings": [
               {
                 "symbol": "NVDA",
+                "shares": 3,
                 "valueCents": 50000
               }
             ]
           },
           "after": {
-            "owner": "Ram",
+            "owner": "Ram Chawla",
+            "period": "2026-11-14",
             "holdings": [
               {
                 "symbol": "NVDA",
+                "shares": 3,
                 "valueCents": 50000
               }
             ]
           },
           "removed": [
             "ssn",
-            "accounts"
+            "accounts",
+            "routingNumber"
           ],
-          "tokensBefore": 64,
-          "tokensAfter": 38
+          "tokensBefore": 96,
+          "tokensAfter": 57
         },
         "semantic": {
           "pipeline": [
@@ -79,8 +107,10 @@
               "$vectorSearch": {
                 "index": "policy_rules",
                 "path": "rule",
-                "query": "summarize portfolio statement",
-                "numCandidates": 50,
+                "query": {
+                  "text": "data.export to llm: portfolio summary with account statement fields"
+                },
+                "numCandidates": 100,
                 "limit": 3
               }
             },
@@ -97,10 +127,10 @@
           "path": "vector",
           "topScore": 0.86,
           "rule": "Require Touch ID before any account statement leaves our network",
-          "policyId": "pol_ch6",
+          "policyId": "pol_01JD8P2R9X",
           "action": "REQUIRE_FACEID"
         },
-        "approvalChallenge": "cH6mcH6mcH6mcH6mcH6mcH6mcH6mcH6mcH6mcH6mcH6"
+        "approvalChallenge": "R5C2KSy9ln5ZkS-pqDC5ixYX4hk0DGmlV5e3Ufu7taM"
       }
     }
   ],
@@ -110,16 +140,18 @@
     "remainingCents": 50000,
     "totalLimitCents": 100000,
     "perActionMaxCents": 50000,
-    "expiresAt": "2026-11-14T17:00:00.000-08:00"
+    "expiresAt": "2026-11-14T17:00:00.000-05:00"
   },
   "pending": {
-    "approvalId": "apr_01JD8P0007",
-    "challenge": "cH6mcH6mcH6mcH6mcH6mcH6mcH6mcH6mcH6mcH6mcH6",
+    "approvalId": "apr_01JD8P5D4F",
+    "challenge": "R5C2KSy9ln5ZkS-pqDC5ixYX4hk0DGmlV5e3Ufu7taM",
     "minimizedPayload": {
-      "owner": "Ram",
+      "owner": "Ram Chawla",
+      "period": "2026-11-14",
       "holdings": [
         {
           "symbol": "NVDA",
+          "shares": 3,
           "valueCents": 50000
         }
       ]

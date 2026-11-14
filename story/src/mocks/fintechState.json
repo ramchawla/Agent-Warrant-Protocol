@@ -10,8 +10,10 @@
     {
       "ref": "ord_7731",
       "merchant": "BROKERAGE-NVDA",
+      "fromAccount": "SAVINGS",
       "amountCents": 50000,
-      "status": "executed"
+      "status": "executed",
+      "decisionId": "dec_01JD8P3K7Q"
     }
   ]
 }

@@ -10,11 +10,11 @@
           "merchant": "BROKERAGE-NVDA",
           "amountCents": 50000,
           "currency": "USD",
-          "memo": "NVDA"
+          "memo": "NVDA buy"
         }
       },
       "decision": "allow",
-      "decisionId": "dec_01JD8P0001",
+      "decisionId": "dec_01JD8P3K7Q",
       "seq": 3,
       "outcome": "executed",
       "remainingCents": 50000,
@@ -22,35 +22,44 @@
         "atomicUpdate": {
           "filter": {
             "_id": "wrt_01JD8NVDA",
-            "state.status": "active",
+            "status": "active",
+            "termsHash": "hk7xghAvREaDBWKRNcvXXW9bdWlrE8K4-fskaqwddl4",
+            "terms.merchants": "BROKERAGE-NVDA",
+            "terms.accounts": "SAVINGS",
+            "terms.perActionMaxCents": {
+              "$gte": 50000
+            },
             "state.remainingCents": {
               "$gte": 50000
             },
             "expiresAt": {
-              "$gt": "2026-11-14T15:30:00.000Z"
+              "$gt": "2026-11-14T20:31:02.114Z"
             }
           },
           "update": {
             "$inc": {
               "state.remainingCents": -50000,
               "state.actionCount": 1
+            },
+            "$set": {
+              "state.lastDecisionAt": "2026-11-14T20:31:02.114Z"
             }
           },
           "matched": 1
         },
-        "gateMs": 14
+        "gateMs": 11
       },
       "receipt": {
-        "decisionId": "dec_01JD8P0001",
+        "decisionId": "dec_01JD8P3K7Q",
         "aud": "fintech",
-        "iat": "2026-11-14T15:31:02.000Z",
-        "exp": "2026-11-14T15:32:02.000Z",
-        "actionHash": "aH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3xaH3",
+        "iat": "2026-11-14T20:31:02.114Z",
+        "exp": "2026-11-14T20:32:02.114Z",
+        "actionHash": "vK-kH1F7qmoQgIveh-nUlrfCOZoXs63rzYLuyZBHuwY",
         "ledger": {
           "seq": 3,
-          "hash": "Lq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9zLq9"
+          "hash": "4A8FhhH8uF6ED3CPwOhadOIwdZCvlj1pC_WR4OJVnCQ"
         },
-        "gateSig": "gS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7kgS7pQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2mpQ2"
+        "gateSig": "bb3JctsqPnx2kMq3XKvBLZ4ey_hJ25a8fUyQnUUTKM6Fqh4U6VL2_x7C9Lczj8H2jiqK8zFLvAXE9DFz_YGzyA"
       },
       "institutionChecks": {
         "institution": "fintech",
@@ -67,6 +76,6 @@
     "remainingCents": 50000,
     "totalLimitCents": 100000,
     "perActionMaxCents": 50000,
-    "expiresAt": "2026-11-14T17:00:00.000-08:00"
+    "expiresAt": "2026-11-14T17:00:00.000-05:00"
   }
 }
