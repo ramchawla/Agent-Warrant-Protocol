@@ -88,13 +88,16 @@ function Timeline({ events, verify, tampered }: { events: AuditEvent[]; verify: 
   const state = (seq: number): ChainState =>
     !verify ? "idle" : broken === null ? "ok" : seq < broken ? "ok" : seq === broken ? "broken" : "after";
   const brokenRef = useRef<HTMLLIElement>(null);
+  const listRef = useRef<HTMLOListElement>(null);
   useEffect(() => {
-    if (broken !== null) brokenRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
+    // scroll only the timeline (scrollIntoView would also move the stage)
+    const li = brokenRef.current, ol = listRef.current;
+    if (broken !== null && li && ol) ol.scrollTo({ top: li.offsetTop - ol.clientHeight / 2 + li.clientHeight / 2, behavior: "smooth" });
   }, [broken]);
 
   const rows = group(events);
   return (
-    <ol className="scroll-quiet relative max-h-[min(440px,48vh)] overflow-y-auto pr-2">
+    <ol ref={listRef} className="scroll-quiet relative max-h-[min(440px,48vh)] overflow-y-auto pr-2">
       {rows.map((r, i) => {
         if (r.kind === "burst") {
           const first = r.events[0].seq, last = r.events[r.events.length - 1].seq;
