@@ -240,6 +240,8 @@ test("customer view routes (v3.1)", { skip }, async (t) => {
       const res = await app.inject({ url: `/api/warrants/${warrantId}/activity`, headers: me() });
       assert.equal(res.statusCode, 200, res.body);
       const body = res.json();
+      // The real ledger also records WARRANT_CREATED for this warrant; this test is about decisions.
+      body.items = body.items.filter((i: { kind: string }) => i.kind !== "created");
       assert.equal(body.warrant.totalLimitCents, 12000);
       assert.deepEqual(body.items.map((i: { kind: string }) => i.kind), ["allowed", "blocked"]);
       assert.equal(body.items[0].headline, "Paid M1 $30.00 from A1");

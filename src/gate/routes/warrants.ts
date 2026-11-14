@@ -10,7 +10,7 @@ import { newId, newNonce } from "../../shared/ids.ts";
 import type { ActionType, AuditEvent, Terms, WarrantDoc } from "../../shared/types.ts";
 import { issueOptions, verifyAndActivate } from "../approval.ts";
 import { agents, auditEvents, mongo, warrants } from "../db.ts";
-import { appendEvent } from "../ledger.ts";
+import { appendEvent, withLedgerLock } from "../ledger.ts";
 import { buildActivity, money, plainTerms, termsWarnings, when } from "../templates.ts";
 
 // ---- Fixtures (AWP_FIXTURES=1 only): warrant W1 and its 28 ledger events, so the customer view can be
@@ -148,7 +148,7 @@ export default async function warrantRoutes(app: FastifyInstance): Promise<void>
 
     const session = mongo().startSession();
     try {
-      await session.withTransaction(async () => {
+      await withLedgerLock(() => session.withTransaction(async () => {
         await warrants().insertOne(doc, { session });
         await appendEvent(session, {
           type: "WARRANT_CREATED",
@@ -160,7 +160,7 @@ export default async function warrantRoutes(app: FastifyInstance): Promise<void>
             `Warrant ${warrantId} created by user ${userId} for agent ${terms.agentId}: ` +
             `${terms.scope.actions.join(", ")}, up to ${money(terms.totalLimitCents)} in total, until ${when(terms.expiresAt)}.`,
         });
-      });
+      }));
     } finally {
       await session.endSession();
     }

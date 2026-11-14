@@ -6,7 +6,7 @@ import { termsDigest, termsHash } from "../shared/canonical.ts";
 import { config } from "../shared/config.ts";
 import type { WarrantDoc } from "../shared/types.ts";
 import { challenges, credentials, mongo, warrants } from "./db.ts";
-import { appendEvent } from "./ledger.ts";
+import { appendEvent, withLedgerLock } from "./ledger.ts";
 
 const fail = (statusCode: number, message: string): Error => Object.assign(new Error(message), { statusCode });
 
@@ -83,7 +83,7 @@ export async function verifyAndActivate(warrantId: string, response: Authenticat
   };
   const session = mongo().startSession();
   try {
-    await session.withTransaction(async () => {
+    await withLedgerLock(() => session.withTransaction(async () => {
       const updated = await warrants().updateOne(
         { _id: warrantId, "state.status": "pending", termsHash: hash },
         { $set: { "state.status": "active", approval } },
@@ -98,7 +98,7 @@ export async function verifyAndActivate(warrantId: string, response: Authenticat
         runId: null,
         summary: `Warrant ${warrantId} approved by user ${terms.userId} with a ${softwareTest ? "software test authenticator" : "passkey"}.`,
       });
-    });
+   }));
   } finally {
     await session.endSession();
   }

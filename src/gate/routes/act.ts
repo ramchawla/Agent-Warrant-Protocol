@@ -10,7 +10,7 @@ import type { ActAllow, ActDeny, Action, AuditEvent, ReasonCode, WarrantDoc } fr
 import { authenticateAgent } from "../agents.ts";
 import { auditEvents, mongo, warrants } from "../db.ts";
 import { actionAmountCents, evaluate } from "../evaluate.ts";
-import { appendEvent, type NewEvent } from "../ledger.ts";
+import { appendEvent, withLedgerLock, type NewEvent } from "../ledger.ts";
 import { buildReceipt, forwardReceipt } from "../receipts.ts";
 
 // ---- request shape (bounded sizes; unknown top-level keys are malformed) ----
@@ -50,7 +50,7 @@ function tx<T>(work: (session: ClientSession) => Promise<T>): Promise<T> {
   return locked(async () => {
     const session = mongo().startSession();
     try {
-      return await session.withTransaction(work);
+      return await withLedgerLock(() => session.withTransaction(work));
     } finally {
       await session.endSession();
     }
