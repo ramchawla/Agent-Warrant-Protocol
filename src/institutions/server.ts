@@ -57,8 +57,9 @@ const PayParams = z.looseObject({
 type Result = { status: number; body: Record<string, unknown> };
 type Seen = { _id: string; state: "processing" | "done"; receivedAt: Date; result?: Result };
 
-// Verifier failure text -> HTTP status. 400 malformed; 403 scope, limit or policy; otherwise 401 (signature, credential, audience, expiry).
-const statusFor = (reason: string): number => (/malformed/i.test(reason) ? 400 : /scope|limit|amount|action|policy|currency|destination|account|merchant|field/i.test(reason) ? 403 : 401);
+// Verifier reason -> HTTP status: 400 malformed; 403 scope, limit or chain refusals; otherwise 401 (signature, credential, audience, expiry, terms hash).
+const FORBIDDEN = new Set(["CHAIN_NOT_SUBSET", "WARRANT_EXPIRED", "ACTION_OUT_OF_SCOPE", "AMOUNT_OVER_LIMIT", "ACTION_HASH_MISMATCH"]);
+const statusFor = (reason: string): number => (reason === "MALFORMED" ? 400 : FORBIDDEN.has(reason) ? 403 : 401);
 
 const digest = (text: string): Buffer => createHash("sha256").update(text).digest();
 const enrollSecretOk = (presented: unknown): boolean =>
