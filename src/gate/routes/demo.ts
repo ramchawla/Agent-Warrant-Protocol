@@ -462,7 +462,7 @@ export default async function demoRoutes(app: FastifyInstance): Promise<void> {
     const state = await demoMeta().findOne({ _id: "demo" });
     const w = state?.warrantId ? await warrants().findOne({ _id: state.warrantId }) : null;
     const head = (await meta().findOne({ _id: "ledger_head" })) as LedgerHeadDoc | null;
-    return { warrant: w ? summary(w) : null, user: await demoUser(), ledgerHead: { seq: head?.seq ?? 0, hash: head?.hash ?? GENESIS_HASH }, databases: config.dbName };
+    return { warrant: w ? summary(w) : null, user: await demoUser(), ledgerHead: { seq: head?.seq ?? 0, hash: head?.hash ?? GENESIS_HASH }, databases: config.dbName, savingsCents: SAVINGS_CENTS };
   });
 
   app.post("/api/demo/session", async (_req, reply) => {
