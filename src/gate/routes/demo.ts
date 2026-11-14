@@ -581,7 +581,9 @@ export default async function demoRoutes(app: FastifyInstance): Promise<void> {
       if (semantic) item!.trace.semantic = semantic;
       // The best-matching policy decides. voyage-4 scores sit around 0.6 to 0.7, so below the floor nothing applies.
       const floor = semantic?.path === "vector" ? 0.6 : 0.3;
-      const applies = semantic && semantic.topScore >= floor ? semantic.action : "ALLOW";
+      // Fail closed: any action other than an explicit ALLOW or DENY (e.g. a legacy value) needs Touch ID.
+      const matched = semantic && semantic.topScore >= floor ? semantic.action : "ALLOW";
+      const applies = matched === "ALLOW" || matched === "DENY" ? matched : "REQUIRE_TOUCH_ID";
       if (applies === "DENY") {
         delete item!.outcome;
         return { items: [item!], warrant: summary((await warrants().findOne({ _id: warrant._id })) ?? warrant), blocked: { reason: `Policy "${semantic!.rule}" blocks this (match ${semantic!.topScore.toFixed(2)}).` } };
