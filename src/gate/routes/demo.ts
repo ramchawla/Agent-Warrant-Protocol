@@ -13,7 +13,7 @@ import { newId, newNonce } from "../../shared/ids.ts";
 import type { ActionType, LedgerHeadDoc, Terms, WarrantDoc } from "../../shared/types.ts";
 import { hashAgentKey } from "../agents.ts";
 import { agents, auditEvents, challenges, credentials, db, meta, mongo, users, warrants } from "../db.ts";
-import { appendEvent } from "../ledger.ts";
+import { appendEvent, withLedgerLock } from "../ledger.ts";
 import { money, plainTerms, when } from "../templates.ts";
 import { ensurePolicies } from "./policies.ts";
 
@@ -287,15 +287,11 @@ export function minimize(payload: Record<string, unknown>) {
 const STOP = new Set("a an the any our to of for and or in on with before after may be is are it its this that from by at as".split(" "));
 const words = (s: string) => new Set(s.toLowerCase().split(/[^a-z0-9]+/).filter((w) => w.length > 1 && !STOP.has(w)).map((w) => w.replace(/(ing|es|s)$/, "")));
 
-/** The text that is matched against the policies: what is leaving, and where to. */
-function egressText(minimized: Record<string, unknown>): string {
-  const keys = new Set<string>();
-  const collect = (v: unknown): void => {
-    if (Array.isArray(v)) v.forEach(collect);
-    else if (v && typeof v === "object") for (const [k, x] of Object.entries(v)) (keys.add(k), collect(x));
-  };
-  collect(minimized);
-  return `An account statement (portfolio summary with ${[...keys].join(", ")}) leaves our network for an external LLM.`;
+/** The text matched against the policies: what kind of data is leaving, and to where. Short, so the meaning dominates. */
+function egressText(minimized: Record<string, unknown>, destination: string): string {
+  const what = "accounts" in minimized || "totalBalanceCents" in minimized ? "Account statement" : "Customer data";
+  const where = destination === "llm" ? "an external AI assistant" : destination;
+  return `${what} leaving the network to ${where}`;
 }
 
 type Semantic = { pipeline: Record<string, unknown>[]; path: "vector" | "keyword-fallback"; topScore: number; rule: string; policyId: string; action: "REQUIRE_FACEID" | "DENY" | "ALLOW"; error?: string };
@@ -367,7 +363,6 @@ export default async function demoRoutes(app: FastifyInstance): Promise<void> {
       challenges().deleteMany({ warrantId: { $in: ids } }),
       approvals().deleteMany({}),
       warrants().deleteMany({ _id: { $in: ids } }),
-      auditEvents().deleteMany({}),
       users().updateOne({ _id: DEMO_USER }, { $set: { name: DEMO_NAME } }, { upsert: true }),
       demoMeta().replaceOne({ _id: "demo" }, { warrantId: null, userId: DEMO_USER }, { upsert: true }),
       ensurePolicies(true),
@@ -377,8 +372,19 @@ export default async function demoRoutes(app: FastifyInstance): Promise<void> {
         instDb(i).collection(i === "bank" ? "accounts" : "payments").deleteMany(i === "bank" ? { _id: SAVINGS as never } : {}),
       ]),
     ]);
-    // After the events are gone: the head goes back to genesis.
-    await meta().replaceOne({ _id: "ledger_head" }, { seq: 0, hash: GENESIS_HASH }, { upsert: true });
+    // Events and head together, in one transaction under the ledger lock: an append committing meanwhile
+    // (another process on the same database) conflicts and retries instead of leaving an orphan event.
+    const session = mongo().startSession();
+    try {
+      await withLedgerLock(() =>
+        session.withTransaction(async () => {
+          await auditEvents().deleteMany({}, { session });
+          await meta().replaceOne({ _id: "ledger_head" }, { seq: 0, hash: GENESIS_HASH }, { upsert: true, session });
+        }),
+      );
+    } finally {
+      await session.endSession();
+    }
     await ensureEnrolled();
     return { ok: true, warrantId: null, user: await demoUser(), savingsCents: SAVINGS_CENTS };
   });
@@ -549,7 +555,7 @@ export default async function demoRoutes(app: FastifyInstance): Promise<void> {
     item!.trace.minimize = min;
     let pending: { approvalId: string; challenge: string; minimizedPayload: Record<string, unknown>; reason: string } | undefined;
     if (item!.decision === "allow") {
-      const semantic = await semanticMatch(egressText(min.after));
+      const semantic = await semanticMatch(egressText(min.after, action.destination));
       if (semantic) item!.trace.semantic = semantic;
       const threshold = semantic?.path === "vector" ? 0.5 : 0.3;
       if (semantic && semantic.action === "REQUIRE_FACEID" && semantic.topScore >= threshold) {

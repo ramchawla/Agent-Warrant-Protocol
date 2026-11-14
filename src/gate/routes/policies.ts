@@ -18,7 +18,7 @@ export const INDEX_DEFINITION = {
 /** Baseline policies seeded by the demo reset (the chapter-6 rule is added live). */
 export const POLICIES: { _id: string; rule: string; action: EgressAction }[] = [
   { _id: "pol_baseline_domains", rule: "Never send customer data to unapproved domains", action: "DENY" },
-  { _id: "pol_baseline_brokerage", rule: "Trading confirmations may go to the brokerage", action: "ALLOW" },
+  { _id: "pol_baseline_weather", rule: "Weather and news lookups need no approval", action: "ALLOW" },
 ];
 
 const policies = () => db().collection<PolicyDoc>("egress_policies");
@@ -28,7 +28,7 @@ const ACTIONS = new Set<EgressAction>(["REQUIRE_FACEID", "DENY", "ALLOW"]);
 export async function ensurePolicies(reset = false): Promise<void> {
   if (reset) await policies().deleteMany({ _id: { $nin: POLICIES.map((p) => p._id) } });
   for (const p of POLICIES) {
-    await policies().updateOne({ _id: p._id }, { $setOnInsert: { rule: p.rule, action: p.action, createdAt: new Date() } }, { upsert: true });
+    await policies().updateOne({ _id: p._id }, { $set: { rule: p.rule, action: p.action }, $setOnInsert: { createdAt: new Date() } }, { upsert: true });
   }
 }
 
