@@ -2,5 +2,5 @@
   "institution": "fintech",
   "acceptedActions": ["payment.create"],
   "currency": "CAD",
-  "perActionMaxCents": 4000
+  "perActionMaxCents": 75000
 }

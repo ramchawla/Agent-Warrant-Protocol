@@ -91,7 +91,7 @@ test("passkey approval", { skip }, async (t) => {
       kind: "passkey",
       credentialId: auth.credentialId,
       response: assertion,
-      origin: config.origin,
+      origin: config.origin[0]!,
       rpId: config.rpId,
       approvedAt: (stored?.approval as { approvedAt: string }).approvedAt,
     });

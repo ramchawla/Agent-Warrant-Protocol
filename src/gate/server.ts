@@ -6,9 +6,11 @@ import fastifyStatic from "@fastify/static";
 import Fastify, { type FastifyInstance, type FastifyReply, type FastifyRequest } from "fastify";
 import { config } from "../shared/config.ts";
 import actRoutes from "./routes/act.ts";
+import demoRoutes from "./routes/demo.ts";
 import draftRoutes from "./routes/draft.ts";
 import ledgerRoutes from "./routes/ledger.ts";
 import passkeyRoutes from "./routes/passkey.ts";
+import policyRoutes from "./routes/policies.ts";
 import revokeRoutes from "./routes/revoke.ts";
 import streamRoutes from "./routes/stream.ts";
 import ttsRoutes from "./routes/tts.ts";
@@ -99,7 +101,7 @@ export async function buildServer(options: { logger?: boolean } = {}): Promise<F
     decorateReply: false,
   });
 
-  for (const routes of [passkeyRoutes, warrantRoutes, actRoutes, revokeRoutes, ledgerRoutes, streamRoutes, draftRoutes, ttsRoutes]) {
+  for (const routes of [passkeyRoutes, warrantRoutes, actRoutes, revokeRoutes, ledgerRoutes, streamRoutes, draftRoutes, ttsRoutes, demoRoutes, policyRoutes]) {
     await app.register(routes);
   }
   return app;

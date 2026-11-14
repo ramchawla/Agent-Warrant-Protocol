@@ -69,7 +69,29 @@ type Ctx = {
   action?: Action;           // absent for unauthenticated and malformed requests
   note?: string;             // summary text when there is no action
   warrant?: WarrantDoc;
+  trace?: AtomicTrace;       // filled by decide(); returned only when the caller asks for it
+  receiptView?: ReceiptView; // filled by execute(); returned only when the caller asks for it
 };
+type ReceiptView = { decisionId: string; aud: "bank" | "fintech"; iat: string; exp: string; actionHash: string; ledger: { seq: number; hash: string }; gateSig: string };
+
+// ---- trace (story inspector): the conditional update that decided, as plain JSON ----
+
+export type AtomicTrace = { filter: Record<string, unknown>; update: Record<string, unknown>; matched: 0 | 1 };
+export type Trace = { atomicUpdate: AtomicTrace; gateMs: number };
+
+const holdFilter = (warrantId: string, now: Date, amount: number) => ({
+  _id: warrantId, "state.status": "active" as const, expiresAt: { $gt: now }, "state.remainingCents": { $gte: amount },
+});
+const holdUpdate = (amount: number) => ({ $inc: { "state.remainingCents": 0 - amount, "state.actionCount": 1 } });
+const shownAmount = (action: Action | undefined): number => {
+  const a = action?.type === "payment.create" ? action.params.amountCents : 0;
+  return typeof a === "number" && Number.isFinite(a) ? a : 0;
+};
+const plainJson = (v: unknown): Record<string, unknown> => JSON.parse(JSON.stringify(v));
+function traceOf(c: Ctx, now: Date): AtomicTrace {
+  const amount = shownAmount(c.action);
+  return c.trace ?? { filter: { ...plainJson(holdFilter("", now, amount)), _id: c.warrantId }, update: plainJson(holdUpdate(amount)), matched: 0 };
+}
 type AllowCtx = Ctx & { action: Action; warrant: WarrantDoc };
 
 const clip = (s: string): string => (s.length > 64 ? `${s.slice(0, 64)}...` : s);
@@ -148,11 +170,10 @@ function decide(c: Ctx, pre: ReasonCode | undefined, now: Date): Promise<{ event
     let remainingCents: number | undefined;
     if (reasonCode === undefined && c.action && c.warrantId) {
       const amount = actionAmountCents(c.action);   // 0 - amount below: a double -0 would fail the warrant's integer validator
-      const held = await warrants().findOneAndUpdate(
-        { _id: c.warrantId, "state.status": "active", expiresAt: { $gt: now }, "state.remainingCents": { $gte: amount } },
-        { $inc: { "state.remainingCents": 0 - amount, "state.actionCount": 1 } },
-        { session, returnDocument: "after" },
-      );
+      const filter = holdFilter(c.warrantId, now, amount);
+      const update = holdUpdate(amount);
+      const held = await warrants().findOneAndUpdate(filter, update, { session, returnDocument: "after" });
+      c.trace = { filter: plainJson(filter), update: plainJson(update), matched: held ? 1 : 0 };
       if (held) remainingCents = held.state.remainingCents;
       else reasonCode = await whyNotSpent(c.warrantId, now, session);
     }
@@ -205,8 +226,12 @@ async function recordExecution(c: AllowCtx, outcome: "executed" | "rejected" | "
   });
 }
 
-async function execute(c: AllowCtx, decision: AuditEvent, remainingAfterHold: number, log: FastifyBaseLogger): Promise<ActAllow> {
+async function execute(c: AllowCtx, decision: AuditEvent, remainingAfterHold: number, log: FastifyBaseLogger, source: Ctx): Promise<ActAllow> {
   const { action, warrant } = c;
+  // A destination that is not an institution (the story's "llm") is released by the gate's own egress step, not forwarded here.
+  if (action.destination !== "bank" && action.destination !== "fintech" && action.type === "data.export") {
+    return { decision: "allow", decisionId: c.decisionId, seq: decision.seq, outcome: "unknown", remainingCents: remainingAfterHold };
+  }
   let forwarded: Awaited<ReturnType<typeof forwardReceipt>> = { outcome: "unknown" };
   try {
     const aud = action.destination;
@@ -214,6 +239,8 @@ async function execute(c: AllowCtx, decision: AuditEvent, remainingAfterHold: nu
     // TODO(task 13): for a warrant with ancestors the chain is every ancestor, root first. One element for now.
     const chain = [{ terms: warrant.terms, approval: warrant.approval }];
     const { receipt, gateSig } = buildReceipt({ decisionId: c.decisionId, aud, action, chain, ledger: { seq: decision.seq, hash: decision.hash } });
+    const { decisionId, iat, exp, actionHash, ledger } = receipt;
+    source.receiptView = { decisionId, aud, iat, exp, actionHash, ledger, gateSig };
     forwarded = await forwardReceipt(aud, receipt, gateSig);
   } catch (error) {
     log.error({ err: error, decisionId: c.decisionId }, "receipt or forwarding failed; outcome is unknown");
@@ -237,10 +264,11 @@ async function execute(c: AllowCtx, decision: AuditEvent, remainingAfterHold: nu
 }
 
 /** Records the decision (or returns the winner of an idempotency race) and, for an allow, executes. */
-async function settle(c: Ctx, pre: ReasonCode | undefined, now: Date, log: FastifyBaseLogger): Promise<ActAllow | ActDeny> {
+async function settle(c: Ctx, pre: ReasonCode | undefined, now: Date, log: FastifyBaseLogger, seen?: { decidedAt?: number }): Promise<ActAllow | ActDeny> {
   let decided: { event: AuditEvent; remainingCents?: number };
   try {
     decided = await decide(c, pre, now);
+    if (seen) seen.decidedAt = Date.now();
   } catch (error) {
     // Two identical requests committed at once: the unique index let one win; this one returns the winner's decision.
     if (c.idempotencyKey !== undefined && c.warrantId && (error as { code?: number }).code === 11000) {
@@ -251,7 +279,7 @@ async function settle(c: Ctx, pre: ReasonCode | undefined, now: Date, log: Fasti
   }
   if (decided.event.decision !== "allow") return denial(decided.event);
   if (!(c.action && c.warrant)) throw new Error("allow without warrant");   // unreachable: decide checks it
-  return execute({ ...c, action: c.action, warrant: c.warrant }, decided.event, decided.remainingCents ?? 0, log);
+  return execute({ ...c, action: c.action, warrant: c.warrant }, decided.event, decided.remainingCents ?? 0, log, c);
 }
 
 // ---- the request ----
@@ -273,7 +301,7 @@ function malformedNote(raw: string, body: unknown): string {
   return `malformed request (fields: ${fields.join(", ")}${names.length > 20 ? ", ..." : ""})`;
 }
 
-async function handle(authorization: string | undefined, rawBody: unknown, log: FastifyBaseLogger): Promise<ActAllow | ActDeny> {
+async function handle(authorization: string | undefined, rawBody: unknown, log: FastifyBaseLogger, seen: { c?: Ctx; now?: Date; decidedAt?: number }): Promise<ActAllow | ActDeny> {
   const raw = typeof rawBody === "string" ? rawBody : "";
   let body: unknown;
   try {
@@ -285,6 +313,7 @@ async function handle(authorization: string | undefined, rawBody: unknown, log: 
   // unauthenticated and malformed denials never name them: nobody can write events into another warrant's or run's timeline.
   const who = { warrantId: null, runId: null, termsHash: null, decisionId: newId("dec") };
   const now = new Date();
+  seen.now = now;
 
   const agentId = await authenticateAgent(authorization);   // first, before the body is looked at
   if (!agentId) return settle({ ...who, agentId: null, note: "request with no valid agent key" }, "AGENT_UNAUTHENTICATED", now, log);
@@ -293,6 +322,7 @@ async function handle(authorization: string | undefined, rawBody: unknown, log: 
   if (!request.success) return settle({ ...who, agentId, note: malformedNote(raw, body) }, "MALFORMED_REQUEST", now, log);
   const { warrantId, runId, idempotencyKey, action } = request.data;
   const c: Ctx = { agentId, warrantId, runId, termsHash: null, decisionId: who.decisionId, action: action as Action };
+  seen.c = c;
 
   // Until the caller is shown to own the warrant its idempotency key is not trusted: another agent must not be able to claim it.
   const warrant = await warrants().findOne({ _id: warrantId });
@@ -308,7 +338,8 @@ async function handle(authorization: string | undefined, rawBody: unknown, log: 
   const verdict = evaluate(warrant.terms, c.action!, now);
   // The Date copy of the expiry is what the atomic update filters on; the signed terms are checked here too.
   const pre = verdict.decision === "deny" ? verdict.reasonCode : now.getTime() < Date.parse(warrant.terms.expiresAt) ? undefined : "WARRANT_EXPIRED";
-  return settle({ ...c, warrant }, pre, now, log);
+  c.warrant = warrant;
+  return settle(c, pre, now, log, seen);
 }
 
 const notImplemented = async (_req: FastifyRequest, reply: FastifyReply) => reply.code(501).send({ error: "not implemented" });
@@ -320,12 +351,20 @@ export default async function actRoutes(app: FastifyInstance): Promise<void> {
 
   app.post("/api/act", async (req, reply) => {
     let answer: ActAllow | ActDeny;
+    const started = Date.now();
+    const seen: { c?: Ctx; now?: Date; decidedAt?: number } = {};
     try {
-      answer = await handle(req.headers.authorization, req.body, req.log);
+      answer = await handle(req.headers.authorization, req.body, req.log, seen);
     } catch (error) {
       // Fail closed: nothing was forwarded (the only thing after the DECISION commit is caught inside execute).
       req.log.error({ err: error }, "act failed before a decision was recorded");
       answer = unavailable;
+    }
+    // Story inspector: "x-awp-trace: 1" adds the conditional update that decided and the gate's decision time.
+    if (req.headers["x-awp-trace"] === "1") {
+      const c = seen.c ?? { agentId: null, warrantId: null, runId: null, termsHash: null, decisionId: "" };
+      const trace: Trace = { atomicUpdate: traceOf(c, seen.now ?? new Date()), gateMs: (seen.decidedAt ?? Date.now()) - started };
+      return reply.code(answer.decision === "allow" ? 200 : 403).send({ ...answer, trace, ...(seen.c?.receiptView && { receipt: seen.c.receiptView }) });
     }
     return reply.code(answer.decision === "allow" ? 200 : 403).send(answer);
   });

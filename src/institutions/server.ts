@@ -12,8 +12,8 @@ import type { Receipt } from "../shared/types.ts";
 import { verifyReceipt } from "../verifier/verifyReceipt.ts";
 
 // Policy file shape. Strict: JSON has no comments, so a stray key such as "_comment" fails at startup.
-// The fintech's perActionMaxCents (4000) is deliberately below what the demo warrant allows (5000), so a
-// gate-allowed $50 payment is refused here by the institution's own policy (Story 4, third bullet).
+// The fintech plays the brokerage in the story: its own perActionMaxCents (75000) sits above the demo warrant's
+// $500 cap, so a gate-allowed $800 payment under wider terms is still refused here by its own policy (Story 4).
 const Policy = z.strictObject({
   institution: z.enum(["bank", "fintech"]),
   acceptedActions: z.array(z.string()).min(1),
@@ -67,6 +67,17 @@ const enrollSecretOk = (presented: unknown): boolean =>
 
 const refuse = (status: number, reason: string): Result => ({ status, body: { rejected: true, reason } });
 
+// The institution's own three checks for a receipt, shown in the story (GET /state lastChecks).
+// verifyReceipt runs them in this order and stops at the first failure, so later checks are reported false.
+export type Checks = { institution: InstitutionId; decisionId?: string; gateSignature: boolean; customerPasskey: boolean; terms: boolean; institutionRef?: string; reason?: string };
+const PASSKEY_REASONS = new Set(["BAD_PASSKEY_ASSERTION", "TERMS_HASH_MISMATCH", "UNKNOWN_CREDENTIAL"]);
+function checksFor(institution: InstitutionId, reason: string | null): Checks {
+  if (reason === null) return { institution, gateSignature: true, customerPasskey: true, terms: true };
+  if (PASSKEY_REASONS.has(reason)) return { institution, gateSignature: true, customerPasskey: false, terms: false, reason };
+  if (FORBIDDEN.has(reason)) return { institution, gateSignature: true, customerPasskey: true, terms: false, reason };
+  return { institution, gateSignature: false, customerPasskey: false, terms: false, reason };
+}
+
 /** Own policy (8.7 step 7). Returns a refusal, or null when the action is acceptable. */
 function checkPolicy(policy: Policy, receipt: Receipt): Result | null {
   const { action } = receipt;
@@ -119,6 +130,12 @@ export async function buildInstitution(institution: InstitutionId, options: { lo
   const anchors = db.collection<{ _id: number; seq: number; hash: string }>("anchors");
 
   const app = Fastify({ logger: options.logger ?? false });
+  // ponytail: in memory, last 100 receipts; the story reads them right after each step.
+  const recentChecks: Checks[] = [];
+  const remember = (checks: Checks): void => {
+    recentChecks.unshift(checks);
+    recentChecks.length = Math.min(recentChecks.length, 100);
+  };
   app.addHook("onClose", async () => {
     await client.close();
   });
@@ -160,7 +177,10 @@ export async function buildInstitution(institution: InstitutionId, options: { lo
       credentialsFor: async (userId) =>
         (await credentialsColl.find({ userId }).toArray()).map((c) => ({ id: c._id, publicKey: new Uint8Array(c.publicKey.value()) })),
     });
-    if (!verdict.ok) return send(refuse(statusFor(verdict.reason), verdict.reason));
+    if (!verdict.ok) {
+      remember({ ...checksFor(institution, verdict.reason), decisionId: typeof input.receipt.decisionId === "string" ? input.receipt.decisionId : undefined });
+      return send(refuse(statusFor(verdict.reason), verdict.reason));
+    }
     const { receipt } = input;
 
     // Step 3: only a verified receipt is recorded; the unique _id makes a second presentation a duplicate-key error.
@@ -177,6 +197,13 @@ export async function buildInstitution(institution: InstitutionId, options: { lo
     let result = checkPolicy(policy, receipt);
     if (!result) result = { status: 200, body: { executed: true, institutionRef: await execute(db, institution, receipt) } };
     await seen.updateOne({ _id: receipt.decisionId }, { $set: { state: "done", result } });
+    const ref = result.body.institutionRef;
+    remember({
+      ...checksFor(institution, null),
+      decisionId: receipt.decisionId,
+      ...(typeof ref === "string" && { institutionRef: ref }),
+      ...(typeof result.body.reason === "string" && { reason: result.body.reason }),
+    });
     // Anchor: first write wins, so a later receipt cannot rewrite a checkpoint.
     await anchors.updateOne(
       { _id: receipt.ledger.seq },
@@ -187,10 +214,11 @@ export async function buildInstitution(institution: InstitutionId, options: { lo
   });
 
   app.get("/state", async () => {
+    const checks = { lastChecks: recentChecks[0] ?? null, recentChecks };
     if (institution === "bank") {
-      return { institution, accounts: await db.collection("accounts").find().sort({ lastKycRefreshAt: -1 }).limit(100).toArray() };
+      return { institution, accounts: await db.collection("accounts").find().sort({ lastKycRefreshAt: -1 }).limit(100).toArray(), ...checks };
     }
-    return { institution, payments: await db.collection("payments").find().sort({ createdAt: -1 }).limit(100).toArray() };
+    return { institution, payments: await db.collection("payments").find().sort({ createdAt: -1 }).limit(100).toArray(), ...checks };
   });
 
   app.get("/anchors", async () => anchors.find({}, { projection: { _id: 0, seq: 1, hash: 1 } }).sort({ _id: 1 }).toArray());

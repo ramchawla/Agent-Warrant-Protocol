@@ -19,10 +19,10 @@ export type SoftAuthenticator = {
   getAssertion(options: Pick<PublicKeyCredentialRequestOptionsJSON, "challenge">, overrides?: AssertionOverrides): AuthenticationResponseJSON;
 };
 
-/** A fresh key pair and credential ID. rpId and origin default to config.rpId and config.origin. */
+/** A fresh key pair and credential ID. rpId and origin default to config.rpId and config.origin[0]. */
 export function createSoftAuthenticator(opts: { rpId?: string; origin?: string } = {}): SoftAuthenticator {
   const rpId = opts.rpId ?? config.rpId;
-  const origin = opts.origin ?? config.origin;
+  const origin = opts.origin ?? config.origin[0]!;
   const { publicKey: publicKeyObject, privateKey } = generateKeyPairSync("ec", { namedCurve: "P-256" });
   const jwk = publicKeyObject.export({ format: "jwk" });
   // COSE_Key: kty EC2 (2), alg ES256 (-7), crv P-256 (1), x, y.

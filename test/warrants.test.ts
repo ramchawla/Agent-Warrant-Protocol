@@ -241,6 +241,9 @@ test("customer view routes (v3.1)", { skip }, async (t) => {
       assert.equal(res.statusCode, 200, res.body);
       const body = res.json();
       assert.equal(body.warrant.totalLimitCents, 12000);
+      // The real ledger also records WARRANT_CREATED when the warrant is made; it comes first.
+      assert.equal(body.items[0].kind, "created");
+      body.items = body.items.filter((i: { seq: number }) => i.seq >= seq0);
       assert.deepEqual(body.items.map((i: { kind: string }) => i.kind), ["allowed", "blocked"]);
       assert.equal(body.items[0].headline, "Paid M1 $30.00 from A1");
       assert.equal(body.items[0].remainingAfterCents, 9000);
