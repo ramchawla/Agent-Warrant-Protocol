@@ -41,7 +41,7 @@ const chain = [{
     kind: "passkey" as const,
     credentialId: auth.credentialId,
     response: auth.getAssertion({ challenge: termsHash(terms) }),
-    origin: config.origin,
+    origin: config.origin[0]!,
     rpId: config.rpId,
     approvedAt: new Date().toISOString(),
   },

@@ -13,7 +13,7 @@ export type VerifyContext = {
   institution: "bank" | "fintech";
   gatePublicKey: string;            // base64url SPKI DER
   rpId: string;
-  origin: string;
+  origin: string | string[];
   now: Date;
   // the institution's OWN enrolled credentials for this user (never the gate's)
   credentialsFor(userId: string): Promise<VerifierCredential[]>;

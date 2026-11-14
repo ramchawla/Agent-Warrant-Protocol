@@ -95,7 +95,7 @@ test("institutions: receipt verification, replay and own policy", { skip }, asyn
     kind: "passkey",
     credentialId: auth.credentialId,
     response: auth.getAssertion({ challenge: termsHash(terms) }),
-    origin: config.origin,
+    origin: config.origin[0]!,
     rpId: config.rpId,
     approvedAt: new Date().toISOString(),
   });
@@ -274,11 +274,12 @@ test("institutions: receipt verification, replay and own policy", { skip }, asyn
     });
 
     await t.test(`${i}: an action outside its own policy is refused and the refusal is replayed`, async () => {
-      // Fintech: the gate allowed $50 (the warrant's cap is $50) but the fintech's own cap is $40.
+      // Fintech: the terms allow $800 but the fintech's own cap is $750.
       // Bank: it accepts only kyc.refresh, so a payment receipt addressed to it is refused.
-      const { terms, auth, account } = await valid(i);
+      const { terms: base, auth, account } = await valid(i);
+      const terms = i === "fintech" ? { ...base, perActionMaxCents: 100_000, totalLimitCents: 100_000 } : base;
       const action: Action = i === "fintech"
-        ? actionFor("fintech", account, 5000)
+        ? actionFor("fintech", account, 80_000)
         : { type: "payment.create", destination: "bank", params: { fromAccount: account, merchant: "M1", amountCents: 100, currency: "CAD" } };
       const signed = makeReceipt({ aud: i, terms, approval: approval(auth, terms), action });
       const res = await post(i, signed);

@@ -301,7 +301,7 @@ const approvalFor = (a: ReturnType<typeof createSoftAuthenticator>, terms: Terms
   kind: "passkey",
   credentialId: a.credentialId,
   response: a.getAssertion({ challenge: termsHash(terms) }),
-  origin: config.origin,
+  origin: config.origin[0]!,
   rpId: config.rpId,
   approvedAt: new Date().toISOString(),
 });
@@ -436,8 +436,11 @@ const TAMPER: { label: string; run: (i: Inst) => Promise<Cell> }[] = [
   {
     label: "allowed by gate, outside own policy",
     run: async (i) => {
-      const { terms, approval, account } = validFor(i);
-      const action: Action = i === "fintech" ? actionFor("fintech", account, 5000) : { type: "payment.create", destination: "bank", params: { fromAccount: account, merchant: "M1", amountCents: 100, currency: "CAD" } };
+      // Fintech: terms that allow $800, above the fintech's own $750 cap. Bank: it accepts only kyc.refresh.
+      const { terms: base, account } = validFor(i);
+      const terms = i === "fintech" ? { ...base, perActionMaxCents: 100_000, totalLimitCents: 100_000 } : base;
+      const approval = approvalFor(auth, terms);
+      const action: Action = i === "fintech" ? actionFor("fintech", account, 80_000) : { type: "payment.create", destination: "bank", params: { fromAccount: account, merchant: "M1", amountCents: 100, currency: "CAD" } };
       const r = await postExecute(i, receiptFor({ aud: i, terms, approval, action }));
       return { ok: r.status === 403 && r.body.rejected === true && !!r.body.reason?.startsWith("POLICY_"), text: `${r.status} ${r.body.reason ?? "?"}` };
     },

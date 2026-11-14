@@ -243,6 +243,9 @@ test("customer view routes (v3.1)", { skip }, async (t) => {
       // The real ledger also records WARRANT_CREATED for this warrant; this test is about decisions.
       body.items = body.items.filter((i: { kind: string }) => i.kind !== "created");
       assert.equal(body.warrant.totalLimitCents, 12000);
+      // The real ledger also records WARRANT_CREATED when the warrant is made; it comes first.
+      assert.equal(body.items[0].kind, "created");
+      body.items = body.items.filter((i: { seq: number }) => i.seq >= seq0);
       assert.deepEqual(body.items.map((i: { kind: string }) => i.kind), ["allowed", "blocked"]);
       assert.equal(body.items[0].headline, "Paid M1 $30.00 from A1");
       assert.equal(body.items[0].remainingAfterCents, 9000);

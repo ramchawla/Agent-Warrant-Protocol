@@ -58,6 +58,7 @@ export async function verifyAndActivate(warrantId: string, response: Authenticat
   if (softwareTest && !config.allowTestAuthenticator) throw fail(403, "the software test authenticator is disabled");
 
   let newCounter: number;
+  let verifiedOrigin: string;
   try {
     const result = await verifyAuthenticationResponse({
       response,
@@ -69,6 +70,7 @@ export async function verifyAndActivate(warrantId: string, response: Authenticat
     });
     if (result.verified !== true) throw new Error("signature did not verify");
     newCounter = result.authenticationInfo.newCounter;
+    verifiedOrigin = result.authenticationInfo.origin;
   } catch (error) {
     throw fail(403, `passkey assertion rejected: ${(error as Error).message}`);
   }
@@ -77,7 +79,7 @@ export async function verifyAndActivate(warrantId: string, response: Authenticat
     kind: "passkey",
     credentialId: credential._id,
     response: JSON.parse(JSON.stringify(response)),   // plain JSON: drops undefined values
-    origin: config.origin,
+    origin: verifiedOrigin,
     rpId: config.rpId,
     approvedAt: new Date().toISOString(),
   };

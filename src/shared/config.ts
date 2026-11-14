@@ -25,7 +25,8 @@ export const config = {
   },
 
   rpId: opt("RP_ID") ?? "localhost",
-  origin: opt("ORIGIN") ?? "http://localhost:3000",
+  // Comma-separated list: the gate pages (:3000) and the story app (:5173) share RP ID localhost.
+  origin: (opt("ORIGIN") ?? "http://localhost:3000,http://localhost:5173").split(",").map((o) => o.trim()).filter(Boolean),
 
   gatePrivateKey: opt("GATE_ED25519_PRIVATE_KEY"),
   gatePublicKey: opt("GATE_ED25519_PUBLIC_KEY"),
