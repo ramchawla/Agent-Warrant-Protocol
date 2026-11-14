@@ -4,8 +4,8 @@ import { randomBytes } from "node:crypto";
 import type { Document } from "mongodb";
 import { db } from "./db.ts";
 
-export type PolicyMode = "ALLOW_MINIMIZED" | "REQUIRE_FACEID" | "BLOCK";
-export const POLICY_MODES: PolicyMode[] = ["ALLOW_MINIMIZED", "REQUIRE_FACEID", "BLOCK"];
+export type PolicyMode = "ALLOW_MINIMIZED" | "REQUIRE_TOUCH_ID" | "BLOCK";
+export const POLICY_MODES: PolicyMode[] = ["ALLOW_MINIMIZED", "REQUIRE_TOUCH_ID", "BLOCK"];
 export type PolicyDoc = { _id: string; rule: string; mode: PolicyMode; createdAt: Date };
 export type PolicyMatch = { _id: string; rule: string; mode: PolicyMode; score: number };
 export type SemanticTrace = { pipeline: Document[]; path: "vector" | "keyword-fallback"; topScore: number; rule: string | null; ms: number; error?: string };
@@ -27,7 +27,7 @@ export const KEYWORD_THRESHOLD = 0.3;
 
 export const SEED_POLICIES: { _id: string; rule: string; mode: PolicyMode }[] = [
   { _id: "pol_seed_client_lists", rule: "Never send client lists or account numbers to outside services", mode: "BLOCK" },
-  { _id: "pol_seed_payment_touchid", rule: "Require Touch ID before any payment above $1,000", mode: "REQUIRE_FACEID" },
+  { _id: "pol_seed_payment_touchid", rule: "Require Touch ID before any payment above $1,000", mode: "REQUIRE_TOUCH_ID" },
   { _id: "pol_seed_strip_pii", rule: "Strip personal identifiers before calling external AI models", mode: "ALLOW_MINIMIZED" },
 ];
 

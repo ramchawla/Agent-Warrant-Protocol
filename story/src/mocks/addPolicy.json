@@ -2,7 +2,7 @@
   "policy": {
     "_id": "pol_01JD8P2R9X",
     "rule": "Require Touch ID before any account statement leaves our network",
-    "action": "REQUIRE_FACEID",
+    "action": "REQUIRE_TOUCH_ID",
     "createdAt": "2026-11-14T20:33:40.512Z"
   },
   "embeddingWrittenByUs": false

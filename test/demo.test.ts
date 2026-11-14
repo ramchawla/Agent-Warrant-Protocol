@@ -126,7 +126,7 @@ test("story backend: every chapter against the real gate", { skip, timeout: 300_
   // Chapter 6: policy, minimize, match, Touch ID, release.
   const added = await post("/api/policies", { rule: "Require Touch ID before any account statement leaves our network" });
   assert.equal(added.embeddingWrittenByUs, false);
-  assert.equal(added.policy.action, "REQUIRE_FACEID");
+  assert.equal(added.policy.action, "REQUIRE_TOUCH_ID");
   assert.ok((await get("/api/policies")).policies.length >= 3);
   assert.equal((await get("/api/policies/index")).name, "egress_rule_vec");
   const sensitive = await post("/api/demo/sensitive");

@@ -128,7 +128,7 @@
           "topScore": 0.86,
           "rule": "Require Touch ID before any account statement leaves our network",
           "policyId": "pol_01JD8P2R9X",
-          "action": "REQUIRE_FACEID"
+          "action": "REQUIRE_TOUCH_ID"
         },
         "approvalChallenge": "R5C2KSy9ln5ZkS-pqDC5ixYX4hk0DGmlV5e3Ufu7taM"
       }

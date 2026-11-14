@@ -13,7 +13,7 @@ export type ReasonCode =
 export type Trace = {
   atomicUpdate: { filter: Record<string, unknown>; update: Record<string, unknown>; matched: 0 | 1 };
   minimize?: { before: Record<string, unknown>; after: Record<string, unknown>; removed: string[]; tokensBefore: number; tokensAfter: number };
-  semantic?: { pipeline: Record<string, unknown>[]; path: "vector" | "keyword-fallback"; topScore: number; rule: string; policyId: string; action: "REQUIRE_FACEID" | "DENY" | "ALLOW" };
+  semantic?: { pipeline: Record<string, unknown>[]; path: "vector" | "keyword-fallback"; topScore: number; rule: string; policyId: string; action: "REQUIRE_TOUCH_ID" | "DENY" | "ALLOW" };
   approvalChallenge?: string;     // base64url
   gateMs: number;                 // gate decision time for this item
 };

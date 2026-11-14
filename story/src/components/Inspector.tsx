@@ -85,7 +85,7 @@ export function Inspector({
           </div>
           <p className="mt-2.5 text-[14px] leading-snug text-fg">“{s.rule}”</p>
           <p className="mt-1 font-mono text-[12px] text-muted">
-            {s.action === "REQUIRE_FACEID" ? "Touch ID required" : s.action.toLowerCase()} · {s.policyId}
+            {s.action === "REQUIRE_TOUCH_ID" ? "Touch ID required" : s.action.toLowerCase()} · {s.policyId}
           </p>
         </div>
       )}

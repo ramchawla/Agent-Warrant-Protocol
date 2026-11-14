@@ -150,7 +150,7 @@ await db().dropDatabase();
 const RULE = "Require Touch ID before any account statement leaves our network";
 const PAYLOAD = "Account statement for Ram: SSN [redacted], account ending 4421, balance $12,400. Please summarize my portfolio.";
 await check("i", "vector search matches the chapter-6 payload (path vector)", async () => {
-  const added = (await policies().findOne({ rule: RULE })) ? null : await addPolicy(RULE, "REQUIRE_FACEID");
+  const added = (await policies().findOne({ rule: RULE })) ? null : await addPolicy(RULE, "REQUIRE_TOUCH_ID");
   try {
     const started = Date.now();
     for (;;) {

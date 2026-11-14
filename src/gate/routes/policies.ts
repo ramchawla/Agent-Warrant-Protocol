@@ -4,7 +4,7 @@ import { randomBytes } from "node:crypto";
 import type { FastifyInstance } from "fastify";
 import { db } from "../db.ts";
 
-export type EgressAction = "REQUIRE_FACEID" | "DENY" | "ALLOW";
+export type EgressAction = "REQUIRE_TOUCH_ID" | "DENY" | "ALLOW";
 export type PolicyDoc = { _id: string; rule: string; action: EgressAction; createdAt: Date };
 
 export const INDEX_NAME = "egress_rule_vec";
@@ -22,7 +22,7 @@ export const POLICIES: { _id: string; rule: string; action: EgressAction }[] = [
 ];
 
 const policies = () => db().collection<PolicyDoc>("egress_policies");
-const ACTIONS = new Set<EgressAction>(["REQUIRE_FACEID", "DENY", "ALLOW"]);
+const ACTIONS = new Set<EgressAction>(["REQUIRE_TOUCH_ID", "DENY", "ALLOW"]);
 
 /** Makes sure the baseline policies exist; with reset, removes every other policy first. */
 export async function ensurePolicies(reset = false): Promise<void> {
@@ -55,8 +55,8 @@ export default async function policyRoutes(app: FastifyInstance): Promise<void> 
   app.post("/api/policies", async (req, reply) => {
     const body = (req.body ?? {}) as { rule?: unknown; action?: unknown };
     const rule = typeof body.rule === "string" ? body.rule.trim() : "";
-    const action = (body.action ?? "REQUIRE_FACEID") as EgressAction;
-    if (!rule || rule.length > 500 || !ACTIONS.has(action)) return reply.code(400).send({ error: "body must be {rule, action?: REQUIRE_FACEID | DENY | ALLOW}" });
+    const action = (body.action ?? "REQUIRE_TOUCH_ID") as EgressAction;
+    if (!rule || rule.length > 500 || !ACTIONS.has(action)) return reply.code(400).send({ error: "body must be {rule, action?: REQUIRE_TOUCH_ID | DENY | ALLOW}" });
     const policy: PolicyDoc = { _id: `pol_${randomBytes(12).toString("hex")}`, rule, action, createdAt: new Date() };
     await policies().insertOne(policy);
     return { policy, embeddingWrittenByUs: false };

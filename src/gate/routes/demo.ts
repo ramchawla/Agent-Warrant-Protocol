@@ -289,14 +289,15 @@ export function minimize(payload: Record<string, unknown>) {
 const STOP = new Set("a an the any our to of for and or in on with before after may be is are it its this that from by at as".split(" "));
 const words = (s: string) => new Set(s.toLowerCase().split(/[^a-z0-9]+/).filter((w) => w.length > 1 && !STOP.has(w)).map((w) => w.replace(/(ing|es|s)$/, "")));
 
-/** The text matched against the policies: what kind of data is leaving, and to where. Short, so the meaning dominates. */
+/** The text matched against the policies, built from what is actually leaving: the kind of data, its fields, and where it goes. */
 function egressText(minimized: Record<string, unknown>, destination: string): string {
   const what = "accounts" in minimized || "totalBalanceCents" in minimized ? "Account statement" : "Customer data";
+  const fields = Object.keys(minimized).map((k) => k.replace(/Cents$/, "").replace(/([a-z])([A-Z])/g, "$1 $2").toLowerCase());
   const where = destination === "llm" ? "an external AI assistant" : destination;
-  return `${what} leaving the network to ${where}`;
+  return `${what} with ${fields.join(", ")} leaving the network to ${where}`;
 }
 
-type Semantic = { pipeline: Record<string, unknown>[]; path: "vector" | "keyword-fallback"; topScore: number; rule: string; policyId: string; action: "REQUIRE_FACEID" | "DENY" | "ALLOW"; error?: string };
+type Semantic = { pipeline: Record<string, unknown>[]; path: "vector" | "keyword-fallback"; topScore: number; rule: string; policyId: string; action: "REQUIRE_TOUCH_ID" | "DENY" | "ALLOW"; error?: string };
 type PolicyRow = { _id: string; rule: string; action: Semantic["action"] };
 
 async function semanticMatch(text: string): Promise<Semantic | null> {
@@ -461,7 +462,7 @@ export default async function demoRoutes(app: FastifyInstance): Promise<void> {
     const state = await demoMeta().findOne({ _id: "demo" });
     const w = state?.warrantId ? await warrants().findOne({ _id: state.warrantId }) : null;
     const head = (await meta().findOne({ _id: "ledger_head" })) as LedgerHeadDoc | null;
-    return { warrant: w ? summary(w) : null, user: await demoUser(), ledgerHead: { seq: head?.seq ?? 0, hash: head?.hash ?? GENESIS_HASH } };
+    return { warrant: w ? summary(w) : null, user: await demoUser(), ledgerHead: { seq: head?.seq ?? 0, hash: head?.hash ?? GENESIS_HASH }, databases: config.dbName };
   });
 
   app.post("/api/demo/session", async (_req, reply) => {
@@ -578,8 +579,14 @@ export default async function demoRoutes(app: FastifyInstance): Promise<void> {
     if (item!.decision === "allow") {
       const semantic = await semanticMatch(egressText(min.after, action.destination));
       if (semantic) item!.trace.semantic = semantic;
-      const threshold = semantic?.path === "vector" ? 0.5 : 0.3;
-      if (semantic && semantic.action === "REQUIRE_FACEID" && semantic.topScore >= threshold) {
+      // The best-matching policy decides. voyage-4 scores sit around 0.6 to 0.7, so below the floor nothing applies.
+      const floor = semantic?.path === "vector" ? 0.6 : 0.3;
+      const applies = semantic && semantic.topScore >= floor ? semantic.action : "ALLOW";
+      if (applies === "DENY") {
+        delete item!.outcome;
+        return { items: [item!], warrant: summary((await warrants().findOne({ _id: warrant._id })) ?? warrant), blocked: { reason: `Policy "${semantic!.rule}" blocks this (match ${semantic!.topScore.toFixed(2)}).` } };
+      }
+      if (semantic && applies === "REQUIRE_TOUCH_ID") {
         const challenge = b64url(sha256(jcs(min.after)));
         const approvalId = `apr_${randomBytes(12).toString("hex")}`;
         await approvals().insertOne({ _id: approvalId, warrantId: warrant._id, minimized: min.after, challenge, status: "pending", expiresAt: new Date(Date.now() + config.challengeTtlMs), policyId: semantic.policyId });

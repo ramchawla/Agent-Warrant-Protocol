@@ -55,7 +55,7 @@ function Artifact({ complete, Narrative }: ChapterProps) {
     setErr(null);
     try {
       const [added, index] = await Promise.all([
-        api.addPolicy(rule.trim(), "REQUIRE_FACEID"),
+        api.addPolicy(rule.trim(), "REQUIRE_TOUCH_ID"),
         api.policyIndex().catch(() => null),
       ]);
       save({ rule: rule.trim(), added, index });
