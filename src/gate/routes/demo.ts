@@ -1,7 +1,9 @@
 // Story backend (docs/STORY-API.md): /api/demo/*, /api/approvals/*, /api/warrants/:id/inspect and /verify-approval.
 // Owner: Max (agent B). Every step drives the real gate path (/api/act through app.inject with the demo agent's key).
 // ponytail: no auth on these routes (hackathon stand-in, per the contract); dev databases only.
+import { spawn } from "node:child_process";
 import { randomBytes } from "node:crypto";
+import { tmpdir } from "node:os";
 import Anthropic from "@anthropic-ai/sdk";
 import { generateAuthenticationOptions, verifyAuthenticationResponse } from "@simplewebauthn/server";
 import type { AuthenticationResponseJSON } from "@simplewebauthn/server";
@@ -333,7 +335,7 @@ async function askClaude(minimized: Record<string, unknown>): Promise<{ llmReply
     llmReply: "This portfolio holds a large CAD savings balance with a small NVDA position and a broad index fund. It is heavily weighted to cash, so a gradual move into equities would diversify it.",
     llmSource: "canned" as const,
   };
-  if (!config.anthropicApiKey) return canned;
+  if (!config.anthropicApiKey) return (await askClaudeCode(minimized)) ?? canned;
   try {
     const client = new Anthropic({ apiKey: config.anthropicApiKey, timeout: 20_000 });
     const msg = await client.messages.create({
@@ -346,6 +348,25 @@ async function askClaude(minimized: Record<string, unknown>): Promise<{ llmReply
   } catch {
     return canned;
   }
+}
+
+// No API key: ask the Claude Code CLI on this laptop (`claude -p`, the user's own login). Only the
+// minimized payload goes to it, on stdin. Null on any failure, so the caller falls back to the canned reply.
+const CLAUDE_CODE_PROMPT =
+  "The JSON on stdin is a customer's minimized portfolio statement (amounts in cents). Summarize it for the customer " +
+  "in two complete, natural English sentences. Do not use tools.";
+function askClaudeCode(minimized: Record<string, unknown>): Promise<{ llmReply: string; llmSource: "claude" } | null> {
+  return new Promise((resolve) => {
+    const args = ["-p", CLAUDE_CODE_PROMPT, "--model", process.env.AWP_CLAUDE_CODE_MODEL ?? "sonnet",
+      "--append-system-prompt", "Reply in normal, complete English prose. No terse or caveman style."];
+    let out = "";
+    // ponytail: one CLI process per release (~10 s); a long-lived session if the demo needs it faster.
+    const child = spawn(process.env.AWP_CLAUDE_BIN ?? "claude", args, { cwd: tmpdir(), timeout: 60_000 });
+    child.stdout.on("data", (chunk) => (out += chunk));
+    child.on("error", () => resolve(null));
+    child.on("close", (code) => resolve(code === 0 && out.trim() ? { llmReply: out.trim(), llmSource: "claude" } : null));
+    child.stdin.end(JSON.stringify(minimized));
+  });
 }
 
 // ---- WebAuthn helpers ----

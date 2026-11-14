@@ -358,7 +358,7 @@ function LlmPanel({ verify, removed }: { verify: ApprovalVerifyResponse; removed
       </div>
       <div className="flex flex-col rounded-xl border border-line bg-raised/95 p-4">
         <div className="flex items-center justify-between text-[12px]">
-          <span className="text-muted">{claude ? "Claude replied" : "Canned reply"}</span>
+          <span className="text-muted">{claude ? "Claude Code on this laptop replied" : "Canned reply"}</span>
           <span className={`rounded-full border px-2 py-0.5 font-mono text-[11px] ${claude ? "border-amber/40 text-amber" : "border-line-strong text-faint"}`}>
             llmSource: {verify.llmSource}
           </span>
