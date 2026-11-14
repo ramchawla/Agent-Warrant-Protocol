@@ -9,7 +9,7 @@ process.env.AWP_ALLOW_TEST_AUTHENTICATOR = "1";
 process.env.REVIEWER_TOKEN = "test-reviewer-token";
 const { config } = await import("../src/shared/config.ts");
 const { buildServer } = await import("../src/gate/server.ts");
-const { agents, challenges, closeDb, credentials, users, warrants } = await import("../src/gate/db.ts");
+const { agents, auditEvents, challenges, closeDb, credentials, users, warrants } = await import("../src/gate/db.ts");
 const { newId } = await import("../src/shared/ids.ts");
 const { termsHash } = await import("../src/shared/canonical.ts");
 const { createSoftAuthenticator } = await import("./softAuthenticator.ts");
@@ -206,5 +206,51 @@ test("warrant approval", { skip }, async (t) => {
     const { warrantId, termsHash: hash } = (await create(w1())).json();
     assert.equal((await options(warrantId, hash, cookieFor(otherUserId))).statusCode, 404);
     assert.equal((await options(warrantId, hash, {} as ReturnType<typeof me>)).statusCode, 401);
+  });
+});
+
+test("customer view routes (v3.1)", { skip }, async (t) => {
+  await t.test("GET /api/warrants lists only the session user's warrants, newest first", async () => {
+    const a = (await create(w1())).json().warrantId;
+    const b = (await create(w1())).json().warrantId;
+    const res = await app.inject({ url: "/api/warrants", headers: me() });
+    assert.equal(res.statusCode, 200);
+    const ids = res.json().warrants.map((w: { _id: string }) => w._id);
+    assert.ok(ids.indexOf(b) < ids.indexOf(a) && ids.indexOf(a) >= 0);
+    assert.ok(res.json().warrants.every((w: { terms: { userId: string }; plain: string[] }) => w.terms.userId === userId && w.plain.length > 0));
+    const other = await app.inject({ url: "/api/warrants", headers: cookieFor(otherUserId) });
+    assert.ok(!other.json().warrants.some((w: { _id: string }) => w._id === a));
+    assert.equal((await app.inject({ url: "/api/warrants" })).statusCode, 401);
+  });
+
+  await t.test("GET /api/warrants/:id/activity builds the trace from the warrant's ledger events", async () => {
+    const { warrantId, termsHash: hash } = (await create(w1())).json();
+    const base = { warrantId, termsHash: hash, agentId, policyVersion: "awp-policy-1", prevHash: "p".repeat(43), hash: "h".repeat(43), gateSig: "s" };
+    const seq0 = 900_000_000 + Math.floor(Math.random() * 1_000_000);
+    const events = [
+      { ...base, _id: seq0, seq: seq0, ts: new Date().toISOString(), type: "DECISION", runId: "run_t", decisionId: "dec_t1", decision: "allow",
+        action: { type: "payment.create", destination: "fintech", account: "A1", merchant: "M1", amountCents: 3000, fieldNames: [], fieldSizes: {} }, summary: "t" },
+      { ...base, _id: seq0 + 1, seq: seq0 + 1, ts: new Date().toISOString(), type: "EXECUTION", runId: "run_t", decisionId: "dec_t1", outcome: "executed", summary: "t" },
+      { ...base, _id: seq0 + 2, seq: seq0 + 2, ts: new Date().toISOString(), type: "DECISION", runId: "run_t", decisionId: "dec_t2", decision: "deny", reasonCode: "ACCOUNT_NOT_ALLOWED",
+        action: { type: "kyc.refresh", destination: "bank", account: "A9", fieldNames: [], fieldSizes: {} }, summary: "t" },
+    ];
+    // Written directly (the dev database has no validator-free shortcut in the gate); removed afterwards.
+    await auditEvents().insertMany(events as never[]);
+    try {
+      const res = await app.inject({ url: `/api/warrants/${warrantId}/activity`, headers: me() });
+      assert.equal(res.statusCode, 200, res.body);
+      const body = res.json();
+      assert.equal(body.warrant.totalLimitCents, 12000);
+      assert.deepEqual(body.items.map((i: { kind: string }) => i.kind), ["allowed", "blocked"]);
+      assert.equal(body.items[0].headline, "Paid M1 $30.00 from A1");
+      assert.equal(body.items[0].remainingAfterCents, 9000);
+      assert.equal(body.items[1].steps[2].status, "failed");
+      const after = await app.inject({ url: `/api/warrants/${warrantId}/activity?afterSeq=${seq0}`, headers: me() });
+      assert.deepEqual(after.json().items.map((i: { seq: number }) => i.seq), [seq0 + 2]);
+      assert.equal((await app.inject({ url: `/api/warrants/${warrantId}/activity`, headers: cookieFor(otherUserId) })).statusCode, 404);
+      assert.equal((await app.inject({ url: `/api/warrants/${warrantId}/activity`, headers: reviewer })).statusCode, 200);
+    } finally {
+      await auditEvents().deleteMany({ _id: { $in: events.map((e) => e._id) } });
+    }
   });
 });

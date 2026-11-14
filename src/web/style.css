@@ -39,3 +39,42 @@ button.busy { cursor: progress; }
 .badge.pending { color: var(--warn); } .badge.active { color: var(--ok); } .badge.revoked, .badge.rejected { color: var(--err); }
 .fingerprint { font-family: ui-monospace, Consolas, monospace; font-size: 0.85rem; color: var(--muted); word-break: break-all; }
 .muted { color: var(--muted); font-size: 0.9rem; }
+
+/* ---- customer and institution views (REQ-012) ---- */
+.bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.warrant .bar { margin-top: 12px; }
+button.danger { background: var(--err); color: #fff; }
+.button-link { display: inline-block; padding: 10px 16px; border-radius: 6px; background: var(--accent); color: var(--accent-text); font-weight: 600; text-decoration: none; }
+details > summary { cursor: pointer; }
+.terms-details { margin-top: 10px; font-size: 0.95rem; }
+.money { margin-top: 4px; font-size: 1.05rem; }
+.money b { font-size: 1.6rem; }
+.meter { height: 8px; border-radius: 999px; background: var(--line); overflow: hidden; margin: 6px 0 12px; }
+.meter-fill { height: 100%; background: var(--ok); transition: width .6s; }
+.activity-title { font-size: 1rem; margin: 20px 0 6px; }
+.activity-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.activity { border-bottom: 1px solid var(--line); }
+.activity.new { animation: arrive 1.6s ease-out; }
+@keyframes arrive { from { background: var(--warn-bg); } }
+.activity-head { all: unset; box-sizing: border-box; width: 100%; display: grid; grid-template-columns: 28px 1fr auto; gap: 8px; align-items: baseline; padding: 10px 4px; cursor: pointer; }
+.activity-head:focus-visible { outline: 2px solid var(--accent); }
+.activity-head .when { color: var(--muted); font-size: 0.85rem; white-space: nowrap; }
+.kind-icon { font-weight: 700; text-align: center; }
+.kind-icon.allowed { color: var(--ok); } .kind-icon.blocked { color: var(--err); } .kind-icon.revoked { color: var(--err); }
+.activity.blocked .headline { color: var(--err); }
+@media (max-width: 520px) { .activity-head { grid-template-columns: 24px 1fr; } .activity-head .when { grid-column: 2; } }
+.trace-box { margin: 0 4px 12px 36px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); }
+.trace-title { font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin-bottom: 6px; }
+.trace { list-style: none; margin: 0; padding: 0; }
+.step { display: grid; grid-template-columns: 22px 1fr; gap: 8px; padding: 6px 0; font-size: 0.93rem; }
+.step-icon { font-weight: 700; text-align: center; }
+.step.ok .step-icon { color: var(--ok); } .step.failed .step-icon { color: var(--err); }
+.step.flag .step-icon { color: var(--warn); } .step.not-reached { opacity: .55; }
+.step.failed b { color: var(--err); }
+.step-detail { color: var(--muted); }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 12px; }
+.stat { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+.stat b { display: block; font-size: 1.5rem; line-height: 1.2; }
+.stat span { color: var(--muted); font-size: 0.85rem; }
+.chain-ok { color: var(--ok); font-weight: 600; } .chain-bad { color: var(--err); font-weight: 600; }
+.bar button { margin-top: 0; }

@@ -1,0 +1,34 @@
+{
+  "_comment": "Fixture warrant W1 (PRD 8.9) matching test/fixtures/events.json. Served only when AWP_FIXTURES=1. termsHash is copied from the fixture events, not recomputed. Owner: Jackson.",
+  "_id": "wrt_8c4e2a6f0b1d3957e9a7c5f3",
+  "terms": {
+    "v": 1,
+    "warrantId": "wrt_8c4e2a6f0b1d3957e9a7c5f3",
+    "userId": "usr_3a9f1c5e7b2d4f6a8c0e1b3d",
+    "agentId": "agt_5d1f0c9a7b3e4f6a8c2d1e0b",
+    "parentWarrantId": null,
+    "scope": {
+      "actions": ["kyc.refresh", "payment.create"],
+      "accounts": ["A1", "A2", "A3", "A4", "A5"],
+      "merchants": ["M1"],
+      "destinations": ["bank", "fintech"],
+      "fields": {
+        "kyc.refresh": ["account", "fields"],
+        "payment.create": ["fromAccount", "merchant", "amountCents", "currency", "memo"],
+        "data.export": []
+      }
+    },
+    "currency": "CAD",
+    "perActionMaxCents": 5000,
+    "totalLimitCents": 12000,
+    "notBefore": "2026-11-14T19:00:00.000Z",
+    "expiresAt": "2026-11-14T22:00:00.000Z",
+    "nonce": "Zml4dHVyZS13YXJyYW50LTE"
+  },
+  "termsHash": "b4E4G5WIGJhzuKoaT6lV_JweLqlTFJOvToKP-JpTEUc",
+  "approval": null,
+  "state": { "status": "revoked", "remainingCents": 3000, "actionCount": 6 },
+  "ancestors": [],
+  "expiresAt": "2026-11-14T22:00:00.000Z",
+  "createdAt": "2026-11-14T19:02:13.437Z"
+}
