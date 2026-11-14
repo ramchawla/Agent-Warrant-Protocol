@@ -1,4 +1,7 @@
 {
-  "verified": true,
-  "credentialId": "cR1dcR1dcR1dcR1dcR1dcR1dcR1dcR1dcR1dcR1dcR1"
+  "credentialId": "NCiDbulAwzm-UBqXz700g8QLM2M",
+  "enrolled": {
+    "bank": true,
+    "fintech": true
+  }
 }

@@ -1,47 +1,53 @@
 {
-  "warrantId": "wrt_01JD8NVDA",
-  "termsHash": "tH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5ctH5",
+  "warrantId": "wrt_6f1c2a9e4b7d03a58e21c4f7",
+  "termsHash": "MgN6kPXLWD0dKIb74eUbuUUvXKoZjQEmdKoW2g2sfK4",
   "terms": {
     "v": 1,
+    "warrantId": "wrt_6f1c2a9e4b7d03a58e21c4f7",
     "userId": "usr_demo",
     "agentId": "agt_demo",
-    "actions": [
-      "payment.create",
-      "data.export"
-    ],
-    "accounts": [
-      "SAVINGS"
-    ],
-    "merchants": [
-      "BROKERAGE-NVDA"
-    ],
-    "destinations": [
-      "fintech",
-      "llm"
-    ],
-    "fields": {
-      "payment.create": [
-        "fromAccount",
-        "merchant",
-        "amountCents",
-        "currency",
-        "memo"
+    "parentWarrantId": null,
+    "scope": {
+      "actions": [
+        "payment.create",
+        "data.export"
       ],
-      "data.export": [
-        "payload"
-      ]
+      "accounts": [
+        "SAVINGS"
+      ],
+      "merchants": [
+        "BROKERAGE-NVDA"
+      ],
+      "destinations": [
+        "fintech",
+        "llm"
+      ],
+      "fields": {
+        "payment.create": [
+          "fromAccount",
+          "merchant",
+          "amountCents",
+          "currency",
+          "memo"
+        ],
+        "data.export": [
+          "payload"
+        ]
+      }
     },
+    "currency": "CAD",
     "perActionMaxCents": 50000,
     "totalLimitCents": 100000,
-    "notBefore": "2026-11-14T15:20:00.000Z",
-    "expiresAt": "2026-11-15T01:00:00.000Z"
+    "notBefore": "2026-11-14T23:20:00.000Z",
+    "expiresAt": "2026-11-15T01:00:00.000Z",
+    "nonce": "iTZQBqzrwcF1KeH_ja0aDg"
   },
-  "canonical": "{\"accounts\":[\"SAVINGS\"],\"actions\":[\"payment.create\",\"data.export\"],\"agentId\":\"agt_demo\",\"destinations\":[\"fintech\",\"llm\"],\"expiresAt\":\"2026-11-15T01:00:00.000Z\",\"fields\":{\"payment.create\":[\"fromAccount\",\"merchant\",\"amountCents\",\"currency\",\"memo\"],\"data.export\":[\"payload\"]},\"merchants\":[\"BROKERAGE-NVDA\"],\"notBefore\":\"2026-11-14T15:20:00.000Z\",\"perActionMaxCents\":50000,\"totalLimitCents\":100000,\"userId\":\"usr_demo\",\"v\":1}",
+  "canonical": "{\"agentId\":\"agt_demo\",\"currency\":\"CAD\",\"expiresAt\":\"2026-11-15T01:00:00.000Z\",\"nonce\":\"iTZQBqzrwcF1KeH_ja0aDg\",\"notBefore\":\"2026-11-14T23:20:00.000Z\",\"parentWarrantId\":null,\"perActionMaxCents\":50000,\"scope\":{\"accounts\":[\"SAVINGS\"],\"actions\":[\"payment.create\",\"data.export\"],\"destinations\":[\"fintech\",\"llm\"],\"fields\":{\"data.export\":[\"payload\"],\"payment.create\":[\"fromAccount\",\"merchant\",\"amountCents\",\"currency\",\"memo\"]},\"merchants\":[\"BROKERAGE-NVDA\"]},\"totalLimitCents\":100000,\"userId\":\"usr_demo\",\"v\":1,\"warrantId\":\"wrt_6f1c2a9e4b7d03a58e21c4f7\"}",
   "plain": [
     "Buy NVIDIA stock, $500 at a time",
     "Never more than $1,000 in total",
     "Only from your SAVINGS account",
-    "Until 5:00 pm today"
+    "Only until 5:00 pm today"
   ],
   "worstCase": {
     "cents": 100000,
