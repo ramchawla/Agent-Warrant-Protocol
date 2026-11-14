@@ -10,6 +10,7 @@ import { Shorten } from "../components/Shorten";
 import { spring } from "../components/util";
 import { useResult, useStory } from "../store";
 import type { InspectResponse } from "../types";
+import { authFlags, hex } from "./s1/flags";
 
 const actionLabel = "Sign with Touch ID";
 const FALLBACK_TEXT = "okay, $500 at a time, $1,000 max"; // only when chapter 1 was skipped in a rehearsal
@@ -17,16 +18,6 @@ const FALLBACK_TEXT = "okay, $500 at a time, $1,000 max"; // only when chapter 1
 type Phase = "idle" | "touch" | "flow" | "done" | "error";
 
 const clip = (s: string, n = 104) => (s.length > n ? `${s.slice(0, n)}…` : s);
-
-/** The authenticator flags byte (offset 32): 0x01 user present, 0x04 user verified. */
-function flags(authenticatorData: string): number | null {
-  try {
-    const bin = atob(authenticatorData.replace(/-/g, "+").replace(/_/g, "/"));
-    return bin.length > 32 ? bin.charCodeAt(32) : null;
-  } catch {
-    return null;
-  }
-}
 
 function friendly(e: unknown): string {
   const m = (e as Error).message ?? String(e);
@@ -67,7 +58,7 @@ function Artifact({ complete, Narrative }: ChapterProps) {
   };
 
   const a = ins?.approval;
-  const f = a ? flags(a.authenticatorData) : null;
+  const f = a ? authFlags(a.authenticatorData) : null;
   const same = !!a && a.clientDataJSON.challenge === ins!.termsHash;
   const bytes = ins ? new TextEncoder().encode(ins.canonical).length : 0;
 
@@ -168,7 +159,7 @@ function Artifact({ complete, Narrative }: ChapterProps) {
               </p>
               {f !== null && (
                 <span className="ml-auto font-mono text-[12px] text-faint" title="authenticatorData flags byte: 0x01 user present, 0x04 user verified">
-                  flags 0x{f.toString(16).padStart(2, "0")}
+                  flags {hex(f)}
                 </span>
               )}
             </motion.div>
