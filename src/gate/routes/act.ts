@@ -206,9 +206,10 @@ async function recordExecution(c: AllowCtx, outcome: "executed" | "rejected" | "
     : outcome === "rejected" ? `Rejected ${action.type} for decision ${decisionId} by ${action.destination}; held amount released.`
     : `Unknown outcome of ${action.type} for decision ${decisionId} at ${action.destination}: no confirmation from the institution; amount stays held.`;
   await tx(async (session) => {
-    // The mutex is held, so this check and the release below cannot interleave with another execution record.
-    if (await auditEvents().findOne({ type: "EXECUTION", decisionId }, { session })) return;
+    // execute() is the only caller, once per committed decision. The duplicate check (one round trip under the mutex)
+    // guards only the release, the one step a second record would get wrong. The mutex is held, so they cannot interleave.
     if (outcome === "rejected") {
+      if (await auditEvents().findOne({ type: "EXECUTION", decisionId }, { session })) return;
       await warrants().updateOne({ _id: warrant._id }, { $inc: { "state.remainingCents": actionAmountCents(action), "state.actionCount": -1 } }, { session });
     }
     const event: NewEvent = {
